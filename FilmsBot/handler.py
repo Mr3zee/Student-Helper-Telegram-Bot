@@ -11,7 +11,7 @@ handlers = {}
 
 commands = {}
 
-LOG_IN, MAIN, CHANGING, ADD, LIST_USER = range(5)
+LOG_IN, MAIN, CHANGING, ADD, LIST_USER, ADMIN_AUTH, CONTROL = range(7)
 
 
 @log_handler
@@ -57,10 +57,12 @@ def echo(update: Update, context: CallbackContext):
 
 @log_handler
 def help_(update: Update, context: CallbackContext):
+    text = message.help_text.format(data.get_link())
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.help_text,
+        text=text,
         parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True,
     )
     return MAIN
 
@@ -146,7 +148,7 @@ def to_untick(update: Update, context: CallbackContext):
 
 
 @log_handler
-def callback_ticking(update: Update, context: CallbackContext):
+def callback_changing(update: Update, context: CallbackContext):
     query_data = update.callback_query.data
     if query_data == keyboard.COMPLETE_BUTTON:
         return complete_query(update, context)
@@ -299,6 +301,65 @@ def enter_username(update: Update, context: CallbackContext):
     return LIST_USER
 
 
+@log_handler
+def admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.auth_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ADMIN_AUTH
+
+
+@log_handler
+def auth_admin(update: Update, context: CallbackContext):
+    text = update.message.text
+    if text == '/cancel':
+        return exit_(update, context)
+    if data.auth_admin(text.split('\n')):
+        return help_admin(update, context)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.auth_admin_error_text,
+        parse_mode=ParseMode.HTML,
+    )
+    return ADMIN_AUTH
+
+
+@log_handler
+def exit_(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.exit_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ConversationHandler.END
+
+
+@log_handler
+def help_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.auth_admin_welcome_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return CONTROL
+
+
+@log_handler
+def echo_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.echo_admin,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return CONTROL
+    
+
 handlers['main'] = ConversationHandler(
     entry_points=[
         CommandHandler('start', start),
@@ -320,7 +381,7 @@ handlers['main'] = ConversationHandler(
                 ],
                 states={
                     CHANGING: [
-                        CallbackQueryHandler(callback=callback_ticking),
+                        CallbackQueryHandler(callback=callback_changing),
                         MessageHandler(Filters.all, need_to_complete),
                     ],
                     ADD: [
@@ -329,6 +390,22 @@ handlers['main'] = ConversationHandler(
                     LIST_USER: [
                         CallbackQueryHandler(callback=callback_list_user),
                         MessageHandler(Filters.all, enter_username)
+                    ],
+                },
+                fallbacks=[]
+            ),
+            ConversationHandler(
+                entry_points=[
+                    CommandHandler('admin', admin),
+                ],
+                states={
+                    ADMIN_AUTH: [
+                        MessageHandler(Filters.all, auth_admin),
+                    ],
+                    CONTROL: [
+                        CommandHandler('help_admin', help_admin),
+                        CommandHandler('exit', exit_),
+                        MessageHandler(Filters.all, echo_admin),
                     ],
                 },
                 fallbacks=[]

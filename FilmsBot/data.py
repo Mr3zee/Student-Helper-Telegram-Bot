@@ -1,4 +1,5 @@
 users = {'Маша', 'Саша', 'Петя', 'Вася', 'Роман'}
+URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 
 
 def get_users():
@@ -55,3 +56,17 @@ def get_films(username):
             'Крепкий орешек 5',
         ],
     }
+
+
+def get_link():
+    return URL
+
+
+def auth_admin(data: list):
+    if len(data) < 2:
+        return False
+    username = data[0]
+    password = data[1]
+    if username == 'admin' and password == 'admin':
+        return True
+    return False
