@@ -11,7 +11,7 @@ handlers = {}
 
 commands = {}
 
-LOG_IN, MAIN, CHANGING, ADD, LIST_USER, ADMIN_AUTH, CONTROL = range(7)
+LOG_IN, MAIN, CHANGING, ADD, LIST_USER, ADMIN_AUTH, CONTROL, ADD_USER = range(8)
 
 
 @log_handler
@@ -316,7 +316,7 @@ def admin(update: Update, context: CallbackContext):
 def auth_admin(update: Update, context: CallbackContext):
     text = update.message.text
     if text == '/cancel':
-        return exit_(update, context)
+        return exit_admin(update, context)
     if data.auth_admin(text.split('\n')):
         return help_admin(update, context)
     context.bot.send_message(
@@ -328,7 +328,7 @@ def auth_admin(update: Update, context: CallbackContext):
 
 
 @log_handler
-def exit_(update: Update, context: CallbackContext):
+def exit_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.exit_text,
@@ -358,7 +358,78 @@ def echo_admin(update: Update, context: CallbackContext):
         reply_markup=None,
     )
     return CONTROL
-    
+
+
+@log_handler
+def all_users_admin(update: Update, context: CallbackContext):
+    text = message.users_list
+    for user in data.get_users():
+        text += user \
+                + (message.user_authorized if data.user_authorized(user) else message.user_unauthorized) \
+                + '\n\n'
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return CONTROL
+
+
+@log_handler
+def to_add_user_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.add_user_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ADD_USER
+
+
+def add_user_admin(update: Update, context: CallbackContext):
+    text = update.message.text.split('\n')
+    if len(text) < 2:
+        return add_user_error_admin(update, context)
+    username = text[0]
+    password = text[1]
+    if data.add_user(username, password):
+        return done_admin(update, context)
+    return add_user_error_admin(update, context)
+
+
+@log_handler
+def add_user_error_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.add_user_error_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ADD_USER
+
+
+@log_handler
+def done_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.done_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ConversationHandler.END
+
+
+@log_handler
+def stop_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.stop_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return ConversationHandler.END
+
 
 handlers['main'] = ConversationHandler(
     entry_points=[
@@ -392,7 +463,7 @@ handlers['main'] = ConversationHandler(
                         MessageHandler(Filters.all, enter_username)
                     ],
                 },
-                fallbacks=[]
+                fallbacks=[],
             ),
             ConversationHandler(
                 entry_points=[
@@ -403,12 +474,25 @@ handlers['main'] = ConversationHandler(
                         MessageHandler(Filters.all, auth_admin),
                     ],
                     CONTROL: [
+                        ConversationHandler(
+                            entry_points=[
+                                CommandHandler('add_user', to_add_user_admin),
+                            ],
+                            states={
+                                ADD_USER: [
+                                    CommandHandler('stop_admin', stop_admin),
+                                    MessageHandler(Filters.all, add_user_admin),
+                                ],
+                            },
+                            fallbacks=[],
+                        ),
+                        CommandHandler('all_users', all_users_admin),
                         CommandHandler('help_admin', help_admin),
-                        CommandHandler('exit', exit_),
+                        CommandHandler('exit', exit_admin),
                         MessageHandler(Filters.all, echo_admin),
                     ],
                 },
-                fallbacks=[]
+                fallbacks=[],
             ),
             CommandHandler('help', help_),
             CommandHandler('log_out', log_out),
@@ -416,7 +500,7 @@ handlers['main'] = ConversationHandler(
             MessageHandler(Filters.all, echo),
         ]
     },
-    fallbacks=[]
+    fallbacks=[],
 )
 
 handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)

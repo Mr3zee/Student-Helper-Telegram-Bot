@@ -28,16 +28,16 @@ def add_user_chat_id(chat_id, name):
 authorized = set()
 
 
-def rm_from_auth(user_name):
-    authorized.discard(user_name)
+def rm_from_auth(username):
+    authorized.discard(username)
 
 
-def user_authorized(user_name):
-    return user_name in authorized
+def user_authorized(username):
+    return username in authorized
 
 
-def add_to_auth(user_name):
-    authorized.add(user_name)
+def add_to_auth(username):
+    authorized.add(username)
 
 
 def add_films(films: list):
@@ -70,3 +70,9 @@ def auth_admin(data: list):
     if username == 'admin' and password == 'admin':
         return True
     return False
+
+
+def add_user(username, password):
+    if username == 'user' and password == '1234' and username not in users:
+        users.add(username)
+        return True
