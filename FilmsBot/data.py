@@ -76,3 +76,11 @@ def add_user(username, password):
     if username == 'user' and password == '1234' and username not in users:
         users.add(username)
         return True
+
+
+def change_user(username, field, new_data):
+    if new_data in users:
+        return False
+    users.remove(username)
+    users.add(new_data)
+    return True

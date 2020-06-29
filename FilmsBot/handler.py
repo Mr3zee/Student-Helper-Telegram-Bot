@@ -11,7 +11,9 @@ handlers = {}
 
 commands = {}
 
-LOG_IN, MAIN, CHANGING, ADD, LIST_USER, ADMIN_AUTH, CONTROL, ADD_USER = range(8)
+LOG_IN, MAIN, \
+CHANGING, ADD, LIST_USER, \
+ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, CHG_CALLBACK_ADMIN, CHG_ADMIN = range(10)
 
 
 @log_handler
@@ -384,29 +386,29 @@ def to_add_user_admin(update: Update, context: CallbackContext):
         parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
-    return ADD_USER
+    return ADD_USER_ADMIN
 
 
 def add_user_admin(update: Update, context: CallbackContext):
     text = update.message.text.split('\n')
     if len(text) < 2:
-        return add_user_error_admin(update, context)
+        return user_data_error_admin(update, context)
     username = text[0]
     password = text[1]
     if data.add_user(username, password):
         return done_admin(update, context)
-    return add_user_error_admin(update, context)
+    return user_data_error_admin(update, context, ADD_USER_ADMIN)
 
 
 @log_handler
-def add_user_error_admin(update: Update, context: CallbackContext):
+def user_data_error_admin(update: Update, context: CallbackContext, retval):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.add_user_error_text,
+        text=message.user_data_error_text,
         parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
-    return ADD_USER
+    return retval
 
 
 @log_handler
@@ -429,6 +431,58 @@ def stop_admin(update: Update, context: CallbackContext):
         reply_markup=None,
     )
     return ConversationHandler.END
+
+
+@log_handler
+def to_change_user_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.choose_user_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=keyboard.usernames_keyboard(),
+    )
+    return CHG_CALLBACK_ADMIN
+
+
+@log_handler
+def chg_admin_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    if query.data == keyboard.USERNAME_BUTTON or query.data == keyboard.PASSWORD_BUTTON:
+        context.user_data['field'] = query.data
+        query.edit_message_text(
+            text=message.new_field_admin_text,
+        )
+        return CHG_ADMIN
+    context.user_data['user'] = keyboard.keys_users[query.data]
+    query.edit_message_text(
+        text=message.change_user_admin_text,
+    )
+    query.edit_message_reply_markup(
+        reply_markup=keyboard.change_user_admin_keyboard(),
+    )
+    return CHG_CALLBACK_ADMIN
+
+
+def change_user_admin(update: Update, context: CallbackContext):
+    new_data = update.message.text
+    if data.change_user(context.user_data['user'], context.user_data['field'], new_data):
+        return done_admin(update, context)
+    return user_data_error_admin(update, context, CHG_ADMIN)
+
+
+def error_admin(retval_level):
+    @log_handler
+    def error(update: Update, context: CallbackContext):
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=message.error_admin_text,
+            parse_mode=ParseMode.HTML,
+        )
+        return retval_level
+    return error
+
+
+stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 
 
 handlers['main'] = ConversationHandler(
@@ -477,11 +531,21 @@ handlers['main'] = ConversationHandler(
                         ConversationHandler(
                             entry_points=[
                                 CommandHandler('add_user', to_add_user_admin),
+                                CommandHandler('change_user', to_change_user_admin, pass_user_data=True),
                             ],
                             states={
-                                ADD_USER: [
-                                    CommandHandler('stop_admin', stop_admin),
+                                ADD_USER_ADMIN: [
+                                    stop_admin_hdl,
                                     MessageHandler(Filters.all, add_user_admin),
+                                ],
+                                CHG_CALLBACK_ADMIN: [
+                                    CallbackQueryHandler(callback=chg_admin_callback, pass_user_data=True),
+                                    stop_admin_hdl,
+                                    MessageHandler(Filters.all, error_admin(CHG_CALLBACK_ADMIN), pass_user_data=True),
+                                ],
+                                CHG_ADMIN: [
+                                    stop_admin_hdl,
+                                    MessageHandler(Filters.all, change_user_admin, pass_user_data=True),
                                 ],
                             },
                             fallbacks=[],

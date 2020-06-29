@@ -30,9 +30,13 @@ def usernames_keyboard():
 
 
 COMPLETE_BUTTON = 'complete_button'
+USERNAME_BUTTON = 'username'
+PASSWORD_BUTTON = 'password'
 
 keyboard_buttons = {
-    COMPLETE_BUTTON: message.completed_text,
+    COMPLETE_BUTTON: message.complete_button_text,
+    USERNAME_BUTTON: message.username_button_text,
+    PASSWORD_BUTTON: message.password_button_text,
 }
 
 marked_buttons = set()
@@ -95,4 +99,14 @@ def remove_keyboard(user_data=None):
         ])
     # todo list of films
     keyboard.append([InlineKeyboardButton(keyboard_buttons[COMPLETE_BUTTON], callback_data=COMPLETE_BUTTON)])
+    return InlineKeyboardMarkup(keyboard)
+
+
+def change_user_admin_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton(keyboard_buttons[USERNAME_BUTTON], callback_data=USERNAME_BUTTON),
+            InlineKeyboardButton(keyboard_buttons[PASSWORD_BUTTON], callback_data=PASSWORD_BUTTON),
+        ],
+    ]
     return InlineKeyboardMarkup(keyboard)
