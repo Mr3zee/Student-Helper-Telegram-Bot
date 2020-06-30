@@ -1,4 +1,4 @@
-users = {'Маша': 'маша', 'Саша': 'саша', 'Петя': 'петя', 'Вася': 'вася', 'Роман': 'роман', 'admin': 'admin'}
+users = {'Марина': '1234', 'Саша': 'саша', 'Петя': 'петя', 'Вася': 'вася', 'Роман': 'роман', 'admin': 'admin'}
 admins = {'admin': 'admin'}
 
 URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
@@ -21,7 +21,7 @@ def get_admins():
 
 
 def check_auth(chat_id):
-    return
+    return chat_id in users_chat_id
 
 
 def logged_in(chat_id):
@@ -29,7 +29,8 @@ def logged_in(chat_id):
 
 
 def get_username(chat_id):
-    return users_chat_id[chat_id]
+    if chat_id in users_chat_id:
+        return users_chat_id[chat_id]
 
 
 def auth_user(data: dict, chat_id):

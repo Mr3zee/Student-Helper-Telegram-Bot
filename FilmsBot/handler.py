@@ -24,7 +24,20 @@ def unauthorized(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=message.unauthorized_text,
     )
-    return LOG_IN
+    return ConversationHandler.END
+
+
+@log_handler
+def stop_auth(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.stop_auth_text,
+        reply_markup=None,
+    )
+    return ConversationHandler.END
+
+
+stop_auth_hld = CommandHandler('stop_auth', stop_auth)
 
 
 @log_handler
@@ -48,18 +61,34 @@ def log_in(update: Update, context: CallbackContext):
 
 @log_handler
 def echo(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.echo_text,
     )
     return MAIN
 
 
 @log_handler
-def help_(update: Update, context: CallbackContext):
-    text = message.help_text.format(data.get_link())
+def echo_auth(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
+        text=message.echo_auth_text,
+        reply_markup=None,
+    )
+    return LOG_IN
+
+
+@log_handler
+def help_(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
+    text = message.help_text.format(data.get_link())
+    context.bot.send_message(
+        chat_id=chat_id,
         text=text,
     )
     return MAIN
@@ -78,7 +107,7 @@ def auth(update: Update, context: CallbackContext):
             query.edit_message_text(
                 text=message.logged_in_text,
             )
-            return
+            return LOG_IN
         query.edit_message_text(
             text=message.error_text,
         )
@@ -87,7 +116,7 @@ def auth(update: Update, context: CallbackContext):
             text=message.bad_auth_text,
             reply_markup=keyboard.usernames_keyboard(),
         )
-        return
+        return LOG_IN
 
     context.user_data['username'] = username
 
@@ -106,8 +135,7 @@ def password_handler(update: Update, context: CallbackContext):
             chat_id=chat_id,
             text=message.bad_password_text,
         )
-        return LOG_IN
-
+        return ConversationHandler.END
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.auth_text.format(context.user_data['username']),
@@ -127,6 +155,8 @@ def callback_auth(update: Update, context: CallbackContext):
 @log_handler
 def log_out(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     data.unauth_user(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
@@ -137,8 +167,11 @@ def log_out(update: Update, context: CallbackContext):
 
 @log_handler
 def to_tick(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.tick_text,
         reply_markup=keyboard.tick_keyboard(),
     )
@@ -147,8 +180,11 @@ def to_tick(update: Update, context: CallbackContext):
 
 @log_handler
 def to_untick(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.untick_text,
         reply_markup=keyboard.untick_keyboard(),
     )
@@ -217,8 +253,11 @@ def need_to_complete(update: Update, context: CallbackContext):
 
 @log_handler
 def to_add(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.add_text,
         reply_markup=None,
     )
@@ -232,8 +271,11 @@ def add(update: Update, context: CallbackContext):
 
 @log_handler
 def to_remove(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.remove_text,
         reply_markup=keyboard.remove_keyboard(),
     )
@@ -252,6 +294,8 @@ def remove(update: Update, context: CallbackContext):
 @log_handler
 def list_(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
 
     text = message.make_list(data.get_films(data.get_username(chat_id)), message.self_films_list_text)
 
@@ -265,8 +309,11 @@ def list_(update: Update, context: CallbackContext):
 
 @log_handler
 def to_list_user(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if not data.check_auth(chat_id):
+        return unauthorized(update, context)
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.enter_username_list_text,
         reply_markup=keyboard.usernames_keyboard(),
     )
@@ -563,7 +610,8 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
     if query.data == keyboard.CONFIRM_BUTTON:
         type_ = context.user_data['type']
         if type_ == 'one':
-            data.disconnect_user(context.user_data['username'])
+            user_chat_id = data.disconnect_user(context.user_data['username'])
+            alert_disconnection(update, context, user_chat_id)
         elif type_ == 'all':
             for user in data.get_authorized():
                 if data.valid_disconnection(user):
@@ -599,11 +647,11 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
 
         context.user_data['username'] = username
         context.user_data['type'] = 'one'
-        query.edit_message_reply_markup(
-            reply_markup=keyboard.confirm_admin_keyboard(),
-        )
         query.edit_message_text(
             text=message.confirm_disconnection_admin_text,
+        )
+        query.edit_message_reply_markup(
+            reply_markup=keyboard.confirm_admin_keyboard(),
         )
         return DISCONNECT
     else:
@@ -646,9 +694,11 @@ handlers['main'] = ConversationHandler(
     states={
         LOG_IN: [
             CallbackQueryHandler(callback=callback_auth, pass_user_data=True),
-            CommandHandler('log_in', log_in),
+            stop_auth_hld,
+            MessageHandler(Filters.all, echo_auth),
         ],
         PASSWORD: [
+            stop_auth_hld,
             MessageHandler(Filters.all, password_handler),
         ],
         MAIN: [
@@ -690,6 +740,7 @@ handlers['admin'] = ConversationHandler(
     ],
     states={
         ADMIN_AUTH: [
+            stop_auth_hld,
             MessageHandler(Filters.all, auth_admin),
         ],
         CONTROL: [
@@ -747,12 +798,9 @@ handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 # todo front:
 #  system initial config,
 #  Eng language support,
-#  check_auth
 #
 # todo back:
 #  everything
 #
 # todo test:
-#  disconnection,
-#  bad auth,
-#  alerts
+#
