@@ -1,4 +1,4 @@
-from telegram import Update, ParseMode
+from telegram import Update
 from telegram.ext import CallbackContext, Filters, MessageHandler, CallbackQueryHandler, ConversationHandler, \
     CommandHandler
 
@@ -15,8 +15,7 @@ LOG_IN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
 ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, \
 CHG_CALLBACK_ADMIN, CHG_ADMIN, RM_USER_ADMIN, \
-CONFIRM_RM_USER_ADMIN, DISCONNECT, CONFIRM_DISCONNECT, \
-DISCONNECT_ALL = range(16)
+CONFIRM_RM_USER_ADMIN, DISCONNECT = range(14)
 
 
 @log_handler
@@ -24,7 +23,6 @@ def unauthorized(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.unauthorized_text,
-        parse_mode=ParseMode.HTML,
     )
     return LOG_IN
 
@@ -34,7 +32,6 @@ def start(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.start_text,
-        parse_mode=ParseMode.HTML,
     )
     return LOG_IN
 
@@ -45,7 +42,6 @@ def log_in(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=message.log_in_user_text,
         reply_markup=keyboard.usernames_keyboard(),
-        parse_mode=ParseMode.HTML,
     )
     return LOG_IN
 
@@ -55,7 +51,6 @@ def echo(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.echo_text,
-        parse_mode=ParseMode.HTML,
     )
     return MAIN
 
@@ -66,8 +61,6 @@ def help_(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
     )
     return MAIN
 
@@ -84,18 +77,15 @@ def auth(update: Update, context: CallbackContext):
         if username == data.get_username(chat_id):
             query.edit_message_text(
                 text=message.logged_in_text,
-                parse_mode=ParseMode.HTML,
             )
             return
         query.edit_message_text(
             text=message.error_text,
-            parse_mode=ParseMode.HTML,
         )
         context.bot.send_message(
             chat_id=chat_id,
             text=message.bad_auth_text,
             reply_markup=keyboard.usernames_keyboard(),
-            parse_mode=ParseMode.HTML,
         )
         return
 
@@ -103,7 +93,6 @@ def auth(update: Update, context: CallbackContext):
 
     query.edit_message_text(
         text=message.log_in_password_text,
-        parse_mode=ParseMode.HTML,
     )
     return PASSWORD
 
@@ -116,14 +105,12 @@ def password_handler(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text=message.bad_password_text,
-            parse_mode=ParseMode.HTML,
         )
         return LOG_IN
 
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.auth_text.format(context.user_data['username']),
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     context.user_data.clear()
@@ -144,7 +131,6 @@ def log_out(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=chat_id,
         text=message.log_out_text,
-        parse_mode=ParseMode.HTML,
     )
     return ConversationHandler.END
 
@@ -154,7 +140,6 @@ def to_tick(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.tick_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.tick_keyboard(),
     )
     return CHANGING
@@ -165,7 +150,6 @@ def to_untick(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.untick_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.untick_keyboard(),
     )
     return CHANGING
@@ -208,7 +192,6 @@ def complete_query(update: Update, context: CallbackContext):
     keyboard.done_marked_buttons()
     update.callback_query.edit_message_text(
         text=message.complete_text,
-        parse_mode=ParseMode.HTML,
     )
     return ConversationHandler.END
 
@@ -218,7 +201,6 @@ def complete(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.complete_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -229,7 +211,6 @@ def need_to_complete(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.need_to_complete_text,
-        parse_mode=ParseMode.HTML,
     )
     return CHANGING
 
@@ -239,7 +220,6 @@ def to_add(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.add_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ADD
@@ -255,7 +235,6 @@ def to_remove(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.remove_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.remove_keyboard(),
     )
     return CHANGING
@@ -279,7 +258,6 @@ def list_(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=chat_id,
         text=text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return MAIN
@@ -290,7 +268,6 @@ def to_list_user(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.enter_username_list_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.usernames_keyboard(),
     )
     return LIST_USER
@@ -318,7 +295,6 @@ def enter_username(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.bad_username_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return LIST_USER
@@ -329,7 +305,6 @@ def admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.auth_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ADMIN_AUTH
@@ -345,7 +320,6 @@ def auth_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.auth_admin_error_text,
-        parse_mode=ParseMode.HTML,
     )
     return ADMIN_AUTH
 
@@ -355,7 +329,6 @@ def exit_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.exit_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -366,7 +339,6 @@ def help_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.help_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return CONTROL
@@ -377,7 +349,6 @@ def echo_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.echo_admin,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return CONTROL
@@ -393,7 +364,6 @@ def all_users_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return CONTROL
@@ -404,7 +374,6 @@ def to_add_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.add_user_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ADD_USER_ADMIN
@@ -422,7 +391,6 @@ def user_data_error_admin(update: Update, context: CallbackContext, retval):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.user_data_error_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return retval
@@ -433,7 +401,6 @@ def done_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.done_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -445,7 +412,6 @@ def stop_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.stop_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -456,7 +422,6 @@ def to_change_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.choose_user_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.usernames_keyboard(),
     )
     return CHG_CALLBACK_ADMIN
@@ -489,7 +454,6 @@ def to_rm_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.to_rm_user_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.usernames_keyboard(),
     )
     return RM_USER_ADMIN
@@ -510,13 +474,11 @@ def rm_callback_admin(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text=message.confirm_rm_admin_text,
-            parse_mode=ParseMode.HTML,
         )
         return CONFIRM_RM_USER_ADMIN
     context.bot.send_message(
         chat_id=chat_id,
         text=message.bad_rm_user_admin_text,
-        parse_mode=ParseMode.HTML,
     )
     query.answer()
     return RM_USER_ADMIN
@@ -538,7 +500,6 @@ def rm_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=chat_id,
         text=message.bad_password_rm_user_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return CONFIRM_RM_USER_ADMIN
@@ -560,7 +521,6 @@ def error_admin(retval_level):
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message.error_admin_text,
-            parse_mode=ParseMode.HTML,
         )
         return retval_level
 
@@ -578,7 +538,6 @@ def to_disconnect_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.disconnect_user_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.usernames_keyboard(users),
     )
     return DISCONNECT
@@ -589,7 +548,6 @@ def no_users_authorized_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.no_users_authorized_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -616,7 +574,6 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
             context.bot.send_message(
                 chat_id=chat_id,
                 text=message.fatal_error_text,
-                parse_mode=ParseMode.HTML,
             )
             return ConversationHandler.END
         context.bot.delete_message(
@@ -637,7 +594,6 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
             context.bot.send_message(
                 chat_id=chat_id,
                 text=message.bad_disconnect_user_admin_text,
-                parse_mode=ParseMode.HTML,
             )
             return DISCONNECT
 
@@ -660,7 +616,6 @@ def confirm_disconnection_all_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.confirm_disconnection_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=keyboard.confirm_admin_keyboard(),
     )
     return DISCONNECT
@@ -671,7 +626,6 @@ def alert_disconnection(update: Update, context: CallbackContext, chat_id):
     context.bot.send_message(
         chat_id=chat_id,
         text=message.disconnection_alert_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
 
@@ -681,7 +635,6 @@ def alert_removal(update: Update, context: CallbackContext, chat_id):
     context.bot.send_message(
         chat_id=chat_id,
         text=message.removal_alert_admin_text,
-        parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
 

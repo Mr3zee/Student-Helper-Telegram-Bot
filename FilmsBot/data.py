@@ -20,6 +20,10 @@ def get_admins():
     return admins
 
 
+def check_auth(chat_id):
+    return
+
+
 def logged_in(chat_id):
     return chat_id in users_chat_id
 
