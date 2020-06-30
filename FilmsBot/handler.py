@@ -15,7 +15,8 @@ LOG_IN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
 ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, \
 CHG_CALLBACK_ADMIN, CHG_ADMIN, RM_USER_ADMIN, \
-CONFIRM_RM_USER_ADMIN, DISCONNECT, CONFIRM_DISCONNECT = range(15)
+CONFIRM_RM_USER_ADMIN, DISCONNECT, CONFIRM_DISCONNECT, \
+DISCONNECT_ALL = range(16)
 
 
 @log_handler
@@ -364,7 +365,7 @@ def exit_admin(update: Update, context: CallbackContext):
 def help_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.auth_admin_welcome_text,
+        text=message.help_admin_text,
         parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
@@ -578,10 +579,30 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
     query.answer()
 
     if query.data == keyboard.CONFIRM_BUTTON:
-        data.disconnect_user(context.user_data['username'], chat_id)
+        type_ = context.user_data['type']
+        if type_ == 'one':
+            data.disconnect_user(context.user_data['username'], chat_id)
+        elif type_ == 'all':
+            data.disconnect_all_users(chat_id)
+        else:
+            context.user_data.clear()
+            context.bot.send_message(
+                chat_id=chat_id,
+                text=message.fatal_error_text,
+                parse_mode=ParseMode.HTML,
+            )
+            return ConversationHandler.END
+        context.bot.delete_message(
+            chat_id=chat_id,
+            message_id=query.message.message_id,
+        )
         context.user_data.clear()
         return done_admin(update, context)
     elif query.data == keyboard.CANCEL_BUTTON:
+        context.bot.delete_message(
+            chat_id=chat_id,
+            message_id=query.message.message_id,
+        )
         return stop_admin(update, context)
     elif query.data in keyboard.keys_users:
         username = keyboard.keys_users[query.data]
@@ -592,14 +613,23 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
                 parse_mode=ParseMode.HTML,
             )
             return DISCONNECT
+
         context.user_data['username'] = username
-        return confirm_disconnection_admin(update, context)
+        context.user_data['type'] = 'one'
+        query.edit_message_reply_markup(
+            reply_markup=keyboard.confirm_admin_keyboard(),
+        )
+        query.edit_message_text(
+            text=message.confirm_disconnection_admin_text,
+        )
+        return DISCONNECT
     else:
         return error_admin(DISCONNECT)(update, context)
 
 
 @log_handler
-def confirm_disconnection_admin(update: Update, context: CallbackContext):
+def confirm_disconnection_all_admin(update: Update, context: CallbackContext):
+    context.user_data['type'] = 'all'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.confirm_disconnection_admin_text,
@@ -661,6 +691,7 @@ handlers['main'] = ConversationHandler(
                                 CommandHandler('change_user', to_change_user_admin, pass_user_data=True),
                                 CommandHandler('remove_user', to_rm_user_admin, pass_user_data=True),
                                 CommandHandler('disconnect_user', to_disconnect_user_admin, pass_user_data=True),
+                                CommandHandler('disconnect_all_users', confirm_disconnection_all_admin, pass_user_data=True),
                             ],
                             states={
                                 ADD_USER_ADMIN: [
@@ -730,6 +761,18 @@ handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 # /disconnect_all_admins - отключить всех администраторов
 
 
-# todo front: user disconnection, removal, change alerts, system initial config, Eng language support
-# todo back: everything
-# todo test: disconnection, bad auth, alerts
+# todo front:
+#  user disconnection,
+#  removal,
+#  change alerts,
+#  system initial config,
+#  Eng language support,
+#  alerts to superadmin
+#
+# todo back:
+#  everything
+#
+# todo test:
+#  disconnection,
+#  bad auth,
+#  alerts
