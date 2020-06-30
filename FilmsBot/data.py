@@ -1,12 +1,15 @@
-users = {'Маша', 'Саша', 'Петя', 'Вася', 'Роман'}
+users = {'Маша': 'маша', 'Саша': 'саша', 'Петя': 'петя', 'Вася': 'вася', 'Роман': 'роман', 'admin': 'admin'}
+admins = {'admin': 'admin'}
+
 URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+users_chat_id = {}
+
+authorized = {}
 
 
 def get_users():
     return users
-
-
-users_chat_id = {}
 
 
 def logged_in(chat_id):
@@ -17,31 +20,28 @@ def get_username(chat_id):
     return users_chat_id[chat_id]
 
 
-def rm_chat_id(chat_id):
+def auth_user(data: dict, chat_id):
+    if len(data) != 2:
+        return False
+    username = data['username']
+    password = data['password']
+    if username in users and password == users[username]:
+        authorized[username] = chat_id
+        users_chat_id[chat_id] = username
+        return True
+
+
+def unauth_user(chat_id):
+    authorized.pop(users_chat_id[chat_id])
     users_chat_id.pop(chat_id)
-
-
-def add_user_chat_id(chat_id, name):
-    users_chat_id[chat_id] = name
-
-
-authorized = {}
-
-
-def rm_from_auth(username):
-    authorized.pop(username)
 
 
 def user_authorized(username):
     return username in authorized
 
 
-def add_to_auth(username, chat_id):
-    authorized[username] = chat_id
-
-
 def add_films(films: list):
-    return None
+    pass
 
 
 def get_films(username):
@@ -63,36 +63,61 @@ def get_link():
 
 
 def auth_admin(data: list):
-    if len(data) < 2:
+    if len(data) != 2:
         return False
     username = data[0]
     password = data[1]
-    if username == 'admin' and password == 'admin':
+    if username in admins and password == admins[username]:
         return True
     return False
 
 
-def add_user(username, password):
-    if username == 'user' and password == '1234' and username not in users:
-        users.add(username)
+def add_user(data: list):
+    if len(data) != 2:
+        return False
+    username = data[0]
+    password = data[1]
+    if username not in users:
+        users[username] = password
         return True
 
 
-def change_user(username, field, new_data):
-    if new_data in users:
+def change_user(data: dict, new_data):
+    if len(data) != 2:
         return False
-    users.remove(username)
-    users.add(new_data)
-    return True
+    username = data['username']
+    field = data['field']
+    if username not in users:
+        return False
+    if field == 'username':
+        if new_data in users:
+            return False
+        password = users[username]
+        users.pop(username)
+        users[new_data] = password
+        authorized.pop(username)
+        authorized[new_data] = password
+        return True
+    elif field == 'password':
+        if users[username] == new_data:
+            return False
+        users[username] = new_data
+        return True
 
 
 def valid_rm_user(username, admin_chat_id):
     return username != users_chat_id[admin_chat_id]
 
 
-def rm_user(username, admin_password, user_password):
-    if admin_password == 'admin' and user_password == '1234':
-        users.discard(username)
+def rm_user(data: list, chat_id):
+    if len(data) != 3:
+        return False
+    admin = users_chat_id[chat_id]
+    username = data[0]
+    admin_password = data[1]
+    user_password = data[2]
+    if admin_password == admins[admin] and user_password == users[username]:
+        users.pop(username)
         if username in authorized:
             chat_id = authorized[username]
             if chat_id in users_chat_id:
@@ -101,5 +126,12 @@ def rm_user(username, admin_password, user_password):
         return True
 
 
-def valid_change_user(username):
-    return username not in authorized
+def disconnect_user(username, chat_id):
+    if username not in admins and users_chat_id[chat_id] != username:
+        authorized.pop(username)
+        return True
+
+
+def disconnect_all_users(chat_id):
+    for user in users:
+        disconnect_user(user, chat_id)

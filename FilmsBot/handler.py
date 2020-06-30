@@ -11,11 +11,11 @@ handlers = {}
 
 commands = {}
 
-LOG_IN, MAIN, \
+LOG_IN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
 ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, \
 CHG_CALLBACK_ADMIN, CHG_ADMIN, RM_USER_ADMIN, \
-CONFIRM_RM_USER_ADMIN = range(12)
+CONFIRM_RM_USER_ADMIN = range(13)
 
 
 @log_handler
@@ -42,7 +42,7 @@ def start(update: Update, context: CallbackContext):
 def log_in(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.log_in_text,
+        text=message.log_in_user_text,
         reply_markup=keyboard.usernames_keyboard(),
         parse_mode=ParseMode.HTML,
     )
@@ -99,16 +99,36 @@ def auth(update: Update, context: CallbackContext):
         )
         return
 
-    chat_id = update.effective_chat.id
-    data.add_to_auth(username, chat_id)
-    data.add_user_chat_id(chat_id, username)
+    context.user_data['username'] = username
 
     query.edit_message_text(
-        text=message.auth_text.format(username),
+        text=message.log_in_password_text,
         parse_mode=ParseMode.HTML,
     )
-    return MAIN
+    return PASSWORD
 
+
+@log_handler
+def password_handler(update: Update, context: CallbackContext):
+    context.user_data['password'] = update.message.text
+    chat_id = update.effective_chat.id
+    if not data.auth_user(context.user_data, chat_id):
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=message.bad_password_text,
+            parse_mode=ParseMode.HTML,
+        )
+        return LOG_IN
+
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.auth_text.format(context.user_data['username']),
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    context.user_data.clear()
+    return MAIN
+    
 
 def callback_auth(update: Update, context: CallbackContext):
     query_data = update.callback_query.data
@@ -120,8 +140,7 @@ def callback_auth(update: Update, context: CallbackContext):
 @log_handler
 def log_out(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
-    data.rm_from_auth(data.get_username(chat_id))
-    data.rm_chat_id(chat_id)
+    data.unauth_user(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=message.log_out_text,
@@ -393,12 +412,8 @@ def to_add_user_admin(update: Update, context: CallbackContext):
 
 
 def add_user_admin(update: Update, context: CallbackContext):
-    text = update.message.text.split('\n')
-    if len(text) != 2:
-        return user_data_error_admin(update, context)
-    username = text[0]
-    password = text[1]
-    if data.add_user(username, password):
+    text = update.message.text
+    if data.add_user(text.split('\n')):
         return done_admin(update, context)
     return user_data_error_admin(update, context, ADD_USER_ADMIN)
 
@@ -457,16 +472,10 @@ def chg_admin_callback(update: Update, context: CallbackContext):
             text=message.new_field_admin_text,
         )
         return CHG_ADMIN
+
     username = keyboard.keys_users[query.data]
-    if not data.valid_change_user(username):
-        query.answer()
-        context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=message.bad_chg_user_admin_text,
-            parse_mode=ParseMode.HTML,
-        )
-        return CHG_CALLBACK_ADMIN
-    context.user_data['user'] = username
+    context.user_data['username'] = username
+
     query.edit_message_text(
         text=message.change_user_admin_text,
     )
@@ -513,10 +522,14 @@ def rm_callback_admin(update: Update, context: CallbackContext):
 @log_handler
 def rm_user_admin(update: Update, context: CallbackContext):
     text = update.message.text.split('\n')
-    if len(text) == 2 and data.rm_user(context.user_data['username'], text[0], text[1]):
+    chat_id = update.effective_chat.id
+
+    if data.rm_user([context.user_data['username'], text[0], text[1]], chat_id):
+        context.user_data.clear()
         return done_admin(update, context)
+
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=message.bad_password_rm_user_admin_text,
         parse_mode=ParseMode.HTML,
         reply_markup=None,
@@ -526,8 +539,11 @@ def rm_user_admin(update: Update, context: CallbackContext):
 
 def change_user_admin(update: Update, context: CallbackContext):
     new_data = update.message.text
-    if data.change_user(context.user_data['user'], context.user_data['field'], new_data):
+
+    if data.change_user(context.user_data, new_data):
+        context.user_data.clear()
         return done_admin(update, context)
+
     return user_data_error_admin(update, context, CHG_ADMIN)
 
 
@@ -549,12 +565,15 @@ stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 handlers['main'] = ConversationHandler(
     entry_points=[
         CommandHandler('start', start),
-        CommandHandler('log_in', log_in),
+        CommandHandler('log_in', log_in, pass_user_data=True),
     ],
     states={
         LOG_IN: [
-            CallbackQueryHandler(callback=callback_auth),
+            CallbackQueryHandler(callback=callback_auth, pass_user_data=True),
             CommandHandler('log_in', log_in),
+        ],
+        PASSWORD: [
+            MessageHandler(Filters.all, password_handler),
         ],
         MAIN: [
             ConversationHandler(
@@ -639,3 +658,16 @@ handlers['main'] = ConversationHandler(
 )
 
 handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
+
+# /all_users - список всех пользователей
+# /add_user - добавить нового пользователя
+# /change_user - изменить данные пользователя
+# /remove_user - удалить пользователя
+# /disconnect_user - отключить пользователя (утеря старого аккаунта и т.д.)
+# /disconnect_all_users - отключить всех пользователей
+# /all_admins - список всех администраторов \n<b>(функция суперадминистратора)</b>
+# /add_admin - список всех администраторов \n<b>(функция суперадминистратора)</b>
+# /remove_admin - список всех администраторов \n<b>(функция суперадминистратора)</b>
+# /disconnect_admin - отключить администратора \n<b>(функция суперадминистратора)</b>
+# /disconnect_all_admins - отключить всех администраторов \n<b>(функция суперадминистратора)</b>
+# /format - изменить формат таблицы (временно недоступно)
