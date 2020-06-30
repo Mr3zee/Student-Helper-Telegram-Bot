@@ -15,15 +15,12 @@ def all_users(username):
     return True
 
 
-def usernames_keyboard(included=all_users):
+def usernames_keyboard(users=data.get_users()):
     clear_keys_users()
     keyboard = []
     row = []
     user_num = 0
-    users = data.get_users()
     for user in users:
-        if not included(user):
-            continue
         if len(row) == 3:
             keyboard.append(row)
             row = []

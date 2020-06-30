@@ -128,7 +128,7 @@ def password_handler(update: Update, context: CallbackContext):
     )
     context.user_data.clear()
     return MAIN
-    
+
 
 def callback_auth(update: Update, context: CallbackContext):
     query_data = update.callback_query.data
@@ -533,7 +533,7 @@ def rm_user_admin(update: Update, context: CallbackContext):
         reply_markup=None,
     )
     return CONFIRM_RM_USER_ADMIN
-    
+
 
 def change_user_admin(update: Update, context: CallbackContext):
     new_data = update.message.text
@@ -554,6 +554,7 @@ def error_admin(retval_level):
             parse_mode=ParseMode.HTML,
         )
         return retval_level
+
     return error
 
 
@@ -562,13 +563,27 @@ stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 
 @log_handler
 def to_disconnect_user_admin(update: Update, context: CallbackContext):
+    users = data.get_authorized()
+    if len(users) == 0:
+        return no_users_authorized_admin(update, context)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.disconnect_user_admin_text,
         parse_mode=ParseMode.HTML,
-        reply_markup=keyboard.usernames_keyboard(data.user_authorized),
+        reply_markup=keyboard.usernames_keyboard(users),
     )
     return DISCONNECT
+
+
+@log_handler
+def no_users_authorized_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.no_users_authorized_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+    return CONTROL
 
 
 @log_handler
@@ -637,11 +652,10 @@ def confirm_disconnection_all_admin(update: Update, context: CallbackContext):
         reply_markup=keyboard.confirm_admin_keyboard(),
     )
     return DISCONNECT
-    
+
 
 handlers['main'] = ConversationHandler(
     entry_points=[
-        CommandHandler('start', start),
         CommandHandler('log_in', log_in, pass_user_data=True),
     ],
     states={
@@ -676,62 +690,6 @@ handlers['main'] = ConversationHandler(
                 },
                 fallbacks=[],
             ),
-            ConversationHandler(
-                entry_points=[
-                    CommandHandler('admin', admin),
-                ],
-                states={
-                    ADMIN_AUTH: [
-                        MessageHandler(Filters.all, auth_admin),
-                    ],
-                    CONTROL: [
-                        ConversationHandler(
-                            entry_points=[
-                                CommandHandler('add_user', to_add_user_admin),
-                                CommandHandler('change_user', to_change_user_admin, pass_user_data=True),
-                                CommandHandler('remove_user', to_rm_user_admin, pass_user_data=True),
-                                CommandHandler('disconnect_user', to_disconnect_user_admin, pass_user_data=True),
-                                CommandHandler('disconnect_all_users', confirm_disconnection_all_admin, pass_user_data=True),
-                            ],
-                            states={
-                                ADD_USER_ADMIN: [
-                                    stop_admin_hdl,
-                                    MessageHandler(Filters.all, add_user_admin),
-                                ],
-                                CHG_CALLBACK_ADMIN: [
-                                    CallbackQueryHandler(callback=chg_admin_callback, pass_user_data=True),
-                                    stop_admin_hdl,
-                                    MessageHandler(Filters.all, error_admin(CHG_CALLBACK_ADMIN), pass_user_data=True),
-                                ],
-                                CHG_ADMIN: [
-                                    stop_admin_hdl,
-                                    MessageHandler(Filters.all, change_user_admin, pass_user_data=True),
-                                ],
-                                RM_USER_ADMIN: [
-                                    CallbackQueryHandler(callback=rm_callback_admin, pass_user_data=True),
-                                    stop_admin_hdl,
-                                    MessageHandler(Filters.all, error_admin(RM_USER_ADMIN), pass_user_data=True),
-                                ],
-                                CONFIRM_RM_USER_ADMIN: [
-                                    stop_admin_hdl, 
-                                    MessageHandler(Filters.all, rm_user_admin, pass_user_data=True),
-                                ],
-                                DISCONNECT: [
-                                    CallbackQueryHandler(callback=disconnect_callback_admin, pass_chat_data=True),
-                                    stop_admin_hdl,
-                                    MessageHandler(Filters.all, error_admin(DISCONNECT), pass_user_data=True),
-                                ],
-                            },
-                            fallbacks=[],
-                        ),
-                        CommandHandler('all_users', all_users_admin),
-                        CommandHandler('help_admin', help_admin),
-                        CommandHandler('exit', exit_admin),
-                        MessageHandler(Filters.all, echo_admin),
-                    ],
-                },
-                fallbacks=[],
-            ),
             CommandHandler('help', help_),
             CommandHandler('log_out', log_out),
             CommandHandler('list', list_),
@@ -741,6 +699,64 @@ handlers['main'] = ConversationHandler(
     fallbacks=[],
 )
 
+handlers['admin'] = ConversationHandler(
+    entry_points=[
+        CommandHandler('admin', admin),
+    ],
+    states={
+        ADMIN_AUTH: [
+            MessageHandler(Filters.all, auth_admin),
+        ],
+        CONTROL: [
+            ConversationHandler(
+                entry_points=[
+                    CommandHandler('add_user', to_add_user_admin),
+                    CommandHandler('change_user', to_change_user_admin, pass_user_data=True),
+                    CommandHandler('remove_user', to_rm_user_admin, pass_user_data=True),
+                    CommandHandler('disconnect_user', to_disconnect_user_admin, pass_user_data=True),
+                    CommandHandler('disconnect_all_users', confirm_disconnection_all_admin, pass_user_data=True),
+                ],
+                states={
+                    ADD_USER_ADMIN: [
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, add_user_admin),
+                    ],
+                    CHG_CALLBACK_ADMIN: [
+                        CallbackQueryHandler(callback=chg_admin_callback, pass_user_data=True),
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, error_admin(CHG_CALLBACK_ADMIN), pass_user_data=True),
+                    ],
+                    CHG_ADMIN: [
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, change_user_admin, pass_user_data=True),
+                    ],
+                    RM_USER_ADMIN: [
+                        CallbackQueryHandler(callback=rm_callback_admin, pass_user_data=True),
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, error_admin(RM_USER_ADMIN), pass_user_data=True),
+                    ],
+                    CONFIRM_RM_USER_ADMIN: [
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, rm_user_admin, pass_user_data=True),
+                    ],
+                    DISCONNECT: [
+                        CallbackQueryHandler(callback=disconnect_callback_admin, pass_chat_data=True),
+                        stop_admin_hdl,
+                        MessageHandler(Filters.all, error_admin(DISCONNECT), pass_user_data=True),
+                    ],
+                },
+                fallbacks=[],
+            ),
+            CommandHandler('all_users', all_users_admin),
+            CommandHandler('help_admin', help_admin),
+            CommandHandler('exit', exit_admin),
+            MessageHandler(Filters.all, echo_admin),
+        ],
+    },
+    fallbacks=[],
+)
+
+handlers['start'] = CommandHandler('start', start)
 handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 
 # Список доступных команд:

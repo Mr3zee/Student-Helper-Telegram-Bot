@@ -12,6 +12,14 @@ def get_users():
     return users
 
 
+def get_authorized():
+    return authorized
+
+
+def get_admins():
+    return admins
+
+
 def logged_in(chat_id):
     return chat_id in users_chat_id
 
