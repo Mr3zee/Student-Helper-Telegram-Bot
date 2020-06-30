@@ -500,7 +500,12 @@ def rm_callback_admin(update: Update, context: CallbackContext):
     query = update.callback_query
     chat_id = update.effective_chat.id
 
-    if data.valid_rm_user(keyboard.keys_users[query.data], chat_id):
+    username = keyboard.keys_users[query.data]
+
+    if data.valid_rm_user(username, chat_id):
+        query.edit_message_text(
+            text=message.selected_to_rm_user_admin_text.format(username),
+        )
         context.user_data['username'] = keyboard.keys_users[query.data]
         context.bot.send_message(
             chat_id=chat_id,
@@ -519,10 +524,14 @@ def rm_callback_admin(update: Update, context: CallbackContext):
 
 @log_handler
 def rm_user_admin(update: Update, context: CallbackContext):
-    text = update.message.text.split('\n')
+    text = update.message.text
     chat_id = update.effective_chat.id
 
-    if data.rm_user([context.user_data['username'], text[0], text[1]], chat_id):
+    status_ok, user_chat_id = data.rm_user(text.split('\n'), context.user_data['username'])
+
+    if status_ok:
+        if user_chat_id:
+            alert_removal(update, context, user_chat_id)
         context.user_data.clear()
         return done_admin(update, context)
 
@@ -583,7 +592,7 @@ def no_users_authorized_admin(update: Update, context: CallbackContext):
         parse_mode=ParseMode.HTML,
         reply_markup=None,
     )
-    return CONTROL
+    return ConversationHandler.END
 
 
 @log_handler
@@ -596,9 +605,12 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
     if query.data == keyboard.CONFIRM_BUTTON:
         type_ = context.user_data['type']
         if type_ == 'one':
-            data.disconnect_user(context.user_data['username'], chat_id)
+            data.disconnect_user(context.user_data['username'])
         elif type_ == 'all':
-            data.disconnect_all_users(chat_id)
+            for user in data.get_authorized():
+                if data.valid_disconnection(user):
+                    user_chat_id = data.disconnect_user(update)
+                    alert_disconnection(update, context, user_chat_id)
         else:
             context.user_data.clear()
             context.bot.send_message(
@@ -621,7 +633,7 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
         return stop_admin(update, context)
     elif query.data in keyboard.keys_users:
         username = keyboard.keys_users[query.data]
-        if not data.valid_disconnection(username, chat_id):
+        if not data.valid_disconnection(username):
             context.bot.send_message(
                 chat_id=chat_id,
                 text=message.bad_disconnect_user_admin_text,
@@ -652,6 +664,26 @@ def confirm_disconnection_all_admin(update: Update, context: CallbackContext):
         reply_markup=keyboard.confirm_admin_keyboard(),
     )
     return DISCONNECT
+
+
+@log_handler
+def alert_disconnection(update: Update, context: CallbackContext, chat_id):
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=message.disconnection_alert_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
+
+
+@log_handler
+def alert_removal(update: Update, context: CallbackContext, chat_id):
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=message.removal_alert_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=None,
+    )
 
 
 handlers['main'] = ConversationHandler(
@@ -759,31 +791,10 @@ handlers['admin'] = ConversationHandler(
 handlers['start'] = CommandHandler('start', start)
 handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 
-# Список доступных команд:
-# /all_users - список всех пользователей +
-# /add_user - добавить нового пользователя +
-# /change_user - изменить данные пользователя +
-# /remove_user - удалить пользователя +
-# /disconnect_user - отключить пользователя (утеря старого аккаунта и т.д.)
-# /disconnect_all_users - отключить всех пользователей
-# /format - изменить формат таблицы (временно недоступно)
-#
-# Команды суперадминистратора:
-# /all_admins - список всех администраторов
-# /add_admin - добавить администратора
-# /change_user - изменить данные администратора
-# /remove_admin - удалить администратора
-# /disconnect_admin - отключить администратора
-# /disconnect_all_admins - отключить всех администраторов
-
-
 # todo front:
-#  user disconnection,
-#  removal,
-#  change alerts,
 #  system initial config,
 #  Eng language support,
-#  alerts to superadmin
+#  check_auth
 #
 # todo back:
 #  everything

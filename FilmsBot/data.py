@@ -114,35 +114,32 @@ def change_user(data: dict, new_data):
 
 
 def valid_rm_user(username, admin_chat_id):
-    return username != users_chat_id[admin_chat_id]
+    return True
 
 
-def rm_user(data: list, chat_id):
+def rm_user(data: list, username):
     if len(data) != 3:
-        return False
-    admin = users_chat_id[chat_id]
-    username = data[0]
+        return False, None
+    admin = data[0]
     admin_password = data[1]
     user_password = data[2]
     if admin_password == admins[admin] and user_password == users[username]:
         users.pop(username)
         if username in authorized:
-            chat_id = authorized[username]
-            if chat_id in users_chat_id:
-                users_chat_id.pop(chat_id)
+            user_chat_id = authorized[username]
+            users_chat_id.pop(user_chat_id)
             authorized.pop(username)
-        return True
+            return True, user_chat_id
+        return True, None
 
 
-def valid_disconnection(username, chat_id):
-    return username in authorized and username not in admins and users_chat_id[chat_id] != username
+def valid_disconnection(username):
+    return username in authorized and username not in admins
 
 
-def disconnect_user(username, chat_id):
-    if valid_disconnection(username, chat_id):
+def disconnect_user(username):
+    if valid_disconnection(username):
+        chat_id = authorized[username]
         authorized.pop(username)
-
-
-def disconnect_all_users(chat_id):
-    for user in users:
-        disconnect_user(user, chat_id)
+        users_chat_id.pop(chat_id)
+        return chat_id
