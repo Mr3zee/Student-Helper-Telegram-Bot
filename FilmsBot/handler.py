@@ -15,7 +15,7 @@ LOG_IN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
 ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, \
 CHG_CALLBACK_ADMIN, CHG_ADMIN, RM_USER_ADMIN, \
-CONFIRM_RM_USER_ADMIN = range(13)
+CONFIRM_RM_USER_ADMIN, DISCONNECT, CONFIRM_DISCONNECT = range(15)
 
 
 @log_handler
@@ -77,7 +77,6 @@ def auth(update: Update, context: CallbackContext):
     username = keyboard.keys_users[query.data]
 
     query.answer()
-    keyboard.clear_keys_users()
 
     if data.user_authorized(username):
         chat_id = update.effective_chat.id
@@ -310,7 +309,6 @@ def callback_list_user(update: Update, context: CallbackContext):
     query.edit_message_text(
         text=text,
     )
-    keyboard.clear_keys_users()
     return ConversationHandler.END
 
 
@@ -442,6 +440,7 @@ def done_admin(update: Update, context: CallbackContext):
 
 @log_handler
 def stop_admin(update: Update, context: CallbackContext):
+    context.user_data.clear()
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message.stop_admin_text,
@@ -467,7 +466,6 @@ def chg_admin_callback(update: Update, context: CallbackContext):
     query = update.callback_query
     if query.data == keyboard.USERNAME_BUTTON or query.data == keyboard.PASSWORD_BUTTON:
         context.user_data['field'] = query.data
-        keyboard.clear_keys_users()
         query.edit_message_text(
             text=message.new_field_admin_text,
         )
@@ -503,7 +501,6 @@ def rm_callback_admin(update: Update, context: CallbackContext):
 
     if data.valid_rm_user(keyboard.keys_users[query.data], chat_id):
         context.user_data['username'] = keyboard.keys_users[query.data]
-        keyboard.clear_keys_users()
         context.bot.send_message(
             chat_id=chat_id,
             text=message.confirm_rm_admin_text,
@@ -562,6 +559,56 @@ def error_admin(retval_level):
 stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 
 
+@log_handler
+def to_disconnect_user_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.disconnect_user_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=keyboard.usernames_keyboard(data.user_authorized),
+    )
+    return DISCONNECT
+
+
+@log_handler
+def disconnect_callback_admin(update: Update, context: CallbackContext):
+    query = update.callback_query
+    chat_id = update.effective_chat.id
+
+    query.answer()
+
+    if query.data == keyboard.CONFIRM_BUTTON:
+        data.disconnect_user(context.user_data['username'], chat_id)
+        context.user_data.clear()
+        return done_admin(update, context)
+    elif query.data == keyboard.CANCEL_BUTTON:
+        return stop_admin(update, context)
+    elif query.data in keyboard.keys_users:
+        username = keyboard.keys_users[query.data]
+        if not data.valid_disconnection(username, chat_id):
+            context.bot.send_message(
+                chat_id=chat_id,
+                text=message.bad_disconnect_user_admin_text,
+                parse_mode=ParseMode.HTML,
+            )
+            return DISCONNECT
+        context.user_data['username'] = username
+        return confirm_disconnection_admin(update, context)
+    else:
+        return error_admin(DISCONNECT)(update, context)
+
+
+@log_handler
+def confirm_disconnection_admin(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message.confirm_disconnection_admin_text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=keyboard.confirm_admin_keyboard(),
+    )
+    return DISCONNECT
+    
+
 handlers['main'] = ConversationHandler(
     entry_points=[
         CommandHandler('start', start),
@@ -613,6 +660,7 @@ handlers['main'] = ConversationHandler(
                                 CommandHandler('add_user', to_add_user_admin),
                                 CommandHandler('change_user', to_change_user_admin, pass_user_data=True),
                                 CommandHandler('remove_user', to_rm_user_admin, pass_user_data=True),
+                                CommandHandler('disconnect_user', to_disconnect_user_admin, pass_user_data=True),
                             ],
                             states={
                                 ADD_USER_ADMIN: [
@@ -637,6 +685,11 @@ handlers['main'] = ConversationHandler(
                                     stop_admin_hdl, 
                                     MessageHandler(Filters.all, rm_user_admin, pass_user_data=True),
                                 ],
+                                DISCONNECT: [
+                                    CallbackQueryHandler(callback=disconnect_callback_admin, pass_chat_data=True),
+                                    stop_admin_hdl,
+                                    MessageHandler(Filters.all, error_admin(DISCONNECT), pass_user_data=True),
+                                ],
                             },
                             fallbacks=[],
                         ),
@@ -659,15 +712,24 @@ handlers['main'] = ConversationHandler(
 
 handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 
-# /all_users - список всех пользователей
-# /add_user - добавить нового пользователя
-# /change_user - изменить данные пользователя
-# /remove_user - удалить пользователя
+# Список доступных команд:
+# /all_users - список всех пользователей +
+# /add_user - добавить нового пользователя +
+# /change_user - изменить данные пользователя +
+# /remove_user - удалить пользователя +
 # /disconnect_user - отключить пользователя (утеря старого аккаунта и т.д.)
 # /disconnect_all_users - отключить всех пользователей
-# /all_admins - список всех администраторов \n<b>(функция суперадминистратора)</b>
-# /add_admin - список всех администраторов \n<b>(функция суперадминистратора)</b>
-# /remove_admin - список всех администраторов \n<b>(функция суперадминистратора)</b>
-# /disconnect_admin - отключить администратора \n<b>(функция суперадминистратора)</b>
-# /disconnect_all_admins - отключить всех администраторов \n<b>(функция суперадминистратора)</b>
 # /format - изменить формат таблицы (временно недоступно)
+#
+# Команды суперадминистратора:
+# /all_admins - список всех администраторов
+# /add_admin - добавить администратора
+# /change_user - изменить данные администратора
+# /remove_admin - удалить администратора
+# /disconnect_admin - отключить администратора
+# /disconnect_all_admins - отключить всех администраторов
+
+
+# todo front: user disconnection, removal, change alerts, system initial config, Eng language support
+# todo back: everything
+# todo test: disconnection, bad auth, alerts

@@ -11,12 +11,19 @@ def clear_keys_users():
     keys_users.clear()
 
 
-def usernames_keyboard():
+def all_users(username):
+    return True
+
+
+def usernames_keyboard(included=all_users):
+    clear_keys_users()
     keyboard = []
     row = []
     user_num = 0
     users = data.get_users()
     for user in users:
+        if not included(user):
+            continue
         if len(row) == 3:
             keyboard.append(row)
             row = []
@@ -30,11 +37,15 @@ def usernames_keyboard():
 
 
 COMPLETE_BUTTON = 'complete_button'
+CONFIRM_BUTTON = 'confirm_button'
+CANCEL_BUTTON = 'cancel_button'
 USERNAME_BUTTON = 'username'
 PASSWORD_BUTTON = 'password'
 
 keyboard_buttons = {
     COMPLETE_BUTTON: message.complete_button_text,
+    CONFIRM_BUTTON: message.confirm_button_text,
+    CANCEL_BUTTON: message.cancel_button_text,
     USERNAME_BUTTON: message.username_button_text,
     PASSWORD_BUTTON: message.password_button_text,
 }
@@ -107,6 +118,16 @@ def change_user_admin_keyboard():
         [
             InlineKeyboardButton(keyboard_buttons[USERNAME_BUTTON], callback_data=USERNAME_BUTTON),
             InlineKeyboardButton(keyboard_buttons[PASSWORD_BUTTON], callback_data=PASSWORD_BUTTON),
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def confirm_admin_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton(keyboard_buttons[CONFIRM_BUTTON], callback_data=CONFIRM_BUTTON),
+            InlineKeyboardButton(keyboard_buttons[CANCEL_BUTTON], callback_data=CANCEL_BUTTON),
         ],
     ]
     return InlineKeyboardMarkup(keyboard)

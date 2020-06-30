@@ -126,10 +126,13 @@ def rm_user(data: list, chat_id):
         return True
 
 
+def valid_disconnection(username, chat_id):
+    return username not in admins and users_chat_id[chat_id] != username
+
+
 def disconnect_user(username, chat_id):
-    if username not in admins and users_chat_id[chat_id] != username:
+    if valid_disconnection(username, chat_id):
         authorized.pop(username)
-        return True
 
 
 def disconnect_all_users(chat_id):
