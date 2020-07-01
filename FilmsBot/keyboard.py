@@ -40,11 +40,11 @@ USERNAME_BUTTON = 'username'
 PASSWORD_BUTTON = 'password'
 
 keyboard_buttons = {
-    COMPLETE_BUTTON: message.complete_button_text,
-    CONFIRM_BUTTON: message.confirm_button_text,
-    CANCEL_BUTTON: message.cancel_button_text,
-    USERNAME_BUTTON: message.username_button_text,
-    PASSWORD_BUTTON: message.password_button_text,
+    COMPLETE_BUTTON: message.complete_button,
+    CONFIRM_BUTTON: message.confirm_button,
+    CANCEL_BUTTON: message.cancel_button,
+    USERNAME_BUTTON: message.username_button,
+    PASSWORD_BUTTON: message.password_button,
 }
 
 marked_buttons = set()
@@ -62,7 +62,7 @@ def tick_keyboard(user_data=None):
         marked_buttons.add(user_data[4:])
     for lnum in range(10):
         callback_data = 'tick' + str(lnum)
-        button_text = (str(lnum) + (message.ticked_text if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (message.ticked_mark if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
@@ -80,7 +80,7 @@ def untick_keyboard(user_data=None):
         marked_buttons.add(user_data[6:])
     for lnum in range(10):
         callback_data = 'untick' + str(lnum)
-        button_text = (str(lnum) + (message.unticked_text if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (message.unticked_mark if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
@@ -98,7 +98,7 @@ def remove_keyboard(user_data=None):
         marked_buttons.add(user_data[6:])
     for lnum in range(10):
         callback_data = 'remove' + str(lnum)
-        button_text = (str(lnum) + (message.removed_text if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (message.removed_mark if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,

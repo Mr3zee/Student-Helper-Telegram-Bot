@@ -11,7 +11,7 @@ handlers = {}
 
 commands = {}
 
-LOG_IN, PASSWORD, MAIN, \
+LOGIN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
 ADMIN_AUTH, CONTROL, ADD_USER_ADMIN, \
 CHG_CALLBACK_ADMIN, CHG_ADMIN, RM_USER_ADMIN, \
@@ -46,17 +46,17 @@ def start(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=message.start_text,
     )
-    return LOG_IN
+    return LOGIN
 
 
 @log_handler
-def log_in(update: Update, context: CallbackContext):
+def login(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.log_in_user_text,
+        text=message.login_user_text,
         reply_markup=keyboard.usernames_keyboard(),
     )
-    return LOG_IN
+    return LOGIN
 
 
 @log_handler
@@ -78,7 +78,7 @@ def echo_auth(update: Update, context: CallbackContext):
         text=message.echo_auth_text,
         reply_markup=None,
     )
-    return LOG_IN
+    return LOGIN
 
 
 @log_handler
@@ -107,7 +107,7 @@ def auth(update: Update, context: CallbackContext):
             query.edit_message_text(
                 text=message.logged_in_text,
             )
-            return LOG_IN
+            return LOGIN
         query.edit_message_text(
             text=message.error_text,
         )
@@ -116,12 +116,12 @@ def auth(update: Update, context: CallbackContext):
             text=message.bad_auth_text,
             reply_markup=keyboard.usernames_keyboard(),
         )
-        return LOG_IN
+        return LOGIN
 
     context.user_data['username'] = username
 
     query.edit_message_text(
-        text=message.log_in_password_text,
+        text=message.login_password_text,
     )
     return PASSWORD
 
@@ -375,7 +375,7 @@ def auth_admin(update: Update, context: CallbackContext):
 def exit_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.exit_text,
+        text=message.exit_admin_text,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -395,7 +395,7 @@ def help_admin(update: Update, context: CallbackContext):
 def echo_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.echo_admin,
+        text=message.echo_admin_text,
         reply_markup=None,
     )
     return CONTROL
@@ -403,10 +403,10 @@ def echo_admin(update: Update, context: CallbackContext):
 
 @log_handler
 def all_users_admin(update: Update, context: CallbackContext):
-    text = message.users_list
+    text = message.users_list_admin_text
     for user in data.get_users():
         text += user \
-                + (message.user_authorized if data.user_authorized(user) else message.user_unauthorized) \
+                + (message.user_authorized_mark if data.user_authorized(user) else message.user_unauthorized_mark) \
                 + '\n\n'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -420,7 +420,7 @@ def all_users_admin(update: Update, context: CallbackContext):
 def to_add_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.add_user_text,
+        text=message.add_user_admin_text,
         reply_markup=None,
     )
     return ADD_USER_ADMIN
@@ -437,7 +437,7 @@ def add_user_admin(update: Update, context: CallbackContext):
 def user_data_error_admin(update: Update, context: CallbackContext, retval):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.user_data_error_text,
+        text=message.user_data_error_admin_text,
         reply_markup=None,
     )
     return retval
@@ -689,10 +689,10 @@ def alert_removal(update: Update, context: CallbackContext, chat_id):
 
 handlers['main'] = ConversationHandler(
     entry_points=[
-        CommandHandler('log_in', log_in, pass_user_data=True),
+        CommandHandler('login', login, pass_user_data=True),
     ],
     states={
-        LOG_IN: [
+        LOGIN: [
             CallbackQueryHandler(callback=callback_auth, pass_user_data=True),
             stop_auth_hld,
             MessageHandler(Filters.all, echo_auth),
@@ -798,9 +798,11 @@ handlers['unauthorized'] = MessageHandler(Filters.all, unauthorized)
 # todo front:
 #  system initial config,
 #  Eng language support,
+#  disconnect in inner conversation handlers
+#  random film
 #
 # todo back:
 #  everything
 #
 # todo test:
-#
+#  alert while in inner conversation handlers
