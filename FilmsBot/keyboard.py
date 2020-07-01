@@ -1,7 +1,7 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 import FilmsBot.data as data
-import FilmsBot.message as message
+from FilmsBot.message import get_text
 
 # todo fix it
 keys_users = {}
@@ -36,16 +36,12 @@ def usernames_keyboard(users=data.get_users()):
 COMPLETE_BUTTON = 'complete_button'
 CONFIRM_BUTTON = 'confirm_button'
 CANCEL_BUTTON = 'cancel_button'
-USERNAME_BUTTON = 'username'
-PASSWORD_BUTTON = 'password'
+USERNAME_BUTTON = 'username_button'
+PASSWORD_BUTTON = 'password_button'
+TICKED_MARK = 'ticked_mark'
+UNTICKED_MARK = 'unticked_mark'
+REMOVED_MARK = 'removed_mark'
 
-keyboard_buttons = {
-    COMPLETE_BUTTON: message.complete_button,
-    CONFIRM_BUTTON: message.confirm_button,
-    CANCEL_BUTTON: message.cancel_button,
-    USERNAME_BUTTON: message.username_button,
-    PASSWORD_BUTTON: message.password_button,
-}
 
 marked_buttons = set()
 
@@ -56,13 +52,13 @@ def done_marked_buttons():
     marked_buttons.clear()
 
 
-def tick_keyboard(user_data=None):
+def tick_keyboard(language_code, user_data=None):
     keyboard = []
     if user_data:
         marked_buttons.add(user_data[4:])
     for lnum in range(10):
         callback_data = 'tick' + str(lnum)
-        button_text = (str(lnum) + (message.ticked_mark if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (get_text(TICKED_MARK, language_code) if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
@@ -70,17 +66,17 @@ def tick_keyboard(user_data=None):
             )
         ])
     # todo list of films
-    keyboard.append([InlineKeyboardButton(keyboard_buttons[COMPLETE_BUTTON], callback_data=COMPLETE_BUTTON)])
+    keyboard.append([InlineKeyboardButton(get_text(COMPLETE_BUTTON, language_code), callback_data=COMPLETE_BUTTON)])
     return InlineKeyboardMarkup(keyboard)
 
 
-def untick_keyboard(user_data=None):
+def untick_keyboard(language_code, user_data=None):
     keyboard = []
     if user_data:
         marked_buttons.add(user_data[6:])
     for lnum in range(10):
         callback_data = 'untick' + str(lnum)
-        button_text = (str(lnum) + (message.unticked_mark if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (get_text(UNTICKED_MARK, language_code) if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
@@ -88,17 +84,17 @@ def untick_keyboard(user_data=None):
             )
         ])
     # todo list of films
-    keyboard.append([InlineKeyboardButton(keyboard_buttons[COMPLETE_BUTTON], callback_data=COMPLETE_BUTTON)])
+    keyboard.append([InlineKeyboardButton(get_text(COMPLETE_BUTTON, language_code), callback_data=COMPLETE_BUTTON)])
     return InlineKeyboardMarkup(keyboard)
 
 
-def remove_keyboard(user_data=None):
+def remove_keyboard(language_code, user_data=None):
     keyboard = []
     if user_data:
         marked_buttons.add(user_data[6:])
     for lnum in range(10):
         callback_data = 'remove' + str(lnum)
-        button_text = (str(lnum) + (message.removed_mark if str(lnum) in marked_buttons else ''))
+        button_text = (str(lnum) + (get_text(REMOVED_MARK, language_code) if str(lnum) in marked_buttons else ''))
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
@@ -106,25 +102,25 @@ def remove_keyboard(user_data=None):
             )
         ])
     # todo list of films
-    keyboard.append([InlineKeyboardButton(keyboard_buttons[COMPLETE_BUTTON], callback_data=COMPLETE_BUTTON)])
+    keyboard.append([InlineKeyboardButton(get_text(COMPLETE_BUTTON, language_code), callback_data=COMPLETE_BUTTON)])
     return InlineKeyboardMarkup(keyboard)
 
 
-def change_user_admin_keyboard():
+def change_user_admin_keyboard(language_code):
     keyboard = [
         [
-            InlineKeyboardButton(keyboard_buttons[USERNAME_BUTTON], callback_data=USERNAME_BUTTON),
-            InlineKeyboardButton(keyboard_buttons[PASSWORD_BUTTON], callback_data=PASSWORD_BUTTON),
+            InlineKeyboardButton(get_text(USERNAME_BUTTON, language_code), callback_data=USERNAME_BUTTON),
+            InlineKeyboardButton(get_text(PASSWORD_BUTTON, language_code), callback_data=PASSWORD_BUTTON),
         ],
     ]
     return InlineKeyboardMarkup(keyboard)
 
 
-def confirm_admin_keyboard():
+def confirm_admin_keyboard(language_code):
     keyboard = [
         [
-            InlineKeyboardButton(keyboard_buttons[CONFIRM_BUTTON], callback_data=CONFIRM_BUTTON),
-            InlineKeyboardButton(keyboard_buttons[CANCEL_BUTTON], callback_data=CANCEL_BUTTON),
+            InlineKeyboardButton(get_text(CONFIRM_BUTTON, language_code), callback_data=CONFIRM_BUTTON),
+            InlineKeyboardButton(get_text(CANCEL_BUTTON, language_code), callback_data=CANCEL_BUTTON),
         ],
     ]
     return InlineKeyboardMarkup(keyboard)
