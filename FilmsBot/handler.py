@@ -1,3 +1,4 @@
+from time import sleep
 from telegram import Update
 from telegram.ext import CallbackContext, Filters, MessageHandler, CallbackQueryHandler, ConversationHandler, \
     CommandHandler
@@ -164,6 +165,35 @@ def log_out(update: Update, context: CallbackContext):
     )
     return ConversationHandler.END
 
+
+@log_handler
+def random(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    current_film = data.random_film()
+    message_id = context.bot.send_message(
+        chat_id=chat_id,
+        text=message.random_film_process_text.format(current_film),
+        reply_markup=None,
+    ).message_id
+    last_film = current_film
+    for i in range(len(data.get_films_for_random())):
+        current_film = data.random_film()
+        if current_film == last_film:
+            continue
+        sleep(0.05)
+        context.bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=message.random_film_process_text.format(current_film)
+        )
+        last_film = current_film
+    context.bot.edit_message_text(
+        chat_id=chat_id,
+        message_id=message_id,
+        text=message.random_film_text.format(data.random_film()),
+    )
+    return MAIN
+    
 
 @log_handler
 def to_tick(update: Update, context: CallbackContext):
@@ -728,6 +758,7 @@ handlers['main'] = ConversationHandler(
             CommandHandler('help', help_),
             CommandHandler('log_out', log_out),
             CommandHandler('list', list_),
+            CommandHandler('random', random),
             MessageHandler(Filters.all, echo),
         ]
     },

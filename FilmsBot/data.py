@@ -1,5 +1,17 @@
+import random
+
+random.seed()
+
 users = {'Марина': '1234', 'Саша': 'саша', 'Петя': 'петя', 'Вася': 'вася', 'Роман': 'роман', 'admin': 'admin'}
 admins = {'admin': 'admin'}
+films = ['Побег из Шоушенка', 'Крестный отец',
+         'Крестный отец 2', 'Темный рыцарь',
+         '12 разгневанных мужчин', 'Список Шиндлера',
+         'Властелин колец: Возвращение Короля', 'Криминальное чтиво',
+         'Хороший, плохой, злой', 'Властелин колец: Братство кольца',
+         'Бойцовский клуб', 'Форрест Гамп',
+         'Начало', 'Звёздные войны: Эпизод 5 – Империя наносит ответный удар',
+         'Властелин колец: Две крепости', 'Матрица']
 
 URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 
@@ -31,6 +43,15 @@ def logged_in(chat_id):
 def get_username(chat_id):
     if chat_id in users_chat_id:
         return users_chat_id[chat_id]
+
+
+def random_film():
+    index = random.randint(0, len(films) - 1)
+    return films[index]
+
+
+def get_films_for_random():
+    return films
 
 
 def auth_user(data: dict, chat_id):
