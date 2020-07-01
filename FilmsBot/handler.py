@@ -227,7 +227,7 @@ def untick(update: Update, context: CallbackContext):
 def complete_query(update: Update, context: CallbackContext):
     keyboard.done_marked_buttons()
     update.callback_query.edit_message_text(
-        text=message.complete_text,
+        text=message.completed_text,
     )
     return ConversationHandler.END
 
@@ -236,7 +236,7 @@ def complete_query(update: Update, context: CallbackContext):
 def complete(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.complete_text,
+        text=message.completed_text,
         reply_markup=None,
     )
     return ConversationHandler.END
@@ -341,7 +341,7 @@ def callback_list_user(update: Update, context: CallbackContext):
 def enter_username(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=message.bad_username_text,
+        text=message.echo_username_text,
         reply_markup=None,
     )
     return LIST_USER
