@@ -2,12 +2,13 @@ from telegram import ParseMode, Bot
 from telegram.ext import Updater, Dispatcher, Defaults
 
 import FilmsBot.config as config
-import log
 import FilmsBot.handler as hdl
+import FilmsBot.server as server
+import log
 
 
 def connect_bot():
-    log.log("Connecting bot...")
+    log.log('Connecting bot...')
     bot = Bot(
         token=config.TG_TOKEN,
         defaults=Defaults(
@@ -27,22 +28,29 @@ def connect_bot():
 
 def add_handlers(dispatcher: Dispatcher):
     for name, handler in hdl.handlers.items():
-        log.log("Adding " + name + "_handler...")
+        log.log('Adding ' + name + '_handler...')
         dispatcher.add_handler(handler)
         log.log_done()
     log.nl()
 
 
 def start_bot(updater: Updater):
-    log.log_nl("Starting bot")
+    log.log_nl('Starting bot...')
     updater.start_polling()
     updater.idle()
+
+
+def start_server():
+    log.log_nl('Starting server...')
+    server.start()
 
 
 def main():
     updater, dispatcher = connect_bot()
 
     add_handlers(dispatcher)
+
+    start_server()
 
     start_bot(updater)
 

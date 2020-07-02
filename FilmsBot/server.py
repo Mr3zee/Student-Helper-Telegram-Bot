@@ -1,4 +1,5 @@
 import random
+import pygsheets
 
 random.seed()
 
@@ -13,11 +14,23 @@ films = ['Побег из Шоушенка', 'Крестный отец',
          'Начало', 'Звёздные войны: Эпизод 5 – Империя наносит ответный удар',
          'Властелин колец: Две крепости', 'Матрица']
 
-URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-
 users_chat_id = {}
 
 authorized = {}
+
+client_info = {
+    'service_account_credentials_file': 'service_account_credentials.json',
+    'URL': None,
+    'sheet_name': 'FilmsSheet',
+}
+
+
+def start():
+    if client_info['service_account_credentials_file']:
+        client = pygsheets.authorize(service_account_file=client_info['service_account_credentials_file'])
+        sheet = client.open(client_info['sheet_name'])
+        client_info['URL'] = sheet.url
+        sheet.sheet1.update_value('A1', 'Started')
 
 
 def get_users():
@@ -93,7 +106,7 @@ def get_films(username):
 
 
 def get_link():
-    return URL
+    return client_info['URL']
 
 
 def auth_admin(data: list):

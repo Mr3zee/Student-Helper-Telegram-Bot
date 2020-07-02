@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import CallbackContext, Filters, MessageHandler, CallbackQueryHandler, ConversationHandler, \
     CommandHandler
 
-import FilmsBot.data as data
+import FilmsBot.server as server
 import FilmsBot.keyboard as keyboard
 from FilmsBot.message import get_text, make_list
 from log import log_handler
@@ -67,7 +67,7 @@ def login(update: Update, context: CallbackContext):
 def echo(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -90,9 +90,9 @@ def echo_auth(update: Update, context: CallbackContext):
 def help_(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
-    text = get_text('help_text', language_code).format(data.get_link())
+    text = get_text('help_text', language_code).format(server.get_link())
     context.bot.send_message(
         chat_id=chat_id,
         text=text,
@@ -108,9 +108,9 @@ def auth(update: Update, context: CallbackContext):
 
     query.answer()
 
-    if data.user_authorized(username):
+    if server.user_authorized(username):
         chat_id = update.effective_chat.id
-        if username == data.get_username(chat_id):
+        if username == server.get_username(chat_id):
             query.edit_message_text(
                 text=get_text('logged_in_text', language_code),
             )
@@ -138,7 +138,7 @@ def password_handler(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.user_data['password'] = update.message.text
     chat_id = update.effective_chat.id
-    if not data.auth_user(context.user_data, chat_id):
+    if not server.auth_user(context.user_data, chat_id):
         context.bot.send_message(
             chat_id=chat_id,
             text=get_text('bad_password_text', language_code),
@@ -163,9 +163,9 @@ def callback_auth(update: Update, context: CallbackContext):
 def log_out(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
-    data.unauth_user(chat_id)
+    server.unauth_user(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=get_text('log_out_text', language_code),
@@ -177,14 +177,14 @@ def log_out(update: Update, context: CallbackContext):
 def random(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    current_film = data.random_film()
+    current_film = server.random_film()
     message_id = context.bot.send_message(
         chat_id=chat_id,
         text=get_text('random_film_process_text', language_code).format(current_film),
     ).message_id
     last_film = current_film
     for i in range(15):
-        current_film = data.random_film()
+        current_film = server.random_film()
         if current_film == last_film:
             continue
         sleep(0.05)
@@ -197,7 +197,7 @@ def random(update: Update, context: CallbackContext):
     context.bot.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
-        text=get_text('random_film_text', language_code).format(data.random_film()),
+        text=get_text('random_film_text', language_code).format(server.random_film()),
     )
     return MAIN
 
@@ -206,7 +206,7 @@ def random(update: Update, context: CallbackContext):
 def to_tick(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -220,7 +220,7 @@ def to_tick(update: Update, context: CallbackContext):
 def to_untick(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -298,7 +298,7 @@ def need_to_complete(update: Update, context: CallbackContext):
 def to_add(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -308,7 +308,7 @@ def to_add(update: Update, context: CallbackContext):
 
 
 def add(update: Update, context: CallbackContext):
-    data.add_films(update.message.text.split('\n'))
+    server.add_films(update.message.text.split('\n'))
     return complete(update, context)
 
 
@@ -316,7 +316,7 @@ def add(update: Update, context: CallbackContext):
 def to_remove(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -340,11 +340,11 @@ def remove(update: Update, context: CallbackContext):
 def list_(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
 
     text = make_list(
-        data.get_films(data.get_username(chat_id)),
+        server.get_films(server.get_username(chat_id)),
         get_text('self_films_list_text', language_code),
         language_code,
     )
@@ -361,7 +361,7 @@ def list_(update: Update, context: CallbackContext):
 def to_list_user(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not data.check_auth(chat_id):
+    if not server.check_auth(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -378,7 +378,7 @@ def callback_list_user(update: Update, context: CallbackContext):
 
     name = keyboard.keys_users[query.data]
     text = make_list(
-        data.get_films(name),
+        server.get_films(name),
         get_text('user_films_list_text', language_code),
         language_code,
     ).format(name)
@@ -416,7 +416,7 @@ def auth_admin(update: Update, context: CallbackContext):
     text = update.message.text
     if text == '/cancel':
         return exit_admin(update, context)
-    if data.auth_admin(text.split('\n')):
+    if server.auth_admin(text.split('\n')):
         return help_admin(update, context)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -459,10 +459,10 @@ def echo_admin(update: Update, context: CallbackContext):
 def all_users_admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     text = get_text('users_list_admin_text', language_code)
-    for user in data.get_users():
+    for user in server.get_users():
         text += user \
                 + (get_text('user_authorized_mark', language_code)
-                   if data.user_authorized(user)
+                   if server.user_authorized(user)
                    else get_text('user_unauthorized_mark', language_code)) \
                 + '\n\n'
     context.bot.send_message(
@@ -484,7 +484,7 @@ def to_add_user_admin(update: Update, context: CallbackContext):
 
 def add_user_admin(update: Update, context: CallbackContext):
     text = update.message.text
-    if data.add_user(text.split('\n')):
+    if server.add_user(text.split('\n')):
         return done_admin(update, context)
     return user_data_error_admin(update, context, ADD_USER_ADMIN)
 
@@ -573,7 +573,7 @@ def rm_callback_admin(update: Update, context: CallbackContext):
 
     username = keyboard.keys_users[query.data]
 
-    if data.valid_rm_user(username, chat_id):
+    if server.valid_rm_user(username, chat_id):
         query.edit_message_text(
             text=get_text('selected_to_rm_user_admin_text', language_code).format(username),
         )
@@ -597,7 +597,7 @@ def rm_user_admin(update: Update, context: CallbackContext):
     text = update.message.text
     chat_id = update.effective_chat.id
 
-    status_ok, user_chat_id = data.rm_user(text.split('\n'), context.user_data['username'])
+    status_ok, user_chat_id = server.rm_user(text.split('\n'), context.user_data['username'])
 
     if status_ok:
         if user_chat_id:
@@ -615,7 +615,7 @@ def rm_user_admin(update: Update, context: CallbackContext):
 def change_user_admin(update: Update, context: CallbackContext):
     new_data = update.message.text
 
-    if data.change_user(context.user_data, new_data):
+    if server.change_user(context.user_data, new_data):
         context.user_data.clear()
         return done_admin(update, context)
 
@@ -641,7 +641,7 @@ stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 @log_handler
 def to_disconnect_user_admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
-    users = data.get_authorized()
+    users = server.get_authorized()
     if len(users) == 0:
         return no_users_authorized_admin(update, context)
     context.bot.send_message(
@@ -673,12 +673,12 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
     if query.data == keyboard.CONFIRM_BUTTON:
         type_ = context.user_data['type']
         if type_ == 'one':
-            user_chat_id = data.disconnect_user(context.user_data['username'])
+            user_chat_id = server.disconnect_user(context.user_data['username'])
             alert_disconnection(update, context, user_chat_id)
         elif type_ == 'all':
-            for user in data.get_authorized():
-                if data.valid_disconnection(user):
-                    user_chat_id = data.disconnect_user(update)
+            for user in server.get_authorized():
+                if server.valid_disconnection(user):
+                    user_chat_id = server.disconnect_user(update)
                     alert_disconnection(update, context, user_chat_id)
         else:
             context.user_data.clear()
@@ -701,7 +701,7 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
         return stop_admin(update, context)
     elif query.data in keyboard.keys_users:
         username = keyboard.keys_users[query.data]
-        if not data.valid_disconnection(username):
+        if not server.valid_disconnection(username):
             context.bot.send_message(
                 chat_id=chat_id,
                 text=get_text('bad_disconnect_user_admin_text', language_code),
