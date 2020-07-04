@@ -3,14 +3,12 @@ from telegram import Update
 from telegram.ext import CallbackContext, Filters, MessageHandler, CallbackQueryHandler, ConversationHandler, \
     CommandHandler
 
-import FilmsBot.server as server
 import FilmsBot.keyboard as keyboard
 from FilmsBot.message import get_text, make_list
+from FilmsBot.server import SERVER
 from log import log_handler
 
 handlers = {}
-
-commands = {}
 
 LOGIN, PASSWORD, MAIN, \
 CHANGING, ADD, LIST_USER, \
@@ -58,7 +56,7 @@ def login(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('login_user_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(),
+        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
     )
     return LOGIN
 
@@ -67,7 +65,7 @@ def login(update: Update, context: CallbackContext):
 def echo(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -90,9 +88,9 @@ def echo_auth(update: Update, context: CallbackContext):
 def help_(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
-    text = get_text('help_text', language_code).format(server.get_link())
+    text = get_text('help_text', language_code).format(SERVER.URL)
     context.bot.send_message(
         chat_id=chat_id,
         text=text,
@@ -108,9 +106,9 @@ def auth(update: Update, context: CallbackContext):
 
     query.answer()
 
-    if server.user_authorized(username):
+    if SERVER.user_authorized(username):
         chat_id = update.effective_chat.id
-        if username == server.get_username(chat_id):
+        if username == SERVER.get_username(chat_id):
             query.edit_message_text(
                 text=get_text('logged_in_text', language_code),
             )
@@ -121,7 +119,7 @@ def auth(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text=get_text('bad_auth_text', language_code),
-            reply_markup=keyboard.usernames_keyboard(),
+            reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
         )
         return LOGIN
 
@@ -138,7 +136,7 @@ def password_handler(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.user_data['password'] = update.message.text
     chat_id = update.effective_chat.id
-    if not server.auth_user(context.user_data, chat_id):
+    if not SERVER.auth_user(context.user_data, chat_id):
         context.bot.send_message(
             chat_id=chat_id,
             text=get_text('bad_password_text', language_code),
@@ -163,9 +161,9 @@ def callback_auth(update: Update, context: CallbackContext):
 def log_out(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
-    server.unauth_user(chat_id)
+    SERVER.unauth_user(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=get_text('log_out_text', language_code),
@@ -177,14 +175,14 @@ def log_out(update: Update, context: CallbackContext):
 def random(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    current_film = server.random_film()
+    current_film = SERVER.random_film()
     message_id = context.bot.send_message(
         chat_id=chat_id,
         text=get_text('random_film_process_text', language_code).format(current_film),
     ).message_id
     last_film = current_film
     for i in range(15):
-        current_film = server.random_film()
+        current_film = SERVER.random_film()
         if current_film == last_film:
             continue
         sleep(0.05)
@@ -197,7 +195,7 @@ def random(update: Update, context: CallbackContext):
     context.bot.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
-        text=get_text('random_film_text', language_code).format(server.random_film()),
+        text=get_text('random_film_text', language_code).format(SERVER.random_film()),
     )
     return MAIN
 
@@ -206,7 +204,7 @@ def random(update: Update, context: CallbackContext):
 def to_tick(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -220,7 +218,7 @@ def to_tick(update: Update, context: CallbackContext):
 def to_untick(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -298,7 +296,7 @@ def need_to_complete(update: Update, context: CallbackContext):
 def to_add(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -308,7 +306,7 @@ def to_add(update: Update, context: CallbackContext):
 
 
 def add(update: Update, context: CallbackContext):
-    server.add_films(update.message.text.split('\n'))
+    SERVER.add_films(update.message.text.split('\n'))
     return complete(update, context)
 
 
@@ -316,7 +314,7 @@ def add(update: Update, context: CallbackContext):
 def to_remove(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
@@ -340,11 +338,11 @@ def remove(update: Update, context: CallbackContext):
 def list_(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
 
     text = make_list(
-        server.get_films(server.get_username(chat_id)),
+        SERVER.get_films(SERVER.get_username(chat_id)),
         get_text('self_films_list_text', language_code),
         language_code,
     )
@@ -361,12 +359,12 @@ def list_(update: Update, context: CallbackContext):
 def to_list_user(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
-    if not server.check_auth(chat_id):
+    if not SERVER.logged_in(chat_id):
         return unauthorized(update, context)
     context.bot.send_message(
         chat_id=chat_id,
         text=get_text('enter_username_list_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(),
+        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
     )
     return LIST_USER
 
@@ -378,7 +376,7 @@ def callback_list_user(update: Update, context: CallbackContext):
 
     name = keyboard.keys_users[query.data]
     text = make_list(
-        server.get_films(name),
+        SERVER.get_films(name),
         get_text('user_films_list_text', language_code),
         language_code,
     ).format(name)
@@ -416,7 +414,7 @@ def auth_admin(update: Update, context: CallbackContext):
     text = update.message.text
     if text == '/cancel':
         return exit_admin(update, context)
-    if server.auth_admin(text.split('\n')):
+    if SERVER.auth_admin(text.split('\n')):
         return help_admin(update, context)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -459,10 +457,10 @@ def echo_admin(update: Update, context: CallbackContext):
 def all_users_admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     text = get_text('users_list_admin_text', language_code)
-    for user in server.get_users():
+    for user in SERVER.get_users():
         text += user \
                 + (get_text('user_authorized_mark', language_code)
-                   if server.user_authorized(user)
+                   if SERVER.user_authorized(user)
                    else get_text('user_unauthorized_mark', language_code)) \
                 + '\n\n'
     context.bot.send_message(
@@ -484,7 +482,7 @@ def to_add_user_admin(update: Update, context: CallbackContext):
 
 def add_user_admin(update: Update, context: CallbackContext):
     text = update.message.text
-    if server.add_user(text.split('\n')):
+    if SERVER.add_user(text.split('\n')):
         return done_admin(update, context)
     return user_data_error_admin(update, context, ADD_USER_ADMIN)
 
@@ -526,7 +524,7 @@ def to_change_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('choose_user_admin_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(),
+        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
     )
     return CHG_CALLBACK_ADMIN
 
@@ -560,7 +558,7 @@ def to_rm_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('to_rm_user_admin_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(),
+        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
     )
     return RM_USER_ADMIN
 
@@ -573,7 +571,7 @@ def rm_callback_admin(update: Update, context: CallbackContext):
 
     username = keyboard.keys_users[query.data]
 
-    if server.valid_rm_user(username, chat_id):
+    if SERVER.valid_rm_user(username, chat_id):
         query.edit_message_text(
             text=get_text('selected_to_rm_user_admin_text', language_code).format(username),
         )
@@ -597,7 +595,7 @@ def rm_user_admin(update: Update, context: CallbackContext):
     text = update.message.text
     chat_id = update.effective_chat.id
 
-    status_ok, user_chat_id = server.rm_user(text.split('\n'), context.user_data['username'])
+    status_ok, user_chat_id = SERVER.rm_user(text.split('\n'), context.user_data['username'])
 
     if status_ok:
         if user_chat_id:
@@ -615,7 +613,7 @@ def rm_user_admin(update: Update, context: CallbackContext):
 def change_user_admin(update: Update, context: CallbackContext):
     new_data = update.message.text
 
-    if server.change_user(context.user_data, new_data):
+    if SERVER.change_user(context.user_data, new_data):
         context.user_data.clear()
         return done_admin(update, context)
 
@@ -635,13 +633,17 @@ def error_admin(retval_level):
     return error
 
 
+def error_admin_hld(retval_level):
+    return MessageHandler(Filters.all, error_admin(retval_level), pass_user_data=True)
+
+
 stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 
 
 @log_handler
 def to_disconnect_user_admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
-    users = server.get_authorized()
+    users = SERVER.get_authorized()
     if len(users) == 0:
         return no_users_authorized_admin(update, context)
     context.bot.send_message(
@@ -673,12 +675,12 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
     if query.data == keyboard.CONFIRM_BUTTON:
         type_ = context.user_data['type']
         if type_ == 'one':
-            user_chat_id = server.disconnect_user(context.user_data['username'])
+            user_chat_id = SERVER.disconnect_user(context.user_data['username'])
             alert_disconnection(update, context, user_chat_id)
         elif type_ == 'all':
-            for user in server.get_authorized():
-                if server.valid_disconnection(user):
-                    user_chat_id = server.disconnect_user(update)
+            for user in SERVER.get_authorized():
+                if SERVER.valid_disconnection(user):
+                    user_chat_id = SERVER.disconnect_user(update)
                     alert_disconnection(update, context, user_chat_id)
         else:
             context.user_data.clear()
@@ -701,7 +703,7 @@ def disconnect_callback_admin(update: Update, context: CallbackContext):
         return stop_admin(update, context)
     elif query.data in keyboard.keys_users:
         username = keyboard.keys_users[query.data]
-        if not server.valid_disconnection(username):
+        if not SERVER.valid_disconnection(username):
             context.bot.send_message(
                 chat_id=chat_id,
                 text=get_text('bad_disconnect_user_admin_text', language_code),
@@ -825,7 +827,7 @@ handlers['admin'] = ConversationHandler(
                     CHG_CALLBACK_ADMIN: [
                         CallbackQueryHandler(callback=chg_admin_callback, pass_user_data=True),
                         stop_admin_hdl,
-                        MessageHandler(Filters.all, error_admin(CHG_CALLBACK_ADMIN), pass_user_data=True),
+                        error_admin_hld(CHG_CALLBACK_ADMIN),
                     ],
                     CHG_ADMIN: [
                         stop_admin_hdl,
@@ -834,7 +836,7 @@ handlers['admin'] = ConversationHandler(
                     RM_USER_ADMIN: [
                         CallbackQueryHandler(callback=rm_callback_admin, pass_user_data=True),
                         stop_admin_hdl,
-                        MessageHandler(Filters.all, error_admin(RM_USER_ADMIN), pass_user_data=True),
+                        error_admin_hld(RM_USER_ADMIN),
                     ],
                     CONFIRM_RM_USER_ADMIN: [
                         stop_admin_hdl,
@@ -843,7 +845,7 @@ handlers['admin'] = ConversationHandler(
                     DISCONNECT: [
                         CallbackQueryHandler(callback=disconnect_callback_admin, pass_chat_data=True),
                         stop_admin_hdl,
-                        MessageHandler(Filters.all, error_admin(DISCONNECT), pass_user_data=True),
+                        error_admin_hld(DISCONNECT),
                     ],
                 },
                 fallbacks=[],

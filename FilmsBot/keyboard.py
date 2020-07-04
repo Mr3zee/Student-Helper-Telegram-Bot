@@ -1,6 +1,5 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-import FilmsBot.server as server
 from FilmsBot.message import get_text
 
 # todo fix it
@@ -15,7 +14,7 @@ def all_users(username):
     return True
 
 
-def usernames_keyboard(users=server.get_users()):
+def usernames_keyboard(users: set):
     clear_keys_users()
     keyboard = []
     row = []

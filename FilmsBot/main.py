@@ -3,12 +3,11 @@ from telegram.ext import Updater, Dispatcher, Defaults
 
 import FilmsBot.config as config
 import FilmsBot.handler as hdl
-import FilmsBot.server as server
 import log
 
 
 def connect_bot():
-    log.log('Connecting bot...')
+    log.log('Connecting Bot...')
     bot = Bot(
         token=config.TG_TOKEN,
         defaults=Defaults(
@@ -40,17 +39,10 @@ def start_bot(updater: Updater):
     updater.idle()
 
 
-def start_server():
-    log.log_nl('Starting server...')
-    server.start()
-
-
 def main():
     updater, dispatcher = connect_bot()
 
     add_handlers(dispatcher)
-
-    start_server()
 
     start_bot(updater)
 
