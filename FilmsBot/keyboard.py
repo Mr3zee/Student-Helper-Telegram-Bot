@@ -1,7 +1,9 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 from FilmsBot.message import get_text
-from FilmsBot.server import SERVER
+from FilmsBot.server import Server
+
+SERVER = Server.get_instance()
 
 # todo fix it
 keys_users = {}

@@ -175,9 +175,6 @@ class Server:
             return chat_id
 
 
-SERVER = Server.get_instance()
-
-
 # todo:
 #   initial config:
 #     credentials - file

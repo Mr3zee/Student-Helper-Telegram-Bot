@@ -5,8 +5,10 @@ from telegram.ext import CallbackContext, Filters, MessageHandler, CallbackQuery
 
 import FilmsBot.keyboard as keyboard
 from FilmsBot.message import get_text, make_list
-from FilmsBot.server import SERVER
+from FilmsBot.server import Server
 from log import log_handler
+
+SERVER = Server.get_instance()
 
 handlers = {}
 
