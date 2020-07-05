@@ -56,7 +56,7 @@ def login(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('login_user_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
+        reply_markup=keyboard.usernames_keyboard(),
     )
     return LOGIN
 
@@ -119,7 +119,7 @@ def auth(update: Update, context: CallbackContext):
         context.bot.send_message(
             chat_id=chat_id,
             text=get_text('bad_auth_text', language_code),
-            reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
+            reply_markup=keyboard.usernames_keyboard(),
         )
         return LOGIN
 
@@ -364,7 +364,7 @@ def to_list_user(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=chat_id,
         text=get_text('enter_username_list_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
+        reply_markup=keyboard.usernames_keyboard(),
     )
     return LIST_USER
 
@@ -524,7 +524,7 @@ def to_change_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('choose_user_admin_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
+        reply_markup=keyboard.usernames_keyboard(),
     )
     return CHG_CALLBACK_ADMIN
 
@@ -558,7 +558,7 @@ def to_rm_user_admin(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('to_rm_user_admin_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(SERVER.get_users()),
+        reply_markup=keyboard.usernames_keyboard(),
     )
     return RM_USER_ADMIN
 
@@ -643,13 +643,13 @@ stop_admin_hdl = CommandHandler('stop_admin', stop_admin)
 @log_handler
 def to_disconnect_user_admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
-    users = SERVER.get_authorized()
-    if len(users) == 0:
+    auth_users = SERVER.get_authorized()
+    if len(auth_users) == 0:
         return no_users_authorized_admin(update, context)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('disconnect_user_admin_text', language_code),
-        reply_markup=keyboard.usernames_keyboard(users),
+        reply_markup=keyboard.usernames_keyboard(auth_users),
     )
     return DISCONNECT
 

@@ -4,3 +4,4 @@
 **/TestBot/**
 .idea
 **/service_account_credentials.json
+**.db

@@ -4,11 +4,10 @@ import log
 
 
 class Server:
+    __instance = None
+
     __users = {
         'Маша': '1234',
-        'Саша': 'саша',
-        'Петя': 'петя',
-        'Вася': 'вася',
         'Роман': 'роман',
         'admin': 'admin'
     }
@@ -26,17 +25,33 @@ class Server:
 
     def __init__(self):
         log.log('Starting Server...')
+        if not Server.__instance:
+            # todo temporary
+            self.__gc = pygsheets.authorize(service_file='service_account_credentials.json')
+            self.__sh = self.__gc.open('FilmsSheet')
+            self.__wks = self.__sh.sheet1
+            self.URL = self.__sh.url
 
-        self.__gc = pygsheets.authorize(service_file='service_account_credentials.json')
-        self.__sh = self.__gc.open('FilmsSheet')
-        self.__wkh = self.__sh.sheet1
+            self.__authorized = {}
+            self.__users_chat_id = {}
+            random.seed()
+        log.log_done()
+
+    @classmethod
+    def get_instance(cls):
+        if not cls.__instance:
+            cls.__instance = Server()
+        return cls.__instance
+
+    def start(self, service_file, sheet_name):
+        self.__gc = pygsheets.authorize(service_file=service_file)
+        self.__sh = self.__gc.open(sheet_name)
+        self.__wks = self.__sh.sheet1
         self.URL = self.__sh.url
 
         self.__authorized = {}
         self.__users_chat_id = {}
         random.seed()
-
-        log.log_done()
 
     def get_users(self):
         return self.__users
@@ -160,4 +175,12 @@ class Server:
             return chat_id
 
 
-SERVER = Server()
+SERVER = Server.get_instance()
+
+
+# todo:
+#   initial config:
+#     credentials - file
+#     freeze row - first row: (name, watched)+
+#     admin account - name and login for admin
+#     width and height - find out
