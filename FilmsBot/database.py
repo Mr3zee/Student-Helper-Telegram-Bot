@@ -16,8 +16,6 @@ def init(force=False):
 
     if force:
         cur.execute('DROP TABLE IF EXISTS users')
-        cur.execute('DROP TABLE IF EXISTS admins')
-        cur.execute('DROP TABLE IF EXISTS authorized')
 
     cur.execute('''
                 

@@ -2,6 +2,7 @@
 **/.idea/**
 **/__pycache__/**
 **/TestBot/**
+**/ElonMuskBot/**
 .idea
 *.json
 *.db

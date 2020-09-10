@@ -4,7 +4,6 @@ from telegram.ext import Updater, Dispatcher, Defaults
 import FilmsBot.config as config
 import FilmsBot.handler as hdl
 import log
-import os
 
 
 def connect_bot():
