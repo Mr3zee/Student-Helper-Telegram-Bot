@@ -11,24 +11,7 @@ from datetime import datetime
 
 handlers = {}
 
-
-@log_handler
-def start(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('start_text', language_code),
-    )
-
-
-@log_handler
-def timetable(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('timetable_text', language_code),
-        reply_markup=keyboard.timetable_keyboard(language_code),
-    )
+MESSAGE, COMMAND = range(2)
 
 
 @log_handler
@@ -58,109 +41,40 @@ def today(update: Update, context: CallbackContext):
     )
 
 
-@log_handler
-def help_(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('help_text', language_code),
-    )
+def simple_handler(name, hdl_type, reply_markup_func=None, filters=None):
+
+    @log_handler
+    def inner(update: Update, context: CallbackContext):
+        language_code = update.effective_user.language_code
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=get_text(name + '_text', language_code),
+            reply_markup=reply_markup_func(language_code=language_code),
+        )
+
+    if hdl_type == COMMAND:
+        handler = CommandHandler(command=name, callback=inner)
+    elif hdl_type == MESSAGE:
+        handler = MessageHandler(filters, callback=inner)
+    else:
+        raise ValueError('Invalid type')
+    handlers[name] = handler
 
 
-@log_handler
-def algo(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('algo_text', language_code),
-    )
+simple_handler('start', COMMAND)
+simple_handler('help', COMMAND)
+simple_handler('algo', COMMAND)
+simple_handler('discra', COMMAND)
+simple_handler('diffur', COMMAND)
+simple_handler('os', COMMAND)
+simple_handler('kotlin', COMMAND)
+simple_handler('matan', COMMAND)
+simple_handler('eng', COMMAND)
+simple_handler('timetable', COMMAND, keyboard.timetable_keyboard)
 
-
-@log_handler
-def matan(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('matan_text', language_code),
-    )
-
-
-@log_handler
-def kotlin(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('kotlin_text', language_code),
-    )
-
-
-@log_handler
-def os(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('os_text', language_code),
-    )
-
-
-@log_handler
-def diffur(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('diffur_text', language_code),
-    )
-
-
-@log_handler
-def discra(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('discra_text', language_code),
-    )
-
-
-@log_handler
-def eng(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('eng_text', language_code),
-    )
-
-
-@log_handler
-def echo_command(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('echo_command_text', language_code),
-    )
-
-
-@log_handler
-def echo_message(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('echo_message_text', language_code),
-    )
-
-
-handlers['start'] = CommandHandler(command='start', callback=start)
-handlers['help'] = CommandHandler(command='help', callback=help_)
-handlers['algo'] = CommandHandler(command='algo', callback=algo)
-handlers['discra'] = CommandHandler(command='discra', callback=discra)
-handlers['diffur'] = CommandHandler(command='diffur', callback=diffur)
-handlers['os'] = CommandHandler(command='os', callback=os)
-handlers['kotlin'] = CommandHandler(command='kotlin', callback=kotlin)
-handlers['matan'] = CommandHandler(command='matan', callback=matan)
-handlers['eng'] = CommandHandler(command='eng', callback=eng)
-handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
 handlers['today'] = CommandHandler(command='today', callback=today)
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
-handlers['echo_command'] = MessageHandler(filters=Filters.command, callback=echo_command)
-handlers['echo_message'] = MessageHandler(filters=Filters.all, callback=echo_message)
+simple_handler('echo_command', MESSAGE, Filters.command)
+simple_handler('echo_message', MESSAGE, Filters.all)
