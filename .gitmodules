@@ -1,0 +1,3 @@
+[submodule "pythoneverywhere"]
+	path = pythoneverywhere
+	url = https://github.com/Mr3zee/pythoneverywhere.git

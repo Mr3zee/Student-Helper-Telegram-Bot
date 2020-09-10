@@ -3,5 +3,6 @@
 **/__pycache__/**
 **/TestBot/**
 .idea
-**/service_account_credentials.json
-**.db
+*.json
+*.db
+*.txt
