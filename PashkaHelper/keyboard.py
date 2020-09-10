@@ -3,11 +3,11 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from message import get_text
 
 MONDAY = 'monday_button'
-TUESDAY = 'monday_button'
-WEDNESDAY = 'monday_button'
-THURSDAY = 'monday_button'
-FRIDAY = 'monday_button'
-SATURDAY = 'monday_button'
+TUESDAY = 'tuesday_button'
+WEDNESDAY = 'wednesday_button'
+THURSDAY = 'thursday_button'
+FRIDAY = 'friday_button'
+SATURDAY = 'saturday_button'
 
 
 def timetable_keyboard(language_code):

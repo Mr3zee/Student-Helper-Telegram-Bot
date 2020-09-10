@@ -2,7 +2,8 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
 from telegram import Update
 
 from PashkaHelper.log import log_handler
-from PashkaHelper.message import text
+from PashkaHelper.message import get_text
+import PashkaHelper.keyboard as keyboard
 
 
 handlers = {}
@@ -10,97 +11,110 @@ handlers = {}
 
 @log_handler
 def start(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['start_text'],
+        text=get_text('start_text', language_code),
     )
 
 
 @log_handler
 def timetable(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['timetable_text'],
+        text=get_text('timetable_text', language_code),
+        reply_markup=keyboard.timetable_keyboard(language_code)
     )
 
 
 @log_handler
 def help_(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['help_text'],
+        text=get_text('help_text', language_code),
     )
 
 
 @log_handler
 def algo(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['algo_text'],
+        text=get_text('algo_text', language_code),
     )
 
 
 @log_handler
 def matan(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['matan_text'],
+        text=get_text('matan_text', language_code),
     )
 
 
 @log_handler
 def kotlin(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['kotlin_text'],
+        text=get_text('kotlin_text', language_code),
     )
 
 
 @log_handler
 def os(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['os_text'],
+        text=get_text('os_text', language_code),
     )
 
 
 @log_handler
 def diffur(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['diffur_text'],
+        text=get_text('diffur_text', language_code),
     )
 
 
 @log_handler
 def discra(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['discra_text'],
+        text=get_text('discra_text', language_code),
     )
 
 
 @log_handler
 def eng(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['eng_text'],
+        text=get_text('eng_text', language_code),
     )
 
 
 @log_handler
 def echo_command(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['echo_command_text'],
+        text=get_text('echo_command_text', language_code),
     )
 
 
 @log_handler
 def echo_message(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text['ru']['echo_message_text'],
+        text=get_text('echo_message_text', language_code),
     )
 
 
