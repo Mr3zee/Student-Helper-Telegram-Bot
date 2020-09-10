@@ -17,15 +17,17 @@ weekdays = {
     6: 'sunday',
 }
 
-INTRAMURAL, EXTRAMURAL = range(2)
+INTRAMURAL, EXTRAMURAL, BOTH = range(3)
 
 
-def get_timetable(day: str, language_code):
-    return get_text('timetable_day_text', language_code).format(get_text(day + '_name', language_code), 'в разработке')
+def get_timetable(weekday: str, attendance, language_code):
+    template = get_text('timetable_day_text', language_code)
+    subject1, subject2 = SERVER.get_timetable(weekday=weekday, attendance=attendance)
+    return None
 
 
-def get_timetable_by_index(day: int, language_code):
-    return get_timetable(weekdays[day], language_code)
+def get_timetable_by_index(day: int, attendance, language_code):
+    return get_timetable(weekdays[day], attendance, language_code)
 
 
 class Server:
@@ -40,6 +42,7 @@ class Server:
     __attendance = {
         INTRAMURAL: [0, 5],
         EXTRAMURAL: [6, 11],
+        BOTH: [0, 11],
     }
 
     __weekdays_in_table = {
@@ -69,9 +72,12 @@ class Server:
     def get_timetable(self, weekday, attendance):
         values = self.__wks.get_values(self.__top_left, self.__bottom_right)
         start_row, end_row = Server.__find_weekday_table(values, weekday)
-        [start_col, end_col] = Server.__attendance[attendance]
-        subjects = Server.__parse_table(values, start_row, end_row, start_col, end_col)
-        print(subjects)
+        if attendance == BOTH:
+            first = Server.__parse_table(values, start_row, end_row, INTRAMURAL)
+            second = Server.__parse_table(values, start_row, end_row, EXTRAMURAL)
+            return first, second
+        else:
+            return Server.__parse_table(values, start_row, end_row, attendance), None
 
     @staticmethod
     def __find_weekday_table(table, weekday):
@@ -89,7 +95,8 @@ class Server:
         return start_row, end_row
 
     @staticmethod
-    def __parse_table(table, start_row, end_row, start_col, end_col):
+    def __parse_table(table, start_row, end_row, attendance):
+        [start_col, end_col] = Server.__attendance[attendance]
         subjects = []
         for row in range(start_row, end_row):
             if table[row][start_col + 2] != '':
@@ -98,4 +105,4 @@ class Server:
 
 
 SERVER = Server.get_instance()
-SERVER.get_timetable('saturday', INTRAMURAL)
+print(SERVER.get_timetable('wednesday', BOTH))
