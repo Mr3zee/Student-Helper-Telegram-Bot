@@ -7,7 +7,7 @@ import PashkaHelper.keyboard as keyboard
 from PashkaHelper.timetable import get_timetable, get_timetable_by_index, INTRAMURAL, EXTRAMURAL, BOTH
 
 from datetime import datetime
-
+import pytz
 
 handlers = {}
 
@@ -32,17 +32,23 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
     )
 
 
+def timezone_converter(input_dt, current_tz='UTC', target_tz='Europe/Moscow'):
+    current_tz = pytz.timezone(current_tz)
+    target_tz = pytz.timezone(target_tz)
+    target_dt = current_tz.localize(input_dt).astimezone(target_tz)
+    return target_tz.normalize(target_dt)
+
+
 @log_handler
 def today(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_timetable_by_index(day=datetime.today().weekday(), attendance=BOTH, language_code=language_code),
+        text=get_timetable_by_index(day=timezone_converter(datetime.utcnow()).weekday(), attendance=BOTH, language_code=language_code),
     )
 
 
 def simple_handler(name, hdl_type, reply_markup_func=None, filters=None):
-
     @log_handler
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
