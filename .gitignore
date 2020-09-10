@@ -4,6 +4,6 @@
 **/TestBot/**
 **/ElonMuskBot/**
 .idea
-*.json
 *.db
 *.txt
+**/service_account_credentials.json
