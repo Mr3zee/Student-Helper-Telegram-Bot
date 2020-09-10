@@ -4,7 +4,9 @@ from telegram import Update
 from PashkaHelper.log import log_handler
 from PashkaHelper.message import get_text
 import PashkaHelper.keyboard as keyboard
-from PashkaHelper.timetable import get_timetable
+from PashkaHelper.timetable import get_timetable, get_timetable_by_index
+
+from datetime import datetime
 
 
 handlers = {}
@@ -26,6 +28,27 @@ def timetable(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=get_text('timetable_text', language_code),
         reply_markup=keyboard.timetable_keyboard(language_code),
+    )
+
+
+@log_handler
+def timetable_callback(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    query = update.callback_query
+    data = query.data
+    query.answer()
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_timetable(data[:-7], language_code),
+    )
+
+
+@log_handler
+def today(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_timetable_by_index(day=datetime.today().weekday(), language_code=language_code),
     )
 
 
@@ -119,18 +142,6 @@ def echo_message(update: Update, context: CallbackContext):
     )
 
 
-@log_handler
-def timetable_callback(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    query = update.callback_query
-    data = query.data
-    query.answer()
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_timetable(data[:-7], language_code),
-    )
-
-
 handlers['start'] = CommandHandler(command='start', callback=start)
 handlers['help'] = CommandHandler(command='help', callback=help_)
 handlers['algo'] = CommandHandler(command='algo', callback=algo)
@@ -141,6 +152,7 @@ handlers['kotlin'] = CommandHandler(command='kotlin', callback=kotlin)
 handlers['matan'] = CommandHandler(command='matan', callback=matan)
 handlers['eng'] = CommandHandler(command='eng', callback=eng)
 handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
+handlers['today'] = CommandHandler(command='today', callback=today)
 handlers['timetable_callback'] = CallbackQueryHandler(callback=timetable_callback)
 
 handlers['echo_command'] = MessageHandler(filters=Filters.command, callback=echo_command)
