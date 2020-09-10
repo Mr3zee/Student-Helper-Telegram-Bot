@@ -18,12 +18,23 @@ weekdays = {
 }
 
 INTRAMURAL, EXTRAMURAL, BOTH = range(3)
+subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 
 
 def get_timetable(weekday: str, attendance, language_code):
     template = get_text('timetable_day_text', language_code)
-    subject1, subject2 = SERVER.get_timetable(weekday=weekday, attendance=attendance)
-    return None
+    subjects1, subjects2 = SERVER.get_timetable(weekday=weekday, attendance=attendance)
+    timetable = get_text('{}_text'.format('intramural' if attendance != EXTRAMURAL else 'extramural'), language_code)
+    timetable += '\n' + __make_timetable(subjects1)
+    if subjects2:
+        timetable += '\n\n' + get_text('extramural_text', language_code) + '\n'
+        timetable += __make_timetable(subjects2)
+    weekday_text = get_text('{}_name'.format(weekday), language_code)
+    return template.format(weekday_text, timetable)
+
+
+def __make_timetable(subjects):
+    return '\n'.join(list(map(lambda a: subject_template % a, subjects)))
 
 
 def get_timetable_by_index(day: int, attendance, language_code):
@@ -75,9 +86,10 @@ class Server:
         if attendance == BOTH:
             first = Server.__parse_table(values, start_row, end_row, INTRAMURAL)
             second = Server.__parse_table(values, start_row, end_row, EXTRAMURAL)
-            return first, second
+            return Server.__make_subject_dict(first), Server.__make_subject_dict(second)
         else:
-            return Server.__parse_table(values, start_row, end_row, attendance), None
+            subjects = Server.__parse_table(values, start_row, end_row, attendance)
+            return Server.__make_subject_dict(subjects), None
 
     @staticmethod
     def __find_weekday_table(table, weekday):
@@ -103,6 +115,19 @@ class Server:
                 subjects.append(table[row][start_col + 1:end_col - Server.__number_of_cols])
         return subjects
 
+    @staticmethod
+    def __make_subject_dict(subjects):
+        retval = []
+        for row in subjects:
+            subject = {
+                'time': (row[0] if row[0] != '' else ' ' * 10),
+                'subject': row[1],
+                'teacher': row[2],
+                'place': row[3]
+            }
+            retval.append(subject)
+        return retval
+
 
 SERVER = Server.get_instance()
-print(SERVER.get_timetable('wednesday', BOTH))
+# print(get_timetable('wednesday', BOTH, 'ru'))

@@ -4,7 +4,7 @@ from telegram import Update
 from PashkaHelper.log import log_handler
 from PashkaHelper.message import get_text
 import PashkaHelper.keyboard as keyboard
-from PashkaHelper.timetable import get_timetable, get_timetable_by_index
+from PashkaHelper.timetable import get_timetable, get_timetable_by_index, INTRAMURAL, EXTRAMURAL, BOTH
 
 from datetime import datetime
 
@@ -28,7 +28,7 @@ def callback(update: Update, context: CallbackContext):
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_timetable(data[:-7], language_code),
+        text=get_timetable(data[:-7], attendance=BOTH, language_code=language_code),
     )
 
 
@@ -37,7 +37,7 @@ def today(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_timetable_by_index(day=datetime.today().weekday(), language_code=language_code),
+        text=get_timetable_by_index(day=datetime.today().weekday(), attendance=BOTH, language_code=language_code),
     )
 
 

@@ -24,6 +24,8 @@
     "thursday_name": "Четверг",
     "friday_name": "Пятница",
     "saturday_name": "Суббота",
-    "timetable_day_text": "<b>{}</b>, расписание пар на день:\n\n{}\n\nРавлекайся"
+    "timetable_day_text": "<b>{}</b>, расписание пар на день:\n\n{}\n\nРавлекайся\n\nВернуться на главную /help",
+    "intramural_text": "<u><em>Очно:</em></u>",
+    "extramural_text": "<u><em>Заочно:</em></u>"
   }
 }
