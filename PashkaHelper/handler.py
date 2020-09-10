@@ -46,10 +46,11 @@ def simple_handler(name, hdl_type, reply_markup_func=None, filters=None):
     @log_handler
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
+        reply_markup = (reply_markup_func(language_code=language_code) if reply_markup_func else None)
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=get_text(name + '_text', language_code),
-            reply_markup=reply_markup_func(language_code=language_code),
+            reply_markup=reply_markup,
         )
 
     if hdl_type == COMMAND:

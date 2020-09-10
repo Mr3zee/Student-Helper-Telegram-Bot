@@ -1,7 +1,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
 offset = ' ' * 4
 
