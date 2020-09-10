@@ -32,11 +32,17 @@ def timetable(update: Update, context: CallbackContext):
 
 
 @log_handler
-def timetable_callback(update: Update, context: CallbackContext):
+def callback(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     query = update.callback_query
     data = query.data
     query.answer()
+    if data in keyboard.weekdays:
+        return timetable_callback(update, context, data, language_code)
+
+
+@log_handler
+def timetable_callback(update: Update, context: CallbackContext, data, language_code):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_timetable(data[:-7], language_code),
@@ -153,7 +159,8 @@ handlers['matan'] = CommandHandler(command='matan', callback=matan)
 handlers['eng'] = CommandHandler(command='eng', callback=eng)
 handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
 handlers['today'] = CommandHandler(command='today', callback=today)
-handlers['timetable_callback'] = CallbackQueryHandler(callback=timetable_callback)
+
+handlers['callback'] = CallbackQueryHandler(callback=callback)
 
 handlers['echo_command'] = MessageHandler(filters=Filters.command, callback=echo_command)
 handlers['echo_message'] = MessageHandler(filters=Filters.all, callback=echo_message)

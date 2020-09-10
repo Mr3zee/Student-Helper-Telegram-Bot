@@ -9,6 +9,8 @@ THURSDAY = 'thursday_button'
 FRIDAY = 'friday_button'
 SATURDAY = 'saturday_button'
 
+weekdays = {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY}
+
 
 def timetable_keyboard(language_code):
     keyboard = [
