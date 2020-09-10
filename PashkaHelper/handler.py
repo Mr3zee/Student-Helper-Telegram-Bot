@@ -17,6 +17,14 @@ def start(update: Update, context: CallbackContext):
 
 
 @log_handler
+def timetable(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text['ru']['timetable_text'],
+    )
+
+
+@log_handler
 def help_(update: Update, context: CallbackContext):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -80,6 +88,22 @@ def eng(update: Update, context: CallbackContext):
     )
 
 
+@log_handler
+def echo_command(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text['ru']['echo_command_text'],
+    )
+
+
+@log_handler
+def echo_message(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text['ru']['echo_message_text'],
+    )
+
+
 handlers['start'] = CommandHandler(command='start', callback=start)
 handlers['help'] = CommandHandler(command='help', callback=help_)
 handlers['algo'] = CommandHandler(command='algo', callback=algo)
@@ -89,4 +113,7 @@ handlers['os'] = CommandHandler(command='os', callback=os)
 handlers['kotlin'] = CommandHandler(command='kotlin', callback=kotlin)
 handlers['matan'] = CommandHandler(command='matan', callback=matan)
 handlers['eng'] = CommandHandler(command='eng', callback=eng)
+handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
 
+handlers['echo_command'] = MessageHandler(filters=Filters.command, callback=echo_command)
+handlers['echo_message'] = MessageHandler(filters=Filters.all, callback=echo_message)
