@@ -7,3 +7,4 @@
 *.db
 *.txt
 **/service_account_credentials.json
+**/setWebhook.py

@@ -1,30 +1,32 @@
-from telegram import ParseMode, Bot
-from telegram.ext import Updater, Dispatcher, Defaults
+from flask import Flask, request
+from flask_sslify import SSLify
 
-import PashkaHelper.config as config
-import PashkaHelper.handler as hdl
+from telegram import ParseMode, Bot, Update
+from telegram.ext import Dispatcher, Defaults
+
+import config
+import handler as hdl
 
 import logging
 
 logger = logging.getLogger(__name__)
 
+app = Flask(__name__)
+sslify = SSLify(app)
+
 
 def connect_bot():
     logger.info('Connecting bot...')
-    bot = Bot(
+    new_bot = Bot(
         token=config.BOT_TOKEN,
         defaults=Defaults(
             disable_web_page_preview=True,
             parse_mode=ParseMode.HTML,
         )
     )
-    updater = Updater(
-        bot=bot,
-        use_context=True,
-    )
     logger.info('Bot connected successfully')
-    dispatcher = updater.dispatcher
-    return updater, dispatcher
+    dp = Dispatcher(bot=new_bot, update_queue=None, workers=0, use_context=True)
+    return dp, new_bot
 
 
 def add_handlers(dispatcher: Dispatcher):
@@ -34,21 +36,28 @@ def add_handlers(dispatcher: Dispatcher):
         logger.info('Handler added successfully')
 
 
-def start_bot(updater: Updater):
-    logger.info('Starting bot...')
-    updater.start_polling()
-    updater.idle()
+def webhook(dispatcher: Dispatcher, update: Update):
+    dispatcher.process_update(update)
 
 
-def main():
+def setup():
     logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-    updater, dispatcher = connect_bot()
+    dispatcher, bot = connect_bot()
 
     add_handlers(dispatcher)
 
-    start_bot(updater)
+    @app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
+    def get_updates():
+        if request.method == 'POST':
+            update = Update.de_json(request.json, bot)
+            webhook(dispatcher, update)
+        return {'ok': True}
+
+    logger.info('Staring bot...')
+
+    app.run()
 
 
 if __name__ == '__main__':
-    main()
+    setup()

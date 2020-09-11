@@ -1,5 +1,5 @@
-from PashkaHelper.message import get_text
-from PashkaHelper.config import service_file_path, timetable_url
+from message import get_text
+from config import service_file_path, timetable_url
 
 import logging
 import pygsheets

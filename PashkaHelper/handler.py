@@ -1,10 +1,10 @@
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler
 from telegram import Update
 
-from PashkaHelper.log import log_handler
-from PashkaHelper.message import get_text
-import PashkaHelper.keyboard as keyboard
-from PashkaHelper.timetable import get_timetable, get_timetable_by_index, INTRAMURAL, EXTRAMURAL, BOTH
+from log import log_handler
+from message import get_text
+import keyboard as keyboard
+from timetable import get_timetable, get_timetable_by_index, INTRAMURAL, EXTRAMURAL, BOTH
 
 from datetime import datetime
 import pytz
