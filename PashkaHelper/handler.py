@@ -44,7 +44,11 @@ def today(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_timetable_by_index(day=timezone_converter(datetime.utcnow()).weekday(), attendance=BOTH, language_code=language_code),
+        text=get_timetable_by_index(
+            day=timezone_converter(datetime.utcnow()).weekday(), attendance=BOTH,
+            language_code=language_code
+        ),
+        reply_markup=keyboard.timetable_keyboard(language_code=language_code),
     )
 
 
@@ -74,9 +78,11 @@ simple_handler('algo', COMMAND)
 simple_handler('discra', COMMAND)
 simple_handler('diffur', COMMAND)
 simple_handler('os', COMMAND)
-simple_handler('kotlin', COMMAND)
+simple_handler('sp', COMMAND)
+simple_handler('history', COMMAND)
 simple_handler('matan', COMMAND)
 simple_handler('eng', COMMAND)
+simple_handler('bjd', COMMAND)
 simple_handler('timetable', COMMAND, keyboard.timetable_keyboard)
 
 handlers['today'] = CommandHandler(command='today', callback=today)

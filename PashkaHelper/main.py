@@ -59,3 +59,10 @@ if __name__ == '__main__':
     logger.info('Staring bot...')
 
     app.run()
+
+# TODO:
+#  tg chats links
+#  mark tasks in tables
+#  good morning
+#  history module
+#  week parity
