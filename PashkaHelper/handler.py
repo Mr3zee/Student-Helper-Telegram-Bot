@@ -29,6 +29,7 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_timetable(data[:-7], attendance=BOTH, language_code=language_code),
+        reply_markup=keyboard.timetable_keyboard(language_code=language_code)
     )
 
 
