@@ -4,9 +4,12 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
 offset = ' ' * 4
+DEBUG = False
 
 
 def log_handler(f):
+    if not DEBUG:
+        return f
 
     def inner(*args, **kwargs):
         message = f'Handler \'{f.__name__}\' called \n{offset}User: {args[0].effective_user}\n'
