@@ -29,35 +29,33 @@ def connect_bot():
     return dp, new_bot
 
 
-def add_handlers(dispatcher: Dispatcher):
+def add_handlers():
     for name, handler in hdl.handlers.items():
         logger.info('Adding ' + name + ' handler')
         dispatcher.add_handler(handler)
         logger.info('Handler added successfully')
 
 
-def webhook(dispatcher: Dispatcher, update: Update):
+def webhook(update: Update):
     dispatcher.process_update(update)
 
 
-def setup():
-    logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-    dispatcher, bot = connect_bot()
+dispatcher, bot = connect_bot()
 
-    add_handlers(dispatcher)
+add_handlers()
 
-    @app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
-    def get_updates():
-        if request.method == 'POST':
-            update = Update.de_json(request.json, bot)
-            webhook(dispatcher, update)
-        return {'ok': True}
 
-    logger.info('Staring bot...')
-
-    app.run()
+@app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
+def get_updates():
+    if request.method == 'POST':
+        update = Update.de_json(request.json, bot)
+        webhook(update)
+    return {'ok': True}
 
 
 if __name__ == '__main__':
-    setup()
+    logger.info('Staring bot...')
+
+    app.run()
