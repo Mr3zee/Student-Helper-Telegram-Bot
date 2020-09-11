@@ -22,7 +22,7 @@ subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 
 
 def get_timetable(weekday: str, attendance, language_code):
-    template = get_text('week_text', language_code)
+    template = get_text('weekday_text', language_code)
     subjects1, subjects2 = SERVER.get_timetable(weekday=weekday, attendance=attendance)
     timetable = get_text('{}_text'.format('intramural' if attendance != EXTRAMURAL else 'extramural'), language_code)
     timetable += '\n' + __make_timetable(subjects1)
