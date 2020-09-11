@@ -9,3 +9,4 @@
 **/service_account_credentials.json
 **/setWebhook.py
 **/copy_to_server_git.py
+**/deploy.cmd
