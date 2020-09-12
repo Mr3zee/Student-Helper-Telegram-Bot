@@ -63,7 +63,7 @@ if __name__ == '__main__':
 # TODO:
 #  tg chats links +
 #  mark tasks in tables
-#  good morning
+#  good morning (+ disable mode)
 #  history module +
 #  eng module +
 #  week parity
@@ -71,4 +71,6 @@ if __name__ == '__main__':
 #  make inline mode
 #  /today for sunday +
 #  time table for each subject
+#  make personal settings
+#  empty day support
 

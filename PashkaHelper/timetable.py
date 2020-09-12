@@ -1,5 +1,6 @@
 from message import get_text
 from config import service_file_path, timetable_url
+from time_management import get_week_parity
 
 import logging
 import pygsheets
@@ -17,7 +18,8 @@ weekdays = {
     6: 'sunday',
 }
 
-INTRAMURAL, EXTRAMURAL, BOTH = range(3)
+INTRAMURAL, EXTRAMURAL, BOTH_ATTENDANCE = range(3)
+EVEN, ODD, BOTH_PARITY = 'even', 'odd', 'both'
 subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 
 
@@ -26,14 +28,15 @@ def get_timetable(weekday: str, attendance, language_code):
         return get_text('today_sunday_text', language_code=language_code)
 
     template = get_text('weekday_text', language_code)
-    subjects1, subjects2 = SERVER.get_timetable(weekday=weekday, attendance=attendance)
+    subjects1, subjects2, parity = SERVER.get_timetable(weekday=weekday, attendance=attendance)
+    parity_text = get_text(f'{parity}_week_text', language_code=language_code)
     timetable = get_text('{}_text'.format('intramural' if attendance != EXTRAMURAL else 'extramural'), language_code)
     timetable += '\n' + __make_timetable(subjects1)
     if subjects2:
         timetable += '\n\n' + get_text('extramural_text', language_code) + '\n'
         timetable += __make_timetable(subjects2)
-    weekday_text = get_text('{}_name'.format(weekday), language_code)
-    return template.format(weekday_text, timetable)
+    weekday_text = get_text(f'{weekday}_name', language_code)
+    return template.format(weekday_text, parity_text, timetable)
 
 
 def __make_timetable(subjects):
@@ -49,23 +52,29 @@ class Server:
 
     __top_left = 'B1'
 
-    __bottom_right = 'M49'
+    __bottom_right = 'O49'
 
-    __number_of_cols = 12
+    __number_of_cols = 14
 
     __attendance = {
-        INTRAMURAL: [0, 5],
-        EXTRAMURAL: [6, 11],
-        BOTH: [0, 11],
+        INTRAMURAL: [0, 6],
+        EXTRAMURAL: [7, 13],
+        BOTH_ATTENDANCE: [0, 13],
     }
 
-    __weekdays_in_table = {
+    __weekdays_map = {
         'monday': 'пн',
         'tuesday': 'вт',
         'wednesday': 'ср',
         'thursday': 'чт',
         'friday': 'пт',
         'saturday': 'сб',
+    }
+
+    __week_parity_map = {
+        'ч': 'even',
+        'н': 'odd',
+        'нч': 'both',
     }
 
     def __init__(self):
@@ -86,22 +95,25 @@ class Server:
     def get_timetable(self, weekday, attendance):
         values = self.__wks.get_values(self.__top_left, self.__bottom_right)
         start_row, end_row = Server.__find_weekday_table(values, weekday)
-        if attendance == BOTH:
-            first = Server.__parse_table(values, start_row, end_row, INTRAMURAL)
-            second = Server.__parse_table(values, start_row, end_row, EXTRAMURAL)
-            return Server.__make_subject_dict(first), Server.__make_subject_dict(second)
+        week_parity = get_week_parity()
+        if attendance == BOTH_ATTENDANCE:
+            offline = Server.__parse_table(values, start_row, end_row, INTRAMURAL)
+            online = Server.__parse_table(values, start_row, end_row, EXTRAMURAL)
+            offline_dict = Server.__make_subject_dict(offline, week_parity)
+            online_dict = Server.__make_subject_dict(online, week_parity)
+            return offline_dict, online_dict, week_parity
         else:
             subjects = Server.__parse_table(values, start_row, end_row, attendance)
-            return Server.__make_subject_dict(subjects), None
+            return Server.__make_subject_dict(subjects, week_parity), None, week_parity
 
     @staticmethod
     def __find_weekday_table(table, weekday):
-        table_weekday = Server.__weekdays_in_table[weekday]
+        table_weekday = Server.__weekdays_map[weekday]
         found = False
         start_row = None
         end_row = None
         for row in range(len(table)):
-            if found and (table[row][0] in Server.__weekdays_in_table.values() or row == len(table) - 1):
+            if found and (table[row][0] in Server.__weekdays_map.values() or row == len(table) - 1):
                 end_row = row
                 break
             if table[row][0] == table_weekday:
@@ -119,18 +131,20 @@ class Server:
         return subjects
 
     @staticmethod
-    def __make_subject_dict(subjects):
+    def __make_subject_dict(subjects, week_parity):
         retval = []
         for row in subjects:
-            subject = {
-                'time': (row[0] if row[0] != '' else ' ' * 10),
-                'subject': row[1],
-                'teacher': row[2],
-                'place': row[3]
-            }
-            retval.append(subject)
+            subject_parity = Server.__week_parity_map[row[1]]
+            if subject_parity == BOTH_PARITY or  subject_parity == week_parity:
+                subject = {
+                    'time': (row[0] if row[0] != '' else ' ' * 10),
+                    'parity': row[1],
+                    'subject': row[2],
+                    'teacher': row[3],
+                    'place': row[4]
+                }
+                retval.append(subject)
         return retval
 
 
 SERVER = Server.get_instance()
-# print(get_timetable('wednesday', BOTH, 'ru'))
