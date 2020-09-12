@@ -1,5 +1,7 @@
 import pytz
-from datetime import datetime
+from datetime import datetime, date
+
+zero_week = date(2020, 9, 3).isocalendar()[1]
 
 
 def get_weekday():
@@ -14,4 +16,4 @@ def timezone_converter(input_dt, current_tz='UTC', target_tz='Europe/Moscow'):
 
 
 def get_week_parity():
-    return 'even'
+    return 'odd' if (datetime.today().isocalendar()[1] - zero_week % 2 != 0) else 'even'
