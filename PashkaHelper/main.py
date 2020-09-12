@@ -1,8 +1,10 @@
 from flask import Flask, request
 from flask_sslify import SSLify
+from threading import Thread
+from queue import Queue
 
 from telegram import ParseMode, Bot, Update
-from telegram.ext import Dispatcher, Defaults
+from telegram.ext import Dispatcher, Defaults, JobQueue
 
 import config
 import handler as hdl
@@ -24,9 +26,20 @@ def connect_bot():
             parse_mode=ParseMode.HTML,
         )
     )
+    upd_queue = Queue()
+    job_queue = JobQueue()
+    dp = Dispatcher(
+        bot=new_bot,
+        update_queue=upd_queue,
+        use_context=True,
+        job_queue=job_queue,
+    )
+    job_queue.set_dispatcher(dp)
+    job_queue.start()
+    thread = Thread(target=dp.start, name='dispatcher')
+    thread.start()
     logger.info('Bot connected successfully')
-    dp = Dispatcher(bot=new_bot, update_queue=None, workers=0, use_context=True)
-    return dp, new_bot
+    return dp, new_bot, upd_queue
 
 
 def add_handlers():
@@ -36,13 +49,9 @@ def add_handlers():
         logger.info('Handler added successfully')
 
 
-def webhook(update: Update):
-    dispatcher.process_update(update)
-
-
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-dispatcher, bot = connect_bot()
+dispatcher, bot, update_queue = connect_bot()
 
 add_handlers()
 
@@ -51,7 +60,7 @@ add_handlers()
 def get_updates():
     if request.method == 'POST':
         update = Update.de_json(request.json, bot)
-        webhook(update)
+        update_queue.put(update)
     return {'ok': True}
 
 
@@ -63,10 +72,10 @@ if __name__ == '__main__':
 # TODO:
 #  tg chats links +
 #  mark tasks in tables
-#  good morning (+ disable mode)
+#  good morning +
 #  history module +
 #  eng module +
-#  week parity
+#  week parity +
 #  make weekday timetable as edit message +
 #  make inline mode
 #  /today for sunday +

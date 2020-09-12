@@ -6,11 +6,49 @@ from message import get_text
 import keyboard as keyboard
 from timetable import get_timetable, get_timetable_by_index, BOTH_ATTENDANCE
 
-from time_management import get_weekday
+from time_management import get_weekday, MORNING_MESSAGE_TIME
 
 handlers = {}
 
 MESSAGE, COMMAND = range(2)
+
+
+def send_morning_message(context: CallbackContext):
+    job = context.job
+    print(job.context)
+    send_today_timetable(
+        context=context,
+        chat_id=job.context[0],
+        language_code=job.context[1]
+    )
+
+
+def set_morning_message(context: CallbackContext, chat_id, language_code):
+    job_name = 'morning_message'
+    if job_name not in context.chat_data:
+        print(f"time: {MORNING_MESSAGE_TIME}")
+        new_job = context.job_queue.run_daily(
+            callback=send_morning_message,
+            time=MORNING_MESSAGE_TIME,
+            days=(0, 1, 2, 3, 4, 5),
+            context=[chat_id, language_code],
+            name=job_name,
+        )
+        context.chat_data[job_name] = new_job
+        return new_job
+
+
+@log_handler
+def start(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    chat_id = update.effective_chat.id
+
+    new_job = set_morning_message(chat_id=chat_id, context=context, language_code=language_code)
+
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=get_text('start_text', language_code=language_code),
+    )
 
 
 @log_handler
@@ -38,17 +76,24 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
         pass
 
 
-@log_handler
-def today(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
+def send_today_timetable(context: CallbackContext, chat_id, language_code):
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=get_timetable_by_index(
             day=get_weekday(),
             attendance=BOTH_ATTENDANCE,
             language_code=language_code,
         ),
         reply_markup=keyboard.timetable_keyboard(language_code=language_code),
+    )
+
+
+@log_handler
+def today(update: Update, context: CallbackContext):
+    send_today_timetable(
+        context=context,
+        chat_id=update.effective_chat.id,
+        language_code=update.effective_user.language_code
     )
 
 
@@ -72,7 +117,8 @@ def simple_handler(name, hdl_type, reply_markup_func=None, filters=None):
     handlers[name] = handler
 
 
-simple_handler('start', COMMAND)
+handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
+
 simple_handler('help', COMMAND)
 simple_handler('algo', COMMAND)
 simple_handler('discra', COMMAND)
@@ -89,5 +135,5 @@ handlers['today'] = CommandHandler(command='today', callback=today)
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
-simple_handler('echo_command', MESSAGE, Filters.command)
-simple_handler('echo_message', MESSAGE, Filters.all)
+simple_handler('echo_command', MESSAGE, filters=Filters.command)
+simple_handler('echo_message', MESSAGE, filters=Filters.all)
