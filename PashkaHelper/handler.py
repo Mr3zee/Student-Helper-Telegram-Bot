@@ -15,7 +15,6 @@ MESSAGE, COMMAND = range(2)
 
 def send_morning_message(context: CallbackContext):
     job = context.job
-    print(job.context)
     send_today_timetable(
         context=context,
         chat_id=job.context[0],
@@ -26,7 +25,6 @@ def send_morning_message(context: CallbackContext):
 def set_morning_message(context: CallbackContext, chat_id, language_code):
     job_name = 'morning_message'
     if job_name not in context.chat_data:
-        print(f"time: {MORNING_MESSAGE_TIME}")
         new_job = context.job_queue.run_daily(
             callback=send_morning_message,
             time=MORNING_MESSAGE_TIME,

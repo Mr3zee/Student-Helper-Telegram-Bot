@@ -1,7 +1,5 @@
 from flask import Flask, request
 from flask_sslify import SSLify
-from threading import Thread
-from queue import Queue
 
 from telegram import ParseMode, Bot, Update
 from telegram.ext import Dispatcher, Defaults, JobQueue
@@ -26,20 +24,17 @@ def connect_bot():
             parse_mode=ParseMode.HTML,
         )
     )
-    upd_queue = Queue()
     job_queue = JobQueue()
     dp = Dispatcher(
         bot=new_bot,
-        update_queue=upd_queue,
+        update_queue=None,
         use_context=True,
         job_queue=job_queue,
     )
     job_queue.set_dispatcher(dp)
     job_queue.start()
-    thread = Thread(target=dp.start, name='dispatcher')
-    thread.start()
     logger.info('Bot connected successfully')
-    return dp, new_bot, upd_queue
+    return dp, new_bot
 
 
 def add_handlers():
@@ -51,7 +46,7 @@ def add_handlers():
 
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-dispatcher, bot, update_queue = connect_bot()
+dispatcher, bot = connect_bot()
 
 add_handlers()
 
@@ -60,7 +55,7 @@ add_handlers()
 def get_updates():
     if request.method == 'POST':
         update = Update.de_json(request.json, bot)
-        update_queue.put(update)
+        dispatcher.process_update(update)
     return {'ok': True}
 
 
