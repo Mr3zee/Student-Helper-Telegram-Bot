@@ -66,3 +66,4 @@ if __name__ == '__main__':
 #  good morning
 #  history module
 #  week parity
+#  make weekday timetable as edit message +

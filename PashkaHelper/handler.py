@@ -1,5 +1,5 @@
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler
-from telegram import Update
+from telegram import Update, error
 
 from log import log_handler
 from message import get_text
@@ -26,11 +26,13 @@ def callback(update: Update, context: CallbackContext):
 
 @log_handler
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_timetable(data[:-7], attendance=BOTH, language_code=language_code),
-        reply_markup=keyboard.timetable_keyboard(language_code=language_code)
-    )
+    try:
+        update.callback_query.edit_message_text(
+            text=get_timetable(data[:-7], attendance=BOTH, language_code=language_code),
+            reply_markup=keyboard.timetable_keyboard(language_code=language_code)
+        )
+    except error.BadRequest:
+        pass
 
 
 def timezone_converter(input_dt, current_tz='UTC', target_tz='Europe/Moscow'):
