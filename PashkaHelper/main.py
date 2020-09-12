@@ -61,9 +61,14 @@ if __name__ == '__main__':
     app.run()
 
 # TODO:
-#  tg chats links
+#  tg chats links +
 #  mark tasks in tables
 #  good morning
-#  history module
+#  history module +
+#  eng module +
 #  week parity
 #  make weekday timetable as edit message +
+#  make inline mode
+#  /today for sunday
+#  time table for each subject
+
