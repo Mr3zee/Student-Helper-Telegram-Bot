@@ -69,6 +69,6 @@ if __name__ == '__main__':
 #  week parity
 #  make weekday timetable as edit message +
 #  make inline mode
-#  /today for sunday
+#  /today for sunday +
 #  time table for each subject
 
