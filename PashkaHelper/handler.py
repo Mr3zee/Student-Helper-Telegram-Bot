@@ -4,7 +4,7 @@ from telegram import Update, error
 from log import log_handler
 from message import get_text
 import keyboard as keyboard
-from timetable import get_timetable, get_timetable_by_index, BOTH_ATTENDANCE
+from timetable import get_weekday_timetable, get_timetable_by_index, BOTH_ATTENDANCE
 
 from time_management import get_weekday, MORNING_MESSAGE_TIME
 
@@ -63,7 +63,7 @@ def callback(update: Update, context: CallbackContext):
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
     try:
         update.callback_query.edit_message_text(
-            text=get_timetable(
+            text=get_weekday_timetable(
                 weekday=data[:-7],
                 attendance=BOTH_ATTENDANCE,
                 language_code=language_code,

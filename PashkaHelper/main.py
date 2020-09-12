@@ -76,5 +76,5 @@ if __name__ == '__main__':
 #  /today for sunday +
 #  time table for each subject
 #  make personal settings
-#  empty day support
+#  empty day support +
 

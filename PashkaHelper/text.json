@@ -31,6 +31,9 @@
     "extramural_text": "<u><em>Заочно:</em></u>",
     "today_sunday_text": "Сегодня же воскресенье!!!\n\n<s>Отдыхай</s> сиди домашку делай\n\nУзнать расписание на другой день:",
     "odd_week_text": "нечетная",
-    "even_week_text": "четная"
+    "even_week_text": "четная",
+    "happy_text": "В этот прекрасный день нет пар! Ура, товарищи - Ура, Ура, Ура\n\nА теперь за домашку",
+    "subject_timetable_text": "Расписание по дням:\n\n",
+    "subject_day_timetable_text": "<em>{}:</em>\n{}\n\n"
   }
 }

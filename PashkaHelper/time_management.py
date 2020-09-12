@@ -24,6 +24,6 @@ MORNING_MESSAGE_TIME = timezone_converter(
         year=2020,
         month=9,
         day=3,
-        hour=23,
-        minute=13
+        hour=7,
+        minute=0
     ), MOSCOW_TZ, SERVER_TZ).time()
