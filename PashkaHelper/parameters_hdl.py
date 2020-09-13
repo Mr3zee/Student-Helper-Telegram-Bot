@@ -150,13 +150,12 @@ def __update_everyday_msg(update, context, data, language_code):
         return __chg_parameters_page(update, 'time', language_code=language_code, ret_lvl=TIME_LVL)
 
 
-@log_handler
-def tzinfo(update: Update, context: CallbackContext):
+def __user_input_chg(update: Update, context: CallbackContext, validation, setter, ERROR_LVL):
     language_code = update.effective_user.language_code
-    new_tzinfo = update.message.text
-    if user_parameters.valid_tzinfo(new_tzinfo):
+    new_info = update.message.text
+    if validation(new_info):
         user_id = update.effective_user.id
-        user_parameters.set_tzinfo(user_id, new_tzinfo)
+        setter(user_id, new_info)
         current_status = user_parameters.get_user_message_status(user_id)
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -166,6 +165,28 @@ def tzinfo(update: Update, context: CallbackContext):
         return MAIN_LVL
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('tzinfo_error_parameters_text', language_code),
+        text=get_text('error_parameters_text', language_code),
     )
-    return TZINFO_LVL
+    return ERROR_LVL
+
+
+@log_handler
+def tzinfo(update: Update, context: CallbackContext):
+    return __user_input_chg(
+        update=update,
+        context=context,
+        validation=user_parameters.valid_tzinfo,
+        setter=user_parameters.set_user_tzinfo,
+        ERROR_LVL=TZINFO_LVL,
+    )
+
+
+@log_handler
+def time_message(update: Update, context: CallbackContext):
+    return __user_input_chg(
+        update=update,
+        context=context,
+        validation=user_parameters.valid_time,
+        setter=user_parameters.set_user_message_time,
+        ERROR_LVL=TIME_LVL,
+    )

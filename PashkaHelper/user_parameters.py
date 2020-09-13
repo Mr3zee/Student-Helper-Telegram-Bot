@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from timetable import BOTH_ATTENDANCE
 
 
@@ -49,5 +51,17 @@ def valid_tzinfo(new_tzinfo: str):
         return False
 
 
-def set_tzinfo(user_id, new_tzinfo):
+def set_user_tzinfo(user_id, new_tzinfo):
     user['tzinfo'] = new_tzinfo
+
+
+def valid_time(new_time: str):
+    try:
+        datetime.strptime(new_time.strip(), '%H:%M')
+        return True
+    except ValueError:
+        return False
+
+
+def set_user_message_time(user_id, new_time):
+    user['message_time'] = new_time.strip()

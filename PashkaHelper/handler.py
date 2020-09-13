@@ -5,7 +5,7 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
 import keyboard
 import buttons
 import user_parameters
-from parameters_hdl import parameters, parameters_callback, manage_callback_query, name, tzinfo, \
+from parameters_hdl import parameters, parameters_callback, manage_callback_query, name, tzinfo, time_message, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
 from log import log_handler
@@ -144,7 +144,7 @@ handlers['parameters'] = ConversationHandler(
             MessageHandler(filters=Filters.all, callback=name),
         ],
         TIME_LVL: [
-
+            MessageHandler(filters=Filters.all, callback=time_message),
         ],
         TZINFO_LVL: [
             MessageHandler(filters=Filters.all, callback=tzinfo),
