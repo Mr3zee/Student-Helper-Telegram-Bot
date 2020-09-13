@@ -1,13 +1,15 @@
 from telegram import Update, error
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler
 
-import keyboard as keyboard
+import keyboard
+import buttons
+import user_parameters
+import parameters_hdl
 
 from log import log_handler
 from message import get_text
 from time_management import get_weekday, MORNING_MESSAGE_TIME
 from timetable import get_weekday_timetable, get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
-from user_parameters import get_user_parameters
 
 handlers = {}
 
@@ -56,8 +58,14 @@ def callback(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
     query.answer()
-    if data in keyboard.weekdays:
+    if data in keyboard.WEEKDAYS_SET:
         return timetable_callback(update, context, data, language_code)
+    elif data in buttons.PARAMETERS_SET:
+        return parameters_hdl.parameters_callback(update, context, data, language_code)
+    elif data in buttons.COURSES_SET:
+        return parameters_hdl.chg_course(update, context, data, language_code)
+    elif buttons.is_course_update(data):
+        return parameters_hdl.update_course(update, context, data, language_code)
 
 
 @log_handler
@@ -101,11 +109,12 @@ def simple_handler(name, hdl_type, need_subject_timetable=False, reply_markup_fu
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id
+        user_id = update.effective_user.id
 
         reply_markup = (reply_markup_func(language_code=language_code) if reply_markup_func else None)
         main_info = get_text(f"{name}_text", language_code=language_code)
         if need_subject_timetable:
-            subject_type, attendance = get_user_parameters(chat_id, name)
+            subject_type, attendance = user_parameters.get_user_course(user_id, name)
             additional_info = f'\n{get_subject_timetable(subject_type, attendance, language_code)}'
             main_info = main_info.format(additional_info)
         context.bot.send_message(
@@ -123,19 +132,31 @@ def simple_handler(name, hdl_type, need_subject_timetable=False, reply_markup_fu
     handlers[name] = handler
 
 
+@log_handler
+def parameters(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    user_id = update.effective_user.id
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
+        reply_markup=keyboard.parameters_keyboard(language_code),
+    )
+
+
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
 
 simple_handler('help', COMMAND)
 simple_handler('timetable', COMMAND, reply_markup_func=keyboard.timetable_keyboard)
 
 handlers['today'] = CommandHandler(command='today', callback=today)
+handlers['parameters'] = CommandHandler(command='parameters', callback=parameters)
+
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
 subjects = ['algo', 'discra', 'diffur', 'os', 'sp', 'history', 'matan', 'eng', 'bjd']
 
 for sub in subjects:
     simple_handler(sub, COMMAND, need_subject_timetable=True)
-
 
 simple_handler('echo_command', MESSAGE, filters=Filters.command)
 simple_handler('echo_message', MESSAGE, filters=Filters.all)

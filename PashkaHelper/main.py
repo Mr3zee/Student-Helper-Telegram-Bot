@@ -78,4 +78,5 @@ if __name__ == '__main__':
 #  make personal settings
 #  empty day support +
 #  rm blank spaces in timetables +
+#  make mg messages silent and add greeting
 
