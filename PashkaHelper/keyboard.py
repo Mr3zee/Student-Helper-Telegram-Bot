@@ -42,7 +42,7 @@ def parameters_keyboard(language_code):
 def everyday_message_keyboard(current_status, language_code):
     keyboard = [
         [
-            make_button((ALLOW_MESSAGE if current_status == 'forbid' else FORBID_MESSAGE), language_code)
+            make_button((ALLOW_MESSAGE if current_status == 'forbidden' else FORBID_MESSAGE), language_code)
         ],
         [
             make_button(MESSAGE_TIME, language_code),

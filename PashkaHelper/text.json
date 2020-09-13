@@ -35,7 +35,7 @@
     "happy_text": "В этот прекрасный день нет пар! Ура, товарищи - Ура, Ура, Ура\n\nА теперь за домашку",
     "subject_timetable_text": "<b>Расписание по дням:</b>\n\n",
     "subject_day_template_text": "<em>{}:</em>\n{}\n\n",
-    "parameters_text": "<b>Личный Кабинет</b>\n\nИмя: <em>%(name)s</em>\nТип посещения: <em>%(attendance)s</em>\nЕжедневное расписание: <em>%(morning_message)s</em>\nВремя отправки: <em>%(message_time)s</em>\nВременная зона: <em>UTC %(tzinfo)s</em>\nГруппа английского: <em>%(eng)s</em>\nКурс по истории: <em>%(history)s</em>\nКурс современного программирования: <em>%(sp)s</em>\nКурс операционных систем: <em>%(os)s</em>\n\nИзменить настройки аккаунта:",
+    "parameters_text": "<b>Личный Кабинет</b>\n\nИмя: <em>%(name)s</em>\nТип посещения: <em>%(attendance)s</em>\nЕжедневное расписание: <em>%(message_status)s</em>\nВремя отправки: <em>%(message_time)s</em>\nВременная зона: <em>UTC %(tzinfo)s</em>\nГруппа английского: <em>%(eng)s</em>\nКурс по истории: <em>%(history)s</em>\nКурс современного программирования: <em>%(sp)s</em>\nКурс операционных систем: <em>%(os)s</em>\n\nИзменить настройки аккаунта:",
     "name_par_text": "Пожалуйста, введи свое имя:",
     "attendance_par_text": "Пожалуйста, вебери тип своей посещаемости",
     "everyday_message_par_text": "Нужно ли отправлять ежедневное раписание?",
@@ -48,10 +48,6 @@
     "name_button": "Имя",
     "everyday_message_button": "Ежедневное расписание",
     "courses_button": "Мои курсы",
-    "allow_message_button": "Разрешить отправку",
-    "forbid_message_button": "Запретить отправку",
-    "tz_info_button": "Временная зона",
-    "message_time_button": "Время отправки сообщения",
     "attendance_button": "Посещение",
     "os_type_button": "ОС",
     "sp_type_button": "СП",
@@ -96,6 +92,10 @@
     "attendance_parameters_text": "Выбери свой способ посещения занятий:",
     "online_attendance_button": "Заочно",
     "offline_attendance_button": "Очно",
-    "both_attendance_button": "Все сразу"
+    "both_attendance_button": "Все сразу",
+    "allowed_message_button": "Разрешить отправку",
+    "forbidden_message_button": "Запретить отправку",
+    "tz_info_button": "Временная зона",
+    "message_time_button": "Время отправки сообщения"
   }
 }

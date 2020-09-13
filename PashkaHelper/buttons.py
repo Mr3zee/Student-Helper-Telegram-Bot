@@ -15,7 +15,7 @@ ATTENDANCE = 'attendance_button'
 COURSES = 'courses_button'
 PARAMETERS_RETURN = 'return_par_button'
 
-PARAMETERS_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
+MAIN_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
 
 # attendance buttons
 ATTENDANCE_ONLINE = 'online_attendance_button'
@@ -25,8 +25,8 @@ ATTENDANCE_BOTH = 'both_attendance_button'
 ATTENDANCE_SET = {ATTENDANCE_BOTH, ATTENDANCE_OFFLINE, ATTENDANCE_ONLINE}
 
 # everyday message buttons
-ALLOW_MESSAGE = 'allow_message_button'
-FORBID_MESSAGE = 'forbid_message_button'
+ALLOW_MESSAGE = 'allowed_message_button'
+FORBID_MESSAGE = 'forbidden_message_button'
 TZINFO = 'tz_info_button'
 MESSAGE_TIME = 'message_time_button'
 

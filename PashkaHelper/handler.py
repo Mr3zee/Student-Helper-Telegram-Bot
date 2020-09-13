@@ -1,10 +1,11 @@
 from telegram import Update, error
-from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler
+from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
+    ConversationHandler
 
 import keyboard
 import buttons
 import user_parameters
-import parameters_hdl
+from parameters_hdl import parameters_callback
 
 from log import log_handler
 from message import get_text
@@ -14,6 +15,9 @@ from timetable import get_weekday_timetable, get_timetable_by_index, BOTH_ATTEND
 handlers = {}
 
 MESSAGE, COMMAND = range(2)
+
+# ConversationHandler's states:
+MAIN = range(1)
 
 
 def send_morning_message(context: CallbackContext):
@@ -58,16 +62,8 @@ def callback(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
     query.answer()
-    if data in keyboard.WEEKDAYS_SET:
+    if data in buttons.WEEKDAYS_SET:
         return timetable_callback(update, context, data, language_code)
-    elif data in buttons.PARAMETERS_SET:
-        return parameters_hdl.parameters_callback(update, context, data, language_code)
-    elif data in buttons.COURSES_SET:
-        return parameters_hdl.chg_course(update, context, data, language_code)
-    elif buttons.is_course_update(data):
-        return parameters_hdl.update_course(update, context, data, language_code)
-    elif data in buttons.ATTENDANCE_SET:
-        return parameters_hdl.update_attendance(update, context, data, language_code)
 
 
 @log_handler
@@ -143,6 +139,7 @@ def parameters(update: Update, context: CallbackContext):
         text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
+    return MAIN
 
 
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
@@ -151,7 +148,18 @@ simple_handler('help', COMMAND)
 simple_handler('timetable', COMMAND, reply_markup_func=keyboard.timetable_keyboard)
 
 handlers['today'] = CommandHandler(command='today', callback=today)
-handlers['parameters'] = CommandHandler(command='parameters', callback=parameters)
+
+handlers['parameters'] = ConversationHandler(
+    entry_points=[
+        CommandHandler(command='parameters', callback=parameters)
+    ],
+    states={
+        MAIN: [
+            CallbackQueryHandler(callback=parameters_callback)
+        ],
+    },
+    fallbacks=[],
+)
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 

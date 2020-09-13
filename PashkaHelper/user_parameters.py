@@ -12,7 +12,7 @@ def get_user_status(user_id):
 user = {
     'name': 'Сысоев Александр Александрович',
     'attendance': 'intramural',
-    'morning_message': 'Да',
+    'message_status': 'Да',
     'message_time': '7:30',
     'tzinfo': '+3',
     'eng': '2-ИТИПКТ-С2/1',
@@ -22,15 +22,19 @@ user = {
 }
 
 
-def set_course(user_id, subject, new_course):
+def set_user_course(user_id, subject, new_course):
     user[subject] = new_course
     pass
 
 
-def set_attendance(user_id, attendance):
+def set_user_attendance(user_id, attendance):
     user['attendance'] = attendance
     pass
 
 
 def get_user(user_id):
     return user
+
+
+def get_user_message_status(user_id):
+    return 'forbidden' if user['morning_message'] == 'Нет' else 'allowed'
