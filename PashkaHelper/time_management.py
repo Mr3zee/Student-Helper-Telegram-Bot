@@ -27,3 +27,9 @@ MORNING_MESSAGE_TIME = timezone_converter(
         hour=7,
         minute=0
     ), MOSCOW_TZ, SERVER_TZ).time()
+
+# from datetime import datetime, timezone, timedelta
+#
+# return datetime(yy, mm, dd, hh, min, ss, 0, timezone(timedelta(hours=5)))       # +0500
+# # or
+# return datetime(yy, mm, dd, hh, min, ss, 0, timezone(timedelta(seconds=18000))) # +0500

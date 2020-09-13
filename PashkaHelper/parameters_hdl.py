@@ -51,6 +51,8 @@ def parameters_callback(update: Update, context: CallbackContext):
         return __update_course(update, context, data, language_code)
     elif data in ATTENDANCE_SET:
         return __update_attendance(update, context, data, language_code)
+    elif data in EVERYDAY_MESSAGE_SET:
+        return __update_everyday_msg(update, context, data, language_code)
 
 
 def __main_callback(update: Update, context: CallbackContext, data, language_code):
@@ -79,11 +81,11 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
 
 
 @log_handler
-def __everyday_msg_callback(update: Update, context: CallbackContext, language_code):
+def __everyday_msg_callback(update: Update, context: CallbackContext, language_code, edited=''):
     user_id = update.effective_user.id
-    current_status = user_parameters.get_user_status(user_id)
+    current_status = user_parameters.get_user_message_status(user_id)
     update.callback_query.edit_message_text(
-        text=get_text('everyday_message_text', language_code),
+        text=get_text('everyday_message_text', language_code).format(edited),
         reply_markup=keyboard.everyday_message_keyboard(current_status, language_code),
     )
     return MAIN_LVL
@@ -128,16 +130,42 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
     return __return_callback(update, context, language_code)
 
 
-def __update_name(update: Update, context: CallbackContext, language_code):
-    update.callback_query.edit_message_text(
-        text=get_text('name_parameters_text', language_code),
-    )
-    return NAME_LVL
-
-
 @log_handler
 def name(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     new_name = update.message.text
     user_parameters.set_user_name(user_id, new_name)
     return parameters(update, context)
+
+
+def __update_everyday_msg(update, context, data, language_code):
+    user_id = update.effective_user.id
+    if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
+        new_status = __get_button_name(data)
+        user_parameters.set_user_message_status(user_id, new_status)
+        return __everyday_msg_callback(update, context, language_code, f'message status updated: {new_status}')
+    elif data == TZINFO:
+        return __chg_parameters_page(update, 'tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
+    elif data == MESSAGE_TIME:
+        return __chg_parameters_page(update, 'time', language_code=language_code, ret_lvl=TIME_LVL)
+
+
+@log_handler
+def tzinfo(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    new_tzinfo = update.message.text
+    if user_parameters.valid_tzinfo(new_tzinfo):
+        user_id = update.effective_user.id
+        user_parameters.set_tzinfo(user_id, new_tzinfo)
+        current_status = user_parameters.get_user_message_status(user_id)
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=get_text('everyday_message_text', language_code).format('tzinfo updated'),
+            reply_markup=keyboard.everyday_message_keyboard(current_status, language_code),
+        )
+        return MAIN_LVL
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('tzinfo_error_parameters_text', language_code),
+    )
+    return TZINFO_LVL

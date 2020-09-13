@@ -5,10 +5,6 @@ def get_user_course(user_id, sub_name):
     return sub_name, BOTH_ATTENDANCE
 
 
-def get_user_status(user_id):
-    return 'allow'
-
-
 user = {
     'name': 'Сысоев Александр Александрович',
     'attendance': 'intramural',
@@ -35,8 +31,23 @@ def get_user(user_id):
 
 
 def get_user_message_status(user_id):
-    return 'forbidden' if user['morning_message'] == 'Нет' else 'allowed'
+    return 'forbidden' if user['message_status'] == 'Нет' else 'allowed'
 
 
 def set_user_name(user_id, new_name):
     user['name'] = new_name
+
+
+def set_user_message_status(user_id, status):
+    user['message_status'] = ('Дa' if status == 'allowed' else 'Нет')
+
+
+def valid_tzinfo(new_tzinfo: str):
+    try:
+        return abs(int(new_tzinfo)) < 13
+    except ValueError:
+        return False
+
+
+def set_tzinfo(user_id, new_tzinfo):
+    user['tzinfo'] = new_tzinfo

@@ -46,7 +46,7 @@
     "history_group_button": "История",
     "return_par_button": "<- Назад",
     "courses_parameters_text": "Изменить выбор курса:",
-    "everyday_message_text": "Изменить настройки ежедневной рассылки:",
+    "everyday_message_text": "{}\nИзменить настройки ежедневной рассылки:",
     "return_courses_button": "К выбору курса",
     "os_adv_button": "Системный курс",
     "os_lite_button": "Стандартный курс",
@@ -88,6 +88,9 @@
     "forbidden_message_button": "Запретить отправку",
     "tz_info_button": "Временная зона",
     "message_time_button": "Время отправки сообщения",
-    "name_parameters_text": "Введите свое имя:"
+    "name_parameters_text": "Введи свое имя:",
+    "tzinfo_parameters_text": "Введи свою временную зону. Например, если ты сейчас в Питере (UTC +3), то надо ввести +3",
+    "tzinfo_error_parameters_text": "Неправильный формат ввода, попробуй еще раз:",
+    "time_parameters_text": "Введи время, в которое ты хочешь получать ежедневное расписание:"
   }
 }
