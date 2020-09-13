@@ -3,13 +3,10 @@ from config import service_file_path, timetable_url
 from time_management import get_week_parity
 
 import logging
-import pprint
 import pygsheets
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
-
-pp = pprint.PrettyPrinter()
 
 weekdays = {
     0: 'monday',
@@ -25,6 +22,12 @@ INTRAMURAL, EXTRAMURAL, BOTH_ATTENDANCE = range(3)
 EVEN, ODD, BOTH_PARITY = 'even', 'odd', 'both'
 subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 subject_template_parity = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
+
+
+def __rm_blanks(subject_row):
+    for a in range(len(subject_row) - 1, -1, -1):
+        if not subject_row[a].isspace() and subject_row[a] != '|':
+            return subject_row[:a + 1]
 
 
 def get_weekday_timetable(weekday: str, attendance, language_code):
@@ -56,7 +59,7 @@ def __put_together(subjects1, subjects2, attendance, template, language_code):
 
 
 def __make_timetable(subjects, template):
-    return '\n'.join(list(map(lambda a: template % a, subjects)))
+    return '\n'.join(list(map(lambda a: __rm_blanks(template % a), subjects)))
 
 
 def get_timetable_by_index(day: int, attendance, language_code):

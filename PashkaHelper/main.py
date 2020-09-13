@@ -74,7 +74,8 @@ if __name__ == '__main__':
 #  make weekday timetable as edit message +
 #  make inline mode
 #  /today for sunday +
-#  time table for each subject
+#  time table for each subject +
 #  make personal settings
 #  empty day support +
+#  rm blank spaces in timetables +
 

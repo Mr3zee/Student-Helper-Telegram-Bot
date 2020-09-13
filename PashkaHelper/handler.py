@@ -107,7 +107,6 @@ def simple_handler(name, hdl_type, need_subject_timetable=False, reply_markup_fu
         if need_subject_timetable:
             subject_type, attendance = get_user_parameters(chat_id, name)
             additional_info = f'\n{get_subject_timetable(subject_type, attendance, language_code)}'
-            print(additional_info)
             main_info = main_info.format(additional_info)
         context.bot.send_message(
             chat_id=chat_id,
