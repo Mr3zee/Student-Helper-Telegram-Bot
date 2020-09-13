@@ -1,5 +1,5 @@
 from telegram import Update, error
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, ConversationHandler
 
 from log import log_handler
 from message import get_text
@@ -7,6 +7,7 @@ from buttons import *
 
 import keyboard
 import user_parameters
+import job
 
 # ConversationHandler's states:
 MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)
@@ -43,7 +44,12 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
 
 def parameters_callback(update: Update, context: CallbackContext):
     data, language_code = manage_callback_query(update)
-    if data in MAIN_SET:
+    if data == EXIT:
+        update.callback_query.edit_message_text(
+            text=get_text('exit_text', language_code),
+        )
+        return ConversationHandler.END
+    elif data in MAIN_SET:
         return __main_callback(update, context, data, language_code)
     elif data in COURSES_SET:
         return __chg_course(update, context, data, language_code)
@@ -91,10 +97,13 @@ def __everyday_msg_callback(update: Update, context: CallbackContext, language_c
     return MAIN_LVL
 
 
-def __get_button_name(data):
+def __get_button_vars(data):
+    first = None
     for a in range(len(data)):
-        if data[a] == '_':
-            return data[:a]
+        if data[a] == '_' and not first:
+            first = a
+        elif data[a] == '_':
+            return data[:first], data[first + 1:a]
 
 
 def __update_course(update: Update, context: CallbackContext, data, language_code):
@@ -104,8 +113,7 @@ def __update_course(update: Update, context: CallbackContext, data, language_cod
         return __chg_parameters_page(update, 'eng', language_code, keyboard.eng1_keyboard)
 
     user_id = update.effective_user.id
-    subject = __get_button_name(data)
-    new_course = data[:-7]
+    subject, new_course = __get_button_vars(data)
     user_parameters.set_user_course(user_id, subject, new_course)
     return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
 
@@ -125,7 +133,7 @@ def __chg_course(update: Update, context: CallbackContext, data, language_code):
 
 def __update_attendance(update: Update, context: CallbackContext, data, language_code):
     user_id = update.effective_user.id
-    new_attendance = __get_button_name(data)
+    new_attendance, _blank = __get_button_vars(data)
     user_parameters.set_user_attendance(user_id, new_attendance)
     return __return_callback(update, context, language_code)
 
@@ -138,10 +146,15 @@ def name(update: Update, context: CallbackContext):
     return parameters(update, context)
 
 
-def __update_everyday_msg(update, context, data, language_code):
+def __update_everyday_msg(update: Update, context: CallbackContext, data, language_code):
     user_id = update.effective_user.id
     if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
-        new_status = __get_button_name(data)
+        if data == ALLOW_MESSAGE:
+            job.set_morning_message(context, update.effective_chat.id, user_id, language_code)
+            new_status = 'allowed'
+        else:
+            job.rm_morning_message(context)
+            new_status = 'forbidden'
         user_parameters.set_user_message_status(user_id, new_status)
         return __everyday_msg_callback(update, context, language_code, f'message status updated: {new_status}')
     elif data == TZINFO:
@@ -150,7 +163,8 @@ def __update_everyday_msg(update, context, data, language_code):
         return __chg_parameters_page(update, 'time', language_code=language_code, ret_lvl=TIME_LVL)
 
 
-def __user_input_chg(update: Update, context: CallbackContext, validation, setter, ERROR_LVL):
+# todo optimize
+def __user_input_chg(update: Update, context: CallbackContext, validation, setter, error_lvl):
     language_code = update.effective_user.language_code
     new_info = update.message.text
     if validation(new_info):
@@ -167,7 +181,7 @@ def __user_input_chg(update: Update, context: CallbackContext, validation, sette
         chat_id=update.effective_chat.id,
         text=get_text('error_parameters_text', language_code),
     )
-    return ERROR_LVL
+    return error_lvl
 
 
 @log_handler
@@ -177,7 +191,7 @@ def tzinfo(update: Update, context: CallbackContext):
         context=context,
         validation=user_parameters.valid_tzinfo,
         setter=user_parameters.set_user_tzinfo,
-        ERROR_LVL=TZINFO_LVL,
+        error_lvl=TZINFO_LVL,
     )
 
 
@@ -188,5 +202,5 @@ def time_message(update: Update, context: CallbackContext):
         context=context,
         validation=user_parameters.valid_time,
         setter=user_parameters.set_user_message_time,
-        ERROR_LVL=TIME_LVL,
+        error_lvl=TIME_LVL,
     )

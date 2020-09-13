@@ -5,48 +5,28 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
 import keyboard
 import buttons
 import user_parameters
+import job
 from parameters_hdl import parameters, parameters_callback, manage_callback_query, name, tzinfo, time_message, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
 from log import log_handler
 from message import get_text
-from time_management import get_weekday, MORNING_MESSAGE_TIME
-from timetable import get_weekday_timetable, get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
+from timetable import get_weekday_timetable, BOTH_ATTENDANCE, get_subject_timetable
 
 handlers = {}
 
 MESSAGE, COMMAND = range(2)
 
 
-def send_morning_message(context: CallbackContext):
-    job = context.job
-    send_today_timetable(
-        context=context,
-        chat_id=job.context[0],
-        language_code=job.context[1]
-    )
-
-
-def set_morning_message(context: CallbackContext, chat_id, language_code):
-    job_name = 'morning_message'
-    if job_name not in context.chat_data:
-        new_job = context.job_queue.run_daily(
-            callback=send_morning_message,
-            time=MORNING_MESSAGE_TIME,
-            days=(0, 1, 2, 3, 4, 5),
-            context=[chat_id, language_code],
-            name=job_name,
-        )
-        context.chat_data[job_name] = new_job
-        return new_job
-
-
 @log_handler
 def start(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
 
-    new_job = set_morning_message(chat_id=chat_id, context=context, language_code=language_code)
+    user_parameters.set_default_user_parameters(user_id)
+
+    job.set_morning_message(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
 
     context.bot.send_message(
         chat_id=chat_id,
@@ -67,7 +47,7 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
         update.callback_query.edit_message_text(
             text=get_weekday_timetable(
                 weekday=data[:-7],
-                attendance=BOTH_ATTENDANCE,
+                attendance=user_parameters.get_user_attendance(update.effective_user.id),
                 language_code=language_code,
             ),
             reply_markup=keyboard.timetable_keyboard(language_code=language_code)
@@ -76,21 +56,9 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
         pass
 
 
-def send_today_timetable(context: CallbackContext, chat_id, language_code):
-    context.bot.send_message(
-        chat_id=chat_id,
-        text=get_timetable_by_index(
-            day=get_weekday(),
-            attendance=BOTH_ATTENDANCE,
-            language_code=language_code,
-        ),
-        reply_markup=keyboard.timetable_keyboard(language_code=language_code),
-    )
-
-
 @log_handler
 def today(update: Update, context: CallbackContext):
-    send_today_timetable(
+    job.send_today_timetable(
         context=context,
         chat_id=update.effective_chat.id,
         language_code=update.effective_user.language_code
@@ -138,7 +106,7 @@ handlers['parameters'] = ConversationHandler(
     ],
     states={
         MAIN_LVL: [
-            CallbackQueryHandler(callback=parameters_callback),
+            CallbackQueryHandler(callback=parameters_callback, pass_chat_data=True, pass_job_queue=True),
         ],
         NAME_LVL: [
             MessageHandler(filters=Filters.all, callback=name),

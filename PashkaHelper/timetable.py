@@ -18,7 +18,7 @@ weekdays = {
     6: 'sunday',
 }
 
-INTRAMURAL, EXTRAMURAL, BOTH_ATTENDANCE = range(3)
+INTRAMURAL, EXTRAMURAL, BOTH_ATTENDANCE = 'offline', 'online', 'both'
 EVEN, ODD, BOTH_PARITY = 'even', 'odd', 'both'
 subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 subject_template_parity = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
@@ -67,7 +67,7 @@ def get_timetable_by_index(day: int, attendance, language_code):
 
 
 def get_subject_timetable(subject_type, attendance, language_code):
-    subjects = SERVER.get_subject(subject_type, attendance)
+    subjects = SERVER.get_subjects(subject_type, attendance)
     if not subjects:
         return ''
 
@@ -113,25 +113,25 @@ class Server:
     }
 
     __subject_name_map = {
-        'matan': {'МатАн (лк)', 'МатАн (пр)'},
-        'eng': {'Английский'},
-        'algo': {'АиСД (лк)', 'АиСД (пр)'},
-        'discra': {'Дискретка (лк)', 'Дискретка (пр)'},
-        'diffur': {'Диффуры (лк)', 'Диффуры (пр)'},
+        'matan_all': {'МатАн (лк)', 'МатАн (пр)'},
+        'eng_all': {'Английский'},
+        'algo_all': {'АиСД (лк)', 'АиСД (пр)'},
+        'discra_all': {'Дискретка (лк)', 'Дискретка (пр)'},
+        'diffur_all': {'Диффуры (лк)', 'Диффуры (пр)'},
         'os_lite': {'OC (лк)'},
         'os_adv': {'ОС-adv (лк)', 'ОС-adv (пр)'},
-        'os': {'ОС-adv (лк)', 'ОС-adv (пр)', 'OC (лк)'},
+        'os_all': {'ОС-adv (лк)', 'ОС-adv (пр)', 'OC (лк)'},
         'sp_android_ios': {'Android / iOS'},
         'sp_web': {'СП - Web (лк)', 'СП - Web (пр)'},
         'sp_cpp': {'C++ (лк)', 'C++ (пр)'},
         'sp_kotlin': {'Kotlin (лк)', 'Kotlin (пр)'},
-        'sp': {'Kotlin (лк)', 'Kotlin (пр)',
-               'C++ (лк)', 'C++ (пр)',
-               'СП - Web (лк)', 'СП - Web (пр)',
-               'Android / iOS',
-               },
-        'history': {'История'},
-        'bjd': {}
+        'sp_all': {'Kotlin (лк)', 'Kotlin (пр)',
+                   'C++ (лк)', 'C++ (пр)',
+                   'СП - Web (лк)', 'СП - Web (пр)',
+                   'Android / iOS',
+                   },
+        'history_all': {'История'},
+        'bjd_all': {}
     }
 
     def __init__(self):
@@ -222,9 +222,10 @@ class Server:
     def __subject_compare(subject_set):
         def inner(row):
             return row[2] in subject_set
+
         return inner
 
-    def get_subject(self, subject_name, attendance):
+    def get_subjects(self, subject_name, attendance):
         subject_filter = Server.__subject_compare(Server.__subject_name_map[subject_name])
         values = self.__get_values_from_table()
         retval = {}

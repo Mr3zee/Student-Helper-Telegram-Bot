@@ -1,47 +1,49 @@
 from datetime import datetime
 
-from timetable import BOTH_ATTENDANCE
+users = {}
+
+
+def set_default_user_parameters(user_id):
+    users[user_id] = {
+        'name': 'unknown',
+        'attendance': 'both',
+        'message_status': 'allowed',
+        'message_time': '7:30',
+        'tzinfo': '+3',
+        'os': 'all',
+        'sp': 'all',
+        'history': 'all',
+        'eng': 'all',
+    }
 
 
 def get_user_course(user_id, sub_name):
-    return sub_name, BOTH_ATTENDANCE
-
-
-user = {
-    'name': 'Сысоев Александр Александрович',
-    'attendance': 'intramural',
-    'message_status': 'Да',
-    'message_time': '7:30',
-    'tzinfo': '+3',
-    'eng': '2-ИТИПКТ-С2/1',
-    'history': 'international',
-    'sp': 'kotlin',
-    'os': 'adv',
-}
+    subject = f'{sub_name}_{users[user_id].get(sub_name, "all")}'
+    return subject, users[user_id]['attendance']
 
 
 def set_user_course(user_id, subject, new_course):
-    user[subject] = new_course
+    users[user_id][subject] = new_course
 
 
 def set_user_attendance(user_id, attendance):
-    user['attendance'] = attendance
+    users[user_id]['attendance'] = attendance
 
 
 def get_user(user_id):
-    return user
+    return users[user_id]
 
 
 def get_user_message_status(user_id):
-    return 'forbidden' if user['message_status'] == 'Нет' else 'allowed'
+    return 'forbidden' if users[user_id]['message_status'] == 'Нет' else 'allowed'
 
 
 def set_user_name(user_id, new_name):
-    user['name'] = new_name
+    users[user_id]['name'] = new_name
 
 
 def set_user_message_status(user_id, status):
-    user['message_status'] = ('Дa' if status == 'allowed' else 'Нет')
+    users[user_id]['message_status'] = ('Дa' if status == 'allowed' else 'Нет')
 
 
 def valid_tzinfo(new_tzinfo: str):
@@ -52,7 +54,7 @@ def valid_tzinfo(new_tzinfo: str):
 
 
 def set_user_tzinfo(user_id, new_tzinfo):
-    user['tzinfo'] = new_tzinfo
+    users[user_id]['tzinfo'] = new_tzinfo
 
 
 def valid_time(new_time: str):
@@ -64,4 +66,12 @@ def valid_time(new_time: str):
 
 
 def set_user_message_time(user_id, new_time):
-    user['message_time'] = new_time.strip()
+    users[user_id]['message_time'] = new_time.strip()
+
+
+def get_user_time(user_id):
+    return datetime.strptime(users[user_id]['message_time'], '%H:%M')
+
+
+def get_user_attendance(user_id):
+    return users[user_id]['attendance']

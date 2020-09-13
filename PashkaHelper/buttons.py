@@ -14,6 +14,7 @@ EVERYDAY_MESSAGE = 'everyday_message_button'
 ATTENDANCE = 'attendance_button'
 COURSES = 'courses_button'
 PARAMETERS_RETURN = 'return_par_button'
+EXIT = 'exit_button'
 
 MAIN_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
 
