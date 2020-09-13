@@ -3,10 +3,13 @@ from config import service_file_path, timetable_url
 from time_management import get_week_parity
 
 import logging
+import pprint
 import pygsheets
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
+
+pp = pprint.PrettyPrinter()
 
 weekdays = {
     0: 'monday',
@@ -38,7 +41,7 @@ def get_weekday_timetable(weekday: str, attendance, language_code):
         happy_text = get_text('happy_text', language_code=language_code)
         return template.format(weekday_text, parity_text, happy_text)
 
-    weekday_timetable = __put_together(subjects1, subjects2, attendance, language_code, subject_template)
+    weekday_timetable = __put_together(subjects1, subjects2, attendance, subject_template, language_code)
     return template.format(weekday_text, parity_text, weekday_timetable)
 
 
@@ -60,11 +63,14 @@ def get_timetable_by_index(day: int, attendance, language_code):
     return get_weekday_timetable(weekdays[day], attendance, language_code)
 
 
-def get_subject_timetable(subject_name, attendance, language_code):
-    subjects = SERVER.get_subject(subject_name, attendance)
+def get_subject_timetable(subject_type, attendance, language_code):
+    subjects = SERVER.get_subject(subject_type, attendance)
+    if not subjects:
+        return ''
+
     template = get_text('subject_timetable_text', language_code=language_code)
 
-    for weekday, [sub1, sub2] in subjects:
+    for weekday, [sub1, sub2] in subjects.items():
         weekday_name = get_text(f'{weekday}_name', language_code=language_code)
         day_template = get_text('subject_day_template_text', language_code=language_code)
         subject_timetable = __put_together(sub1, sub2, attendance, subject_template_parity, language_code)
@@ -111,17 +117,18 @@ class Server:
         'diffur': {'Диффуры (лк)', 'Диффуры (пр)'},
         'os_lite': {'OC (лк)'},
         'os_adv': {'ОС-adv (лк)', 'ОС-adv (пр)'},
-        'os_all': {'ОС-adv (лк)', 'ОС-adv (пр)', 'OC (лк)'},
+        'os': {'ОС-adv (лк)', 'ОС-adv (пр)', 'OC (лк)'},
         'sp_android_ios': {'Android / iOS'},
         'sp_web': {'СП - Web (лк)', 'СП - Web (пр)'},
         'sp_cpp': {'C++ (лк)', 'C++ (пр)'},
         'sp_kotlin': {'Kotlin (лк)', 'Kotlin (пр)'},
-        'sp_all': {'Kotlin (лк)', 'Kotlin (пр)',
-                   'C++ (лк)', 'C++ (пр)',
-                   'СП - Web (лк)', 'СП - Web (пр)',
-                   'Android / iOS',
-                   },
+        'sp': {'Kotlin (лк)', 'Kotlin (пр)',
+               'C++ (лк)', 'C++ (пр)',
+               'СП - Web (лк)', 'СП - Web (пр)',
+               'Android / iOS',
+               },
         'history': {'История'},
+        'bjd': {}
     }
 
     def __init__(self):
@@ -143,13 +150,13 @@ class Server:
         return self.__wks.get_values(self.__top_left, self.__bottom_right)
 
     @staticmethod
-    def __true_filter(subject):
+    def __true_filter(*args, **kwargs):
         return True
 
     @staticmethod
-    def __parse_and_make(values, start_row, end_row, attendance, week_parity=BOTH_PARITY, filter_sub=__true_filter):
-        offline = Server.__parse_table(values, start_row, end_row, attendance)
-        return Server.__make_subject_dict(offline, week_parity, filter_sub)
+    def __parse_and_make(values, start_row, end_row, attendance, week_parity=BOTH_PARITY, filter_sub=None):
+        table = Server.__parse_table(values, start_row, end_row, attendance)
+        return Server.__make_subject_dict(table, week_parity, filter_sub)
 
     def get_timetable(self, weekday, attendance):
         values = self.__get_values_from_table()
@@ -187,13 +194,19 @@ class Server:
         return subjects
 
     @staticmethod
-    def __make_subject_dict(subjects, week_parity=BOTH_PARITY, subject_filter=__true_filter):
+    def __accept_parity(sub_parity, week_parity):
+        return sub_parity == week_parity or sub_parity == BOTH_PARITY or week_parity == BOTH_PARITY
+
+    @staticmethod
+    def __make_subject_dict(subjects, week_parity=BOTH_PARITY, subject_filter=None):
+        if subject_filter is None:
+            subject_filter = Server.__true_filter
         retval = []
         for row in subjects:
             subject_parity = Server.__week_parity_map[row[1]]
-            if (subject_parity == BOTH_PARITY or subject_parity == week_parity) and subject_filter(row):
+            if Server.__accept_parity(subject_parity, week_parity) and subject_filter(row):
                 subject = {
-                    'time': (row[0] if row[0] != '' else ' ' * 10),
+                    'time': row[0],
                     'parity': row[1],
                     'subject': row[2],
                     'teacher': row[3],
@@ -206,7 +219,6 @@ class Server:
     def __subject_compare(subject_set):
         def inner(row):
             return row[2] in subject_set
-
         return inner
 
     def get_subject(self, subject_name, attendance):
