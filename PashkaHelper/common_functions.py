@@ -1,9 +1,14 @@
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, MessageHandler, CommandHandler
+from telegram import Update
 
 import keyboard
 import user_parameters
 from timetable import get_timetable_by_index, BOTH_ATTENDANCE
 from time_management import get_weekday
+from log import log_handler
+from message import get_text
+
+MESSAGE, COMMAND = range(2)
 
 
 def send_today_timetable(context: CallbackContext, chat_id, language_code):
@@ -45,3 +50,33 @@ def rm_morning_message(context: CallbackContext):
     old_job = context.chat_data['job']
     old_job.schedule_removal()
     del context.chat_data['job']
+
+
+def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_lvl=None):
+    @log_handler
+    def inner(update: Update, context: CallbackContext):
+        language_code = update.effective_user.language_code
+        chat_id = update.effective_chat.id
+
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=get_text(f'{hdl_name}_text', language_code),
+            reply_markup=(get_reply_markup(language_code) if get_reply_markup else None),
+        )
+        return ret_lvl
+
+    if hdl_type == COMMAND:
+        ret_handler = CommandHandler(command=hdl_name, callback=inner)
+    elif hdl_type == MESSAGE:
+        ret_handler = MessageHandler(filters=filters, callback=inner)
+    else:
+        raise ValueError('Unsupported hdl type')
+    return ret_handler
+
+
+def manage_callback_query(update: Update):
+    language_code = update.effective_user.language_code
+    query = update.callback_query
+    data = query.data
+    query.answer()
+    return data, language_code

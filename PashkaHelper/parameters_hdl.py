@@ -1,4 +1,4 @@
-from telegram import Update, error
+from telegram import Update
 from telegram.ext import CallbackContext, ConversationHandler
 
 from log import log_handler
@@ -7,7 +7,7 @@ from buttons import *
 
 import keyboard
 import user_parameters
-import job
+import common_functions as cf
 
 # ConversationHandler's states:
 MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)
@@ -25,14 +25,6 @@ def parameters(update: Update, context: CallbackContext):
     return MAIN_LVL
 
 
-def manage_callback_query(update: Update):
-    language_code = update.effective_user.language_code
-    query = update.callback_query
-    data = query.data
-    query.answer()
-    return data, language_code
-
-
 @log_handler
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
     update.callback_query.edit_message_text(
@@ -43,7 +35,7 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
 
 
 def parameters_callback(update: Update, context: CallbackContext):
-    data, language_code = manage_callback_query(update)
+    data, language_code = cf.manage_callback_query(update)
     if data == EXIT:
         update.callback_query.edit_message_text(
             text=get_text('exit_text', language_code),
@@ -139,7 +131,7 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
 
 
 @log_handler
-def name(update: Update, context: CallbackContext):
+def name_parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     new_name = update.message.text
     user_parameters.set_user_name(user_id, new_name)
@@ -150,10 +142,10 @@ def __update_everyday_msg(update: Update, context: CallbackContext, data, langua
     user_id = update.effective_user.id
     if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
         if data == ALLOW_MESSAGE:
-            job.set_morning_message(context, update.effective_chat.id, user_id, language_code)
+            cf.set_morning_message(context, update.effective_chat.id, user_id, language_code)
             new_status = 'allowed'
         else:
-            job.rm_morning_message(context)
+            cf.rm_morning_message(context)
             new_status = 'forbidden'
         user_parameters.set_user_message_status(user_id, new_status)
         return __everyday_msg_callback(update, context, language_code, f'message status updated: {new_status}')
@@ -185,7 +177,7 @@ def __user_input_chg(update: Update, context: CallbackContext, validation, sette
 
 
 @log_handler
-def tzinfo(update: Update, context: CallbackContext):
+def tzinfo_parameters(update: Update, context: CallbackContext):
     return __user_input_chg(
         update=update,
         context=context,
@@ -196,7 +188,7 @@ def tzinfo(update: Update, context: CallbackContext):
 
 
 @log_handler
-def time_message(update: Update, context: CallbackContext):
+def time_message_parameters(update: Update, context: CallbackContext):
     return __user_input_chg(
         update=update,
         context=context,

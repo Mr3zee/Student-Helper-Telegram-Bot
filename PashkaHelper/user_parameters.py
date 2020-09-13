@@ -4,6 +4,8 @@ users = {}
 
 
 def set_default_user_parameters(user_id):
+    if user_id in users:
+        return
     users[user_id] = {
         'name': 'unknown',
         'attendance': 'both',
