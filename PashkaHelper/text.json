@@ -36,15 +36,6 @@
     "subject_timetable_text": "<b>Расписание по дням:</b>\n\n",
     "subject_day_template_text": "<em>{}:</em>\n{}\n\n",
     "parameters_text": "<b>Личный Кабинет</b>\n\nИмя: <em>%(name)s</em>\nТип посещения: <em>%(attendance)s</em>\nЕжедневное расписание: <em>%(message_status)s</em>\nВремя отправки: <em>%(message_time)s</em>\nВременная зона: <em>UTC %(tzinfo)s</em>\nГруппа английского: <em>%(eng)s</em>\nКурс по истории: <em>%(history)s</em>\nКурс современного программирования: <em>%(sp)s</em>\nКурс операционных систем: <em>%(os)s</em>\n\nИзменить настройки аккаунта:",
-    "name_par_text": "Пожалуйста, введи свое имя:",
-    "attendance_par_text": "Пожалуйста, вебери тип своей посещаемости",
-    "everyday_message_par_text": "Нужно ли отправлять ежедневное раписание?",
-    "message_time_par_text": "В какое время нужно отправлять сообщение?",
-    "tzinfo_par_text": "Введи свою временную зону. Например, если ты сейчас в Питере, надо ввести <em>+3</em>:",
-    "os_type_par_text": "Выбери свой курс по операционным системам:",
-    "sp_type_par_text": "Выбери свой курс по современному программированию:",
-    "eng_group_par_text": "Выбери свою группу по английскому:",
-    "history_group_par_text": "Выбери свой курс по истории:",
     "name_button": "Имя",
     "everyday_message_button": "Ежедневное расписание",
     "courses_button": "Мои курсы",
@@ -54,7 +45,7 @@
     "eng_group_button": "Английский",
     "history_group_button": "История",
     "return_par_button": "<- Назад",
-    "courses_text": "Изменить выбор курса:",
+    "courses_parameters_text": "Изменить выбор курса:",
     "everyday_message_text": "Изменить настройки ежедневной рассылки:",
     "return_courses_button": "К выбору курса",
     "os_adv_button": "Системный курс",
@@ -96,6 +87,7 @@
     "allowed_message_button": "Разрешить отправку",
     "forbidden_message_button": "Запретить отправку",
     "tz_info_button": "Временная зона",
-    "message_time_button": "Время отправки сообщения"
+    "message_time_button": "Время отправки сообщения",
+    "name_parameters_text": "Введите свое имя:"
   }
 }

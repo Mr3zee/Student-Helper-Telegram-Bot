@@ -24,12 +24,10 @@ user = {
 
 def set_user_course(user_id, subject, new_course):
     user[subject] = new_course
-    pass
 
 
 def set_user_attendance(user_id, attendance):
     user['attendance'] = attendance
-    pass
 
 
 def get_user(user_id):
@@ -38,3 +36,7 @@ def get_user(user_id):
 
 def get_user_message_status(user_id):
     return 'forbidden' if user['morning_message'] == 'Нет' else 'allowed'
+
+
+def set_user_name(user_id, new_name):
+    user['name'] = new_name
