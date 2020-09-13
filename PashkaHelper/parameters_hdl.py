@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, error
 from telegram.ext import CallbackContext
 
 from message import get_text
@@ -18,15 +18,18 @@ def parameters_callback(update: Update, context: CallbackContext, data, language
     elif data == NAME:
         pass
     elif data == ATTENDANCE:
-        pass
+        return __chg_parameters_page(update, 'attendance', keyboard.attendance_keyboard, language_code)
 
 
 def __return_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
-    update.callback_query.edit_message_text(
-        text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
-        reply_markup=keyboard.parameters_keyboard(language_code),
-    )
+    try:
+        update.callback_query.edit_message_text(
+            text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
+            reply_markup=keyboard.parameters_keyboard(language_code),
+        )
+    except error.BadRequest:
+        pass
 
 
 def __everyday_msg_callback(update: Update, context: CallbackContext, language_code):
@@ -52,7 +55,7 @@ def __chg_page_eng(update: Update, eng_keyboard, language_code):
     )
 
 
-def __get_subject(data):
+def __get_button_name(data):
     for a in range(len(data)):
         if data[a] == '_':
             return data[:a]
@@ -65,27 +68,34 @@ def update_course(update: Update, context: CallbackContext, data, language_code)
         return __chg_page_eng(update, keyboard.eng1_keyboard, language_code)
 
     user_id = update.effective_user.id
-    subject = __get_subject(data)
+    subject = __get_button_name(data)
     new_course = data[:-7]
     user_parameters.set_course(user_id, subject, new_course)
     return __courses_callback(update, context, language_code)
 
 
-def __chg_course_page(update: Update, course_name, course_keyboard, language_code):
+def __chg_parameters_page(update: Update, course_name, parameters_keyboard, language_code):
     update.callback_query.edit_message_text(
-        text=get_text(f'{course_name}_course_text', language_code),
-        reply_markup=course_keyboard(language_code),
+        text=get_text(f'{course_name}_parameters_text', language_code),
+        reply_markup=parameters_keyboard(language_code),
     )
 
 
 def chg_course(update: Update, context: CallbackContext, data, language_code):
     if data == OS_TYPE:
-        return __chg_course_page(update, 'os', keyboard.os_keyboard, language_code)
+        return __chg_parameters_page(update, 'os', keyboard.os_keyboard, language_code)
     elif data == SP_TYPE:
-        return __chg_course_page(update, 'sp', keyboard.sp_keyboard, language_code)
+        return __chg_parameters_page(update, 'sp', keyboard.sp_keyboard, language_code)
     elif data == HISTORY_GROUP:
-        return __chg_course_page(update, 'history', keyboard.history_keyboard, language_code)
+        return __chg_parameters_page(update, 'history', keyboard.history_keyboard, language_code)
     elif data == ENG_GROUP:
-        return __chg_course_page(update, 'eng', keyboard.eng1_keyboard, language_code)
+        return __chg_parameters_page(update, 'eng', keyboard.eng1_keyboard, language_code)
     elif data == COURSES_RETURN:
         return __courses_callback(update, context, language_code)
+
+
+def update_attendance(update: Update, context: CallbackContext, data, language_code):
+    user_id = update.effective_user.id
+    new_attendance = __get_button_name(data)
+    user_parameters.set_attendance(user_id, new_attendance)
+    return __return_callback(update, context, language_code)

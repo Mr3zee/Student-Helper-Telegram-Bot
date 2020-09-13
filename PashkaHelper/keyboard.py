@@ -173,3 +173,17 @@ def history_keyboard(language_code):
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def attendance_keyboard(language_code):
+    keyboard = [
+        [
+            make_button(ATTENDANCE_ONLINE, language_code),
+            make_button(ATTENDANCE_OFFLINE, language_code),
+            make_button(ATTENDANCE_BOTH, language_code),
+        ],
+        [
+            make_button(PARAMETERS_RETURN, language_code),
+        ],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

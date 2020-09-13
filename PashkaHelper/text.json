@@ -89,9 +89,13 @@
     "history_culture_button": "Западноевропейская и русская культуры",
     "history_reforms_button": "Реформы и реформаторы",
     "history_statehood_button": "Российская государственность",
-    "eng_course_text": "Выбери свою группу английского:",
-    "os_course_text": "Выбери свой курс операционных систем",
-    "sp_course_text": "Выбери свой курс современного программирования",
-    "history_course_text": "Выбери свой курс истории"
+    "eng_parameters_text": "Выбери свою группу английского:",
+    "os_parameters_text": "Выбери свой курс операционных систем",
+    "sp_parameters_text": "Выбери свой курс современного программирования",
+    "history_parameters_text": "Выбери свой курс истории",
+    "attendance_parameters_text": "Выбери свой способ посещения занятий:",
+    "online_attendance_button": "Заочно",
+    "offline_attendance_button": "Очно",
+    "both_attendance_button": "Все сразу"
   }
 }

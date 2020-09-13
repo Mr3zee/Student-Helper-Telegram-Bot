@@ -17,6 +17,13 @@ PARAMETERS_RETURN = 'return_par_button'
 
 PARAMETERS_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
 
+# attendance buttons
+ATTENDANCE_ONLINE = 'online_attendance_button'
+ATTENDANCE_OFFLINE = 'offline_attendance_button'
+ATTENDANCE_BOTH = 'both_attendance_button'
+
+ATTENDANCE_SET = {ATTENDANCE_BOTH, ATTENDANCE_OFFLINE, ATTENDANCE_ONLINE}
+
 # everyday message buttons
 ALLOW_MESSAGE = 'allow_message_button'
 FORBID_MESSAGE = 'forbid_message_button'

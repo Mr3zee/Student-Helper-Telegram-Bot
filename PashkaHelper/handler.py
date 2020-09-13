@@ -66,6 +66,8 @@ def callback(update: Update, context: CallbackContext):
         return parameters_hdl.chg_course(update, context, data, language_code)
     elif buttons.is_course_update(data):
         return parameters_hdl.update_course(update, context, data, language_code)
+    elif data in buttons.ATTENDANCE_SET:
+        return parameters_hdl.update_attendance(update, context, data, language_code)
 
 
 @log_handler

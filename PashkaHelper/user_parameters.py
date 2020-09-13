@@ -23,8 +23,12 @@ user = {
 
 
 def set_course(user_id, subject, new_course):
-    print(subject, new_course)
     user[subject] = new_course
+    pass
+
+
+def set_attendance(user_id, attendance):
+    user['attendance'] = attendance
     pass
 
 
