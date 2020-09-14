@@ -69,7 +69,7 @@
     "subject_timetable_text": "<b>Расписание по дням:</b>\n\n",
     "subject_day_template_text": "<u><em>{}:</em></u>\n{}\n\n",
 
-    "parameters_text": "<b>Личный Кабинет</b>\n\nИмя: <em>%(name)s</em>\nТип посещения: <em>%(attendance)s</em>\nЕжедневное расписание: <em>%(message_status)s</em>\nВремя отправки: <em>%(message_time)s</em>\nВременная зона: <em>UTC %(tzinfo)s</em>\nГруппа английского: <em>%(eng)s</em>\nКурс по истории: <em>%(history)s</em>\nКурс современного программирования: <em>%(sp)s</em>\nКурс операционных систем: <em>%(os)s</em>\n\nИзменить настройки аккаунта:",
+    "parameters_text": "<b>Личный Кабинет</b>\n\nИмя: <em>%(name)s</em>\nТип посещения: <em>%(attendance)s</em>\nЕжедневное расписание: <em>%(message_status)s</em>\nВремя отправки: <em>%(message_time)s</em>\nВременная зона: <em>UTC %(utcoffset)s</em>\nГруппа английского: <em>%(eng)s</em>\nКурс по истории: <em>%(history)s</em>\nКурс современного программирования: <em>%(sp)s</em>\nКурс операционных систем: <em>%(os)s</em>\n\nИзменить настройки аккаунта:",
     "name_button": "Имя",
     "everyday_message_button": "Ежедневное расписание",
     "courses_button": "Мои курсы",

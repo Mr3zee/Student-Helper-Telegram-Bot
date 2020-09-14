@@ -82,7 +82,7 @@ if __name__ == '__main__':
 #  Conversation Handler trash support +
 #  fix buttons copypaste
 #  make messages pretty
-#  fix timezone issue
+#  fix timezone issue +
 #  fix parameters page text
 #  make database
 

@@ -1,5 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from subject import subjects
+
+from time_management import timezone_converter
 
 users = {}
 
@@ -12,7 +14,7 @@ def set_default_user_parameters(user_id):
         'attendance': 'both',
         'message_status': 'forbidden',
         'message_time': '19:12',
-        'tzinfo': '+3',
+        'utcoffset': '+3',
         'os': None,
         'sp': None,
         'history': None,
@@ -60,7 +62,7 @@ def valid_tzinfo(new_tzinfo: str):
 
 
 def set_user_tzinfo(user_id, new_tzinfo):
-    users[user_id]['tzinfo'] = new_tzinfo
+    users[user_id]['utcoffset'] = new_tzinfo
 
 
 def valid_time(new_time: str):
@@ -76,7 +78,10 @@ def set_user_message_time(user_id, new_time):
 
 
 def get_user_time(user_id):
-    return datetime.strptime(users[user_id]['message_time'], '%H:%M').time()
+    return timezone_converter(
+        input_date=datetime.strptime(users[user_id]['message_time'], '%H:%M'),
+        utcoffset=get_user_utcoffset(user_id)
+    ).time()
 
 
 def get_user_attendance(user_id):
@@ -88,3 +93,7 @@ def get_user_subject_names(user_id):
     for subject in subjects:
         retval = retval.union(subjects[subject].get_all_timetable_names(get_user_subtype(user_id, subject)))
     return retval
+
+
+def get_user_utcoffset(user_id):
+    return timedelta(hours=int(users[user_id]['utcoffset']))

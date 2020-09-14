@@ -4,7 +4,7 @@ from telegram import Update
 import keyboard
 import user_parameters
 from timetable import get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
-from time_management import get_weekday, MORNING_MESSAGE_TIME
+from time_management import get_weekday
 from log import log_handler
 from message import get_text
 
@@ -20,10 +20,11 @@ logger = logging.getLogger(__name__)
 
 def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
                          disable_notification=False):
+    utcoffset = user_parameters.get_user_utcoffset(user_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=get_timetable_by_index(
-            day=get_weekday(),
+            day=get_weekday(utcoffset),
             subject_names=user_parameters.get_user_subject_names(user_id),
             attendance=BOTH_ATTENDANCE,
             language_code=language_code,
