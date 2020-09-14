@@ -42,10 +42,12 @@ def callback(update: Update, context: CallbackContext):
 
 @log_handler
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
+    subject_names = user_parameters.get_user_subject_names(user_id=update.effective_user.id)
     try:
         update.callback_query.edit_message_text(
             text=get_weekday_timetable(
                 weekday=data[:-7],
+                subject_names=subject_names,
                 attendance=user_parameters.get_user_attendance(update.effective_user.id),
                 language_code=language_code,
             ),

@@ -1,4 +1,4 @@
-from typing import Set, Dict
+from typing import Dict
 
 
 class Subject:

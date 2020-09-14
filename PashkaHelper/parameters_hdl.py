@@ -27,11 +27,13 @@ def parameters(update: Update, context: CallbackContext):
 
 @log_handler
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
-    update.callback_query.edit_message_text(
-        text=get_text(f'{page_name}_parameters_text', language_code),
-        reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
-    )
-    return ret_lvl
+    try:
+        update.callback_query.edit_message_text(
+            text=get_text(f'{page_name}_parameters_text', language_code),
+            reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
+        )
+    finally:
+        return ret_lvl
 
 
 def parameters_callback(update: Update, context: CallbackContext):

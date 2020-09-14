@@ -1,4 +1,5 @@
 from datetime import datetime
+from subject import subjects
 
 users = {}
 
@@ -80,3 +81,10 @@ def get_user_time(user_id):
 
 def get_user_attendance(user_id):
     return users[user_id]['attendance']
+
+
+def get_user_subject_names(user_id):
+    retval = set()
+    for subject in subjects:
+        retval = retval.union(subjects[subject].get_all_timetable_names(get_user_subtype(user_id, subject)))
+    return retval

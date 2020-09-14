@@ -80,10 +80,11 @@ if __name__ == '__main__':
 #  make inline mode
 #  /today for sunday +
 #  time table for each subject +
-#  make personal settings (weekday timetable issues)
+#  make personal settings (weekday timetable issues) +
 #  empty day support +
 #  rm blank spaces in timetables +
 #  make mg messages silent and add greeting
 #  Conversation Handler trash support
-#  add 'all' buttons
+#  fix buttons copypaste
+#  make messages pretty
 
