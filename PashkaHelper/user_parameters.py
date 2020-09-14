@@ -12,8 +12,8 @@ def set_default_user_parameters(user_id):
     users[user_id] = {
         'name': 'unknown',
         'attendance': 'both',
-        'message_status': 'forbidden',
-        'message_time': '19:12',
+        'message_status': 'allowed',
+        'message_time': '7:30',
         'utcoffset': '+3',
         'os': None,
         'sp': None,
@@ -31,6 +31,8 @@ def get_user_subtype(user_id, sub_name):
 
 
 def set_user_course(user_id, subject, new_course):
+    if new_course == 'all':
+        new_course = None
     users[user_id][subject] = new_course
 
 
@@ -43,7 +45,7 @@ def get_user(user_id):
 
 
 def get_user_message_status(user_id):
-    return 'forbidden' if users[user_id]['message_status'] == 'Нет' else 'allowed'
+    return users[user_id]['message_status']
 
 
 def set_user_name(user_id, new_name):
@@ -51,7 +53,7 @@ def set_user_name(user_id, new_name):
 
 
 def set_user_message_status(user_id, status):
-    users[user_id]['message_status'] = ('Дa' if status == 'allowed' else 'Нет')
+    users[user_id]['message_status'] = status
 
 
 def valid_tzinfo(new_tzinfo: str):

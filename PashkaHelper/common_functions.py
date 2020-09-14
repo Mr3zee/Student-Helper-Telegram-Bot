@@ -63,14 +63,16 @@ def set_morning_message(context: CallbackContext, chat_id, user_id, language_cod
             context=[chat_id, user_id, language_code],
             name=job_name,
         )
+        print(user_parameters.get_user_time(user_id))
         context.chat_data[job_name] = new_job
         return new_job
 
 
 def rm_morning_message(context: CallbackContext):
-    old_job = context.chat_data['job']
-    old_job.schedule_removal()
-    del context.chat_data['job']
+    if 'job' in context.chat_data:
+        old_job = context.chat_data['job']
+        old_job.schedule_removal()
+        del context.chat_data['job']
 
 
 def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_lvl=None):

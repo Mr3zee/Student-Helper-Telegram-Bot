@@ -116,8 +116,6 @@ class Server:
         'нч': 'both',
     }
 
-    # todo fix this shit
-
     def __init__(self):
         logger.info('Starting Server...')
         if not Server.__instance:

@@ -10,10 +10,10 @@ WEEKDAYS_SET = {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY}
 
 # parameters buttons
 NAME = 'name_button'
-EVERYDAY_MESSAGE = 'everyday_message_button'
+EVERYDAY_MESSAGE = 'mailing_parameters_button'
 ATTENDANCE = 'attendance_button'
-COURSES = 'courses_button'
-PARAMETERS_RETURN = 'return_par_button'
+COURSES = 'courses_parameters_button'
+PARAMETERS_RETURN = 'return_parameters_button'
 EXIT_PARAMETERS = 'exit_parameters_button'
 
 MAIN_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
@@ -26,8 +26,8 @@ ATTENDANCE_BOTH = 'both_attendance_button'
 ATTENDANCE_SET = {ATTENDANCE_BOTH, ATTENDANCE_OFFLINE, ATTENDANCE_ONLINE}
 
 # everyday message buttons
-ALLOW_MESSAGE = 'allowed_message_button'
-FORBID_MESSAGE = 'forbidden_message_button'
+ALLOW_MESSAGE = 'allowed_mailing_button'
+FORBID_MESSAGE = 'forbidden_mailing_button'
 TZINFO = 'tz_info_button'
 MESSAGE_TIME = 'message_time_button'
 
@@ -45,8 +45,9 @@ COURSES_SET = {OS_TYPE, SP_TYPE, HISTORY_GROUP, ENG_GROUP, COURSES_RETURN}
 # os buttons
 OS_ADV = 'os_adv_button'
 OS_LITE = 'os_lite_button'
+OS_ALL = 'os_all_button'
 
-OS_SET = {OS_ADV, OS_LITE}
+OS_SET = {OS_ADV, OS_LITE, OS_ALL}
 
 # sp buttons
 SP_KOTLIN = 'sp_kotlin_button'
@@ -54,8 +55,9 @@ SP_IOS = 'sp_ios_button'
 SP_ANDROID = 'sp_android_button'
 SP_WEB = 'sp_web_button'
 SP_CPP = 'sp_cpp_button'
+SP_ALL = 'sp_all_button'
 
-SP_SET = {SP_CPP, SP_IOS, SP_WEB, SP_KOTLIN, SP_ANDROID}
+SP_SET = {SP_CPP, SP_IOS, SP_WEB, SP_KOTLIN, SP_ANDROID, SP_ALL}
 
 # eng buttons
 ENG_C2_1 = 'eng_c2_1_button'
@@ -74,11 +76,12 @@ ENG_B11_2 = 'eng_b11_2_button'
 ENG_B12_1 = 'eng_b12_1_button'
 ENG_B12_2 = 'eng_b12_2_button'
 
+ENG_ALL = 'eng_all_button'
 ENG_NEXT = 'eng_next_button'
 ENG_PREV = 'eng_prev_button'
 
 ENG_SET = {ENG_C2_1, ENG_C2_3, ENG_C1_1, ENG_C1_2, ENG_B2_1, ENG_B2_2, ENG_B2_3, ENG_C2_2, ENG_B11_1, ENG_B11_2,
-           ENG_B12_1, ENG_B12_2, ENG_NEXT, ENG_PREV}
+           ENG_B12_1, ENG_B12_2, ENG_ALL, ENG_NEXT, ENG_PREV}
 
 # history buttons
 HISTORY_INTERNATIONAL = 'history_international_button'
@@ -87,9 +90,10 @@ HISTORY_EU_PROBLEMS = 'history_eu_problems_button'
 HISTORY_CULTURE = 'history_culture_button'
 HISTORY_REFORMS = 'history_reforms_button'
 HISTORY_STATEHOOD = 'history_statehood_button'
+HISTORY_ALL = 'history_all_button'
 
 HISTORY_SET = {HISTORY_CULTURE, HISTORY_EU_PROBLEMS, HISTORY_INTERNATIONAL, HISTORY_REFORMS, HISTORY_SCIENCE,
-               HISTORY_STATEHOOD}
+               HISTORY_STATEHOOD, HISTORY_ALL}
 
 
 def is_course_update(button):

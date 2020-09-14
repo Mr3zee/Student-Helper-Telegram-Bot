@@ -27,9 +27,10 @@ def parameters(update: Update, context: CallbackContext):
 
 @log_handler
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
+    user_id = update.effective_user.id
     try:
         update.callback_query.edit_message_text(
-            text=get_text(f'{page_name}_parameters_text', language_code),
+            text=get_text(f'{page_name}_parameters_text', language_code) % user_parameters.get_user(user_id),
             reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
         )
     finally:
@@ -59,7 +60,7 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
     if data == PARAMETERS_RETURN:
         return __return_callback(update, context, language_code)
     elif data == EVERYDAY_MESSAGE:
-        return __everyday_msg_callback(update, context, language_code)
+        return __mailing_callback(update, context, language_code)
     elif data == COURSES:
         return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
     elif data == NAME:
@@ -81,12 +82,12 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
 
 
 @log_handler
-def __everyday_msg_callback(update: Update, context: CallbackContext, language_code, edited=''):
+def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     current_status = user_parameters.get_user_message_status(user_id)
     update.callback_query.edit_message_text(
-        text=get_text('everyday_message_text', language_code).format(edited),
-        reply_markup=keyboard.everyday_message_keyboard(current_status, language_code),
+        text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id),
+        reply_markup=keyboard.mailing_keyboard(current_status, language_code),
     )
     return MAIN_LVL
 
@@ -127,7 +128,7 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
     user_id = update.effective_user.id
     new_attendance, _blank = __get_button_vars(data)
     user_parameters.set_user_attendance(user_id, new_attendance)
-    return __return_callback(update, context, language_code)
+    return __chg_parameters_page(update, 'attendance', language_code, keyboard.attendance_keyboard)
 
 
 @log_handler
@@ -148,7 +149,7 @@ def __update_everyday_msg(update: Update, context: CallbackContext, data, langua
             cf.rm_morning_message(context)
             new_status = 'forbidden'
         user_parameters.set_user_message_status(user_id, new_status)
-        return __everyday_msg_callback(update, context, language_code, f'message status updated: {new_status}')
+        return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
         return __chg_parameters_page(update, 'tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
     elif data == MESSAGE_TIME:
@@ -167,8 +168,8 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
         current_status = user_parameters.get_user_message_status(user_id)
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=get_text('everyday_message_text', language_code).format('tzinfo updated'),
-            reply_markup=keyboard.everyday_message_keyboard(current_status, language_code),
+            text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id),
+            reply_markup=keyboard.mailing_keyboard(current_status, language_code),
         )
         return MAIN_LVL
     context.bot.send_message(
