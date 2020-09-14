@@ -61,8 +61,9 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
 def today(update: Update, context: CallbackContext):
     cf.send_today_timetable(
         context=context,
+        user_id=update.effective_user.id,
         chat_id=update.effective_chat.id,
-        language_code=update.effective_user.language_code
+        language_code=update.effective_user.language_code,
     )
 
 

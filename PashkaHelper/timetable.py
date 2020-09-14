@@ -66,8 +66,8 @@ def __make_timetable(subjects_dict, template):
     return '\n'.join(list(map(lambda a: __rm_blanks(template % a), subjects_dict)))
 
 
-def get_timetable_by_index(day: int, attendance, language_code):
-    return get_weekday_timetable(weekdays[day], attendance, language_code)
+def get_timetable_by_index(day: int, subject_names, attendance, language_code):
+    return get_weekday_timetable(weekdays[day], subject_names, attendance, language_code)
 
 
 def get_subject_timetable(sub_name, subtype, attendance, language_code):
