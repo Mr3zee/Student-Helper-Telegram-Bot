@@ -78,8 +78,9 @@ if __name__ == '__main__':
 #  make personal settings (weekday timetable issues) +
 #  empty day support +
 #  rm blank spaces in timetables +
-#  make mg messages silent and add greeting
+#  make mg messages silent and add greeting +
 #  Conversation Handler trash support
 #  fix buttons copypaste
 #  make messages pretty
+#  fix timezone issue
 

@@ -11,7 +11,7 @@ def set_default_user_parameters(user_id):
         'name': 'unknown',
         'attendance': 'both',
         'message_status': 'forbidden',
-        'message_time': '7:30',
+        'message_time': '19:12',
         'tzinfo': '+3',
         'os': None,
         'sp': None,

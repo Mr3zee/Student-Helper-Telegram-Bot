@@ -156,12 +156,14 @@ def __update_everyday_msg(update: Update, context: CallbackContext, data, langua
 
 
 # todo optimize
-def __user_input_chg(update: Update, context: CallbackContext, validation, setter, error_lvl):
+def __user_time_input_chg(update: Update, context: CallbackContext, validation, setter, error_lvl):
     language_code = update.effective_user.language_code
     new_info = update.message.text
     if validation(new_info):
         user_id = update.effective_user.id
         setter(user_id, new_info)
+        cf.rm_morning_message(context)
+        cf.set_morning_message(context, update.effective_chat.id, user_id, language_code)
         current_status = user_parameters.get_user_message_status(user_id)
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -178,7 +180,7 @@ def __user_input_chg(update: Update, context: CallbackContext, validation, sette
 
 @log_handler
 def tzinfo_parameters(update: Update, context: CallbackContext):
-    return __user_input_chg(
+    return __user_time_input_chg(
         update=update,
         context=context,
         validation=user_parameters.valid_tzinfo,
@@ -189,7 +191,7 @@ def tzinfo_parameters(update: Update, context: CallbackContext):
 
 @log_handler
 def time_message_parameters(update: Update, context: CallbackContext):
-    return __user_input_chg(
+    return __user_time_input_chg(
         update=update,
         context=context,
         validation=user_parameters.valid_time,

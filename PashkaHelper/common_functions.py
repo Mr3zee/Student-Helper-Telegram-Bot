@@ -4,7 +4,7 @@ from telegram import Update
 import keyboard
 import user_parameters
 from timetable import get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
-from time_management import get_weekday
+from time_management import get_weekday, MORNING_MESSAGE_TIME
 from log import log_handler
 from message import get_text
 
@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(leveln
 logger = logging.getLogger(__name__)
 
 
-def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code):
+def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
+                         disable_notification=False):
     context.bot.send_message(
         chat_id=chat_id,
         text=get_timetable_by_index(
@@ -28,16 +29,26 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
             language_code=language_code,
         ),
         reply_markup=keyboard.timetable_keyboard(language_code=language_code),
+        disable_notification=disable_notification,
     )
 
 
 def send_morning_message(context: CallbackContext):
     job = context.job
+    chat_id = job.context[0]
+    user_id = job.context[1]
+    language_code = job.context[2]
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=get_text('everyday_greeting_text', language_code),
+        disable_notification=True,
+    )
     send_today_timetable(
         context=context,
-        chat_id=job.context[0],
-        user_id=job.context[1],
-        language_code=job.context[2]
+        chat_id=chat_id,
+        user_id=user_id,
+        language_code=language_code,
+        disable_notification=True,
     )
 
 

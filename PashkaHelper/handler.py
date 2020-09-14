@@ -86,10 +86,11 @@ handlers['parameters'] = ConversationHandler(
             MessageHandler(filters=Filters.all, callback=name_parameters),
         ],
         TIME_LVL: [
-            MessageHandler(filters=Filters.all, callback=time_message_parameters),
+            MessageHandler(filters=Filters.all, callback=time_message_parameters, pass_chat_data=True,
+                           pass_job_queue=True),
         ],
         TZINFO_LVL: [
-            MessageHandler(filters=Filters.all, callback=tzinfo_parameters),
+            MessageHandler(filters=Filters.all, callback=tzinfo_parameters, pass_chat_data=True, pass_job_queue=True),
         ],
     },
     fallbacks=[],
