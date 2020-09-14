@@ -33,7 +33,7 @@ def parameters_keyboard(language_code):
             make_button(COURSES, language_code),
         ],
         [
-            make_button(EXIT, language_code),
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(EVERYDAY_MESSAGE, language_code),
         ],
     ]

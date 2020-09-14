@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import CallbackContext, ConversationHandler
+from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, Filters, CommandHandler
 
 from log import log_handler
 from message import get_text
@@ -38,9 +38,9 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
 
 def parameters_callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
-    if data == EXIT:
+    if data == EXIT_PARAMETERS:
         update.callback_query.edit_message_text(
-            text=get_text('exit_text', language_code),
+            text=get_text('exit_parameters_text', language_code),
         )
         return ConversationHandler.END
     elif data in MAIN_SET:
@@ -198,3 +198,28 @@ def time_message_parameters(update: Update, context: CallbackContext):
         setter=user_parameters.set_user_message_time,
         error_lvl=TIME_LVL,
     )
+
+
+def parameters_error(name):
+    @log_handler
+    def error(update: Update, context: CallbackContext):
+        language_code = update.effective_user.language_code
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=get_text(f'{name}_parameters_error_text', language_code),
+        )
+        return
+    return MessageHandler(callback=error, filters=Filters.all)
+
+
+@log_handler
+def exit_parameters(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('exit_parameters_text', language_code),
+    )
+    return ConversationHandler.END
+
+
+exit_parameters_hdl = CommandHandler(command='exit', callback=exit_parameters)

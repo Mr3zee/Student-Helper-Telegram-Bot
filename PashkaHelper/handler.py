@@ -6,8 +6,8 @@ import keyboard
 import buttons
 import user_parameters
 import common_functions as cf
-from parameters_hdl import parameters, parameters_callback, \
-    name_parameters, tzinfo_parameters, time_message_parameters, \
+from parameters_hdl import parameters, parameters_callback, parameters_error, \
+    name_parameters, tzinfo_parameters, time_message_parameters, exit_parameters_hdl, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
 from log import log_handler
@@ -67,13 +67,6 @@ def today(update: Update, context: CallbackContext):
     )
 
 
-handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
-
-handlers['help'] = cf.simple_handler('help', cf.COMMAND)
-handlers['timetable'] = cf.simple_handler('timetable', cf.COMMAND, get_reply_markup=keyboard.timetable_keyboard)
-
-handlers['today'] = CommandHandler(command='today', callback=today)
-
 handlers['parameters'] = ConversationHandler(
     entry_points=[
         CommandHandler(command='parameters', callback=parameters)
@@ -81,20 +74,33 @@ handlers['parameters'] = ConversationHandler(
     states={
         MAIN_LVL: [
             CallbackQueryHandler(callback=parameters_callback, pass_chat_data=True, pass_job_queue=True),
+            exit_parameters_hdl,
+            parameters_error('main'),
         ],
         NAME_LVL: [
+            exit_parameters_hdl,
             MessageHandler(filters=Filters.all, callback=name_parameters),
         ],
         TIME_LVL: [
+            exit_parameters_hdl,
             MessageHandler(filters=Filters.all, callback=time_message_parameters, pass_chat_data=True,
                            pass_job_queue=True),
         ],
         TZINFO_LVL: [
+            exit_parameters_hdl,
             MessageHandler(filters=Filters.all, callback=tzinfo_parameters, pass_chat_data=True, pass_job_queue=True),
+            parameters_error('tzinfo'),
         ],
     },
     fallbacks=[],
 )
+
+handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
+
+handlers['help'] = cf.simple_handler('help', cf.COMMAND)
+handlers['timetable'] = cf.simple_handler('timetable', cf.COMMAND, get_reply_markup=keyboard.timetable_keyboard)
+
+handlers['today'] = CommandHandler(command='today', callback=today)
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
