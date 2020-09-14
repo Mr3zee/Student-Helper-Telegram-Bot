@@ -9,19 +9,22 @@ def set_default_user_parameters(user_id):
     users[user_id] = {
         'name': 'unknown',
         'attendance': 'both',
-        'message_status': 'allowed',
+        'message_status': 'forbidden',
         'message_time': '7:30',
         'tzinfo': '+3',
-        'os': 'all',
-        'sp': 'all',
-        'history': 'all',
-        'eng': 'all',
+        'os': None,
+        'sp': None,
+        'history': None,
+        'eng': None,
     }
 
 
 def get_user_course(user_id, sub_name):
-    subject = f'{sub_name}_{users[user_id].get(sub_name, "all")}'
-    return subject, users[user_id]['attendance']
+    return get_user_subtype(user_id, sub_name), users[user_id]['attendance']
+
+
+def get_user_subtype(user_id, sub_name):
+    return users[user_id].get(sub_name)
 
 
 def set_user_course(user_id, subject, new_course):
@@ -72,7 +75,7 @@ def set_user_message_time(user_id, new_time):
 
 
 def get_user_time(user_id):
-    return datetime.strptime(users[user_id]['message_time'], '%H:%M')
+    return datetime.strptime(users[user_id]['message_time'], '%H:%M').time()
 
 
 def get_user_attendance(user_id):

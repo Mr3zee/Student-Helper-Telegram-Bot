@@ -1,3 +1,4 @@
+from subject import subjects
 from message import get_text
 from config import service_file_path, timetable_url
 from time_management import get_week_parity
@@ -58,22 +59,22 @@ def __put_together(subjects1, subjects2, attendance, template, language_code):
     return timetable
 
 
-def __make_timetable(subjects, template):
-    return '\n'.join(list(map(lambda a: __rm_blanks(template % a), subjects)))
+def __make_timetable(subjects_dict, template):
+    return '\n'.join(list(map(lambda a: __rm_blanks(template % a), subjects_dict)))
 
 
 def get_timetable_by_index(day: int, attendance, language_code):
     return get_weekday_timetable(weekdays[day], attendance, language_code)
 
 
-def get_subject_timetable(subject_type, attendance, language_code):
-    subjects = SERVER.get_subjects(subject_type, attendance)
-    if not subjects:
+def get_subject_timetable(sub_name, subtype, attendance, language_code):
+    timetable = SERVER.get_subject_timetable(sub_name, subtype, attendance)
+    if not timetable:
         return ''
 
     template = get_text('subject_timetable_text', language_code=language_code)
 
-    for weekday, [sub1, sub2] in subjects.items():
+    for weekday, [sub1, sub2] in timetable.items():
         weekday_name = get_text(f'{weekday}_name', language_code=language_code)
         day_template = get_text('subject_day_template_text', language_code=language_code)
         subject_timetable = __put_together(sub1, sub2, attendance, subject_template_parity, language_code)
@@ -112,27 +113,7 @@ class Server:
         'нч': 'both',
     }
 
-    __subject_name_map = {
-        'matan_all': {'МатАн (лк)', 'МатАн (пр)'},
-        'eng_all': {'Английский'},
-        'algo_all': {'АиСД (лк)', 'АиСД (пр)'},
-        'discra_all': {'Дискретка (лк)', 'Дискретка (пр)'},
-        'diffur_all': {'Диффуры (лк)', 'Диффуры (пр)'},
-        'os_lite': {'OC (лк)'},
-        'os_adv': {'ОС-adv (лк)', 'ОС-adv (пр)'},
-        'os_all': {'ОС-adv (лк)', 'ОС-adv (пр)', 'OC (лк)'},
-        'sp_android_ios': {'Android / iOS'},
-        'sp_web': {'СП - Web (лк)', 'СП - Web (пр)'},
-        'sp_cpp': {'C++ (лк)', 'C++ (пр)'},
-        'sp_kotlin': {'Kotlin (лк)', 'Kotlin (пр)'},
-        'sp_all': {'Kotlin (лк)', 'Kotlin (пр)',
-                   'C++ (лк)', 'C++ (пр)',
-                   'СП - Web (лк)', 'СП - Web (пр)',
-                   'Android / iOS',
-                   },
-        'history_all': {'История'},
-        'bjd_all': {}
-    }
+    # todo fix this shit
 
     def __init__(self):
         logger.info('Starting Server...')
@@ -190,22 +171,22 @@ class Server:
     @staticmethod
     def __parse_table(table, start_row, end_row, attendance):
         [start_col, end_col] = Server.__attendance[attendance]
-        subjects = []
+        retval = []
         for row in range(start_row, end_row):
             if table[row][start_col + 2] != '':
-                subjects.append(table[row][start_col + 1:end_col - Server.__number_of_cols])
-        return subjects
+                retval.append(table[row][start_col + 1:end_col - Server.__number_of_cols])
+        return retval
 
     @staticmethod
     def __accept_parity(sub_parity, week_parity):
         return sub_parity == week_parity or sub_parity == BOTH_PARITY or week_parity == BOTH_PARITY
 
     @staticmethod
-    def __make_subject_dict(subjects, week_parity=BOTH_PARITY, subject_filter=None):
+    def __make_subject_dict(raw_subjects, week_parity=BOTH_PARITY, subject_filter=None):
         if subject_filter is None:
             subject_filter = Server.__true_filter
         retval = []
-        for row in subjects:
+        for row in raw_subjects:
             subject_parity = Server.__week_parity_map[row[1]]
             if Server.__accept_parity(subject_parity, week_parity) and subject_filter(row):
                 subject = {
@@ -225,8 +206,8 @@ class Server:
 
         return inner
 
-    def get_subjects(self, subject_name, attendance):
-        subject_filter = Server.__subject_compare(Server.__subject_name_map[subject_name])
+    def get_subject_timetable(self, sub_name, subtype, attendance):
+        subject_filter = Server.__subject_compare(subjects[sub_name].get_all_timetable_names(subtype))
         values = self.__get_values_from_table()
         retval = {}
         for weekday in Server.__weekdays_map.keys():

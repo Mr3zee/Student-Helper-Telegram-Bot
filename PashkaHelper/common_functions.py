@@ -3,12 +3,19 @@ from telegram import Update
 
 import keyboard
 import user_parameters
-from timetable import get_timetable_by_index, BOTH_ATTENDANCE
-from time_management import get_weekday
+from timetable import get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
+from time_management import get_weekday, MORNING_MESSAGE_TIME
 from log import log_handler
 from message import get_text
 
+from subject import subjects
+
+import logging
+
 MESSAGE, COMMAND = range(2)
+
+logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def send_today_timetable(context: CallbackContext, chat_id, language_code):
@@ -72,6 +79,39 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
     else:
         raise ValueError('Unsupported hdl type')
     return ret_handler
+
+
+def get_subject_main_info(sub_name, user_id, language_code):
+    header = get_text(f'{sub_name}_text', language_code)
+    subtype = subjects[sub_name].get_subtype_full_name(user_parameters.get_user_subtype(user_id, sub_name))
+    main_info = '\n\n'.join([
+        get_text(f'{name}_text', language_code)
+        for name in (
+            subjects[sub_name].get_subtypes_full_names() if not subtype else [subtype]
+        )
+    ])
+    return header.format(main_info)
+
+
+def subject_handler(sub_name):
+    @log_handler
+    def inner(update: Update, context: CallbackContext):
+        language_code = update.effective_user.language_code
+        chat_id = update.effective_chat.id
+        user_id = update.effective_user.id
+
+        main_info = get_subject_main_info(sub_name, user_id, language_code)
+
+        subtype, attendance = user_parameters.get_user_course(user_id, sub_name)
+        additional_info = get_subject_timetable(sub_name, subtype, attendance, language_code)
+        main_info = main_info % additional_info
+
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=main_info,
+        )
+
+    return CommandHandler(command=sub_name, callback=inner)
 
 
 def manage_callback_query(update: Update):

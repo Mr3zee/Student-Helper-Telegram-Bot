@@ -12,7 +12,7 @@ from parameters_hdl import parameters, parameters_callback, \
 
 from log import log_handler
 from message import get_text
-from timetable import get_weekday_timetable, get_subject_timetable
+from timetable import get_weekday_timetable
 
 handlers = {}
 
@@ -64,27 +64,6 @@ def today(update: Update, context: CallbackContext):
     )
 
 
-def subject_handler(hdl_name):
-    @log_handler
-    def inner(update: Update, context: CallbackContext):
-        language_code = update.effective_user.language_code
-        chat_id = update.effective_chat.id
-        user_id = update.effective_user.id
-
-        main_info = get_text(f"{hdl_name}_text", language_code=language_code)
-
-        subject_type, attendance = user_parameters.get_user_course(user_id, hdl_name)
-        additional_info = f'\n{get_subject_timetable(subject_type, attendance, language_code)}'
-        main_info = main_info.format(additional_info)
-
-        context.bot.send_message(
-            chat_id=chat_id,
-            text=main_info,
-        )
-
-    handlers[hdl_name] = CommandHandler(command=hdl_name, callback=inner)
-
-
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
 
 handlers['help'] = cf.simple_handler('help', cf.COMMAND)
@@ -115,10 +94,8 @@ handlers['parameters'] = ConversationHandler(
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
-subjects = ['algo', 'discra', 'diffur', 'os', 'sp', 'history', 'matan', 'eng', 'bjd']
-
-for sub in subjects:
-    subject_handler(sub)
+for sub in cf.subjects:
+    handlers[sub] = cf.subject_handler(sub)
 
 handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
 handlers['echo_message'] = cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all)

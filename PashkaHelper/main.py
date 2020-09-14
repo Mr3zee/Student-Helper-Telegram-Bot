@@ -8,6 +8,8 @@ import config
 import handler as hdl
 
 import logging
+from queue import Queue
+from threading import Thread
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +27,19 @@ def connect_bot():
         )
     )
     job_queue = JobQueue()
+    queue = Queue()
     dp = Dispatcher(
         bot=new_bot,
-        update_queue=None,
+        update_queue=queue,
         use_context=True,
         job_queue=job_queue,
     )
     job_queue.set_dispatcher(dp)
     job_queue.start()
+    thread = Thread(target=dp.start, name='dispatcher')
+    thread.start()
     logger.info('Bot connected successfully')
-    return dp, new_bot
+    return dp, new_bot, queue
 
 
 def add_handlers():
@@ -46,7 +51,7 @@ def add_handlers():
 
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-dispatcher, bot = connect_bot()
+dispatcher, bot, update_queue = connect_bot()
 
 add_handlers()
 
@@ -55,7 +60,7 @@ add_handlers()
 def get_updates():
     if request.method == 'POST':
         update = Update.de_json(request.json, bot)
-        dispatcher.process_update(update)
+        update_queue.put(update)
     return {'ok': True}
 
 
@@ -75,9 +80,10 @@ if __name__ == '__main__':
 #  make inline mode
 #  /today for sunday +
 #  time table for each subject +
-#  make personal settings
+#  make personal settings (weekday timetable issues)
 #  empty day support +
 #  rm blank spaces in timetables +
 #  make mg messages silent and add greeting
 #  Conversation Handler trash support
+#  add 'all' buttons
 

@@ -58,21 +58,21 @@ SP_CPP = 'sp_cpp_button'
 SP_SET = {SP_CPP, SP_IOS, SP_WEB, SP_KOTLIN, SP_ANDROID}
 
 # eng buttons
-ENG_C2_1 = 'eng_c2_1_button'
-ENG_C2_2 = 'eng_c2_2_button'
-ENG_C2_3 = 'eng_c2_3_button'
+ENG_C2_1 = 'eng_c21_button'
+ENG_C2_2 = 'eng_c22_button'
+ENG_C2_3 = 'eng_c23_button'
 
-ENG_C1_1 = 'eng_c1_1_button'
-ENG_C1_2 = 'eng_c1_2_button'
+ENG_C1_1 = 'eng_c11_button'
+ENG_C1_2 = 'eng_c12_button'
 
-ENG_B2_1 = 'eng_b2_1_button'
-ENG_B2_2 = 'eng_b2_2_button'
-ENG_B2_3 = 'eng_b2_3_button'
+ENG_B2_1 = 'eng_b21_button'
+ENG_B2_2 = 'eng_b22_button'
+ENG_B2_3 = 'eng_b23_button'
 
-ENG_B11_1 = 'eng_b11_1_button'
-ENG_B11_2 = 'eng_b11_2_button'
-ENG_B12_1 = 'eng_b12_1_button'
-ENG_B12_2 = 'eng_b12_2_button'
+ENG_B11_1 = 'eng_b111_button'
+ENG_B11_2 = 'eng_b112_button'
+ENG_B12_1 = 'eng_b121_button'
+ENG_B12_2 = 'eng_b122_button'
 
 ENG_NEXT = 'eng_next_button'
 ENG_PREV = 'eng_prev_button'
