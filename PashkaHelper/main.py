@@ -83,7 +83,7 @@ if __name__ == '__main__':
 #  fix buttons copypaste
 #  make messages pretty +
 #  fix timezone issue +
-#  fix parameters page text
+#  fix parameters page text +
 #  make database
 #  add 'all' buttons in courses +
 

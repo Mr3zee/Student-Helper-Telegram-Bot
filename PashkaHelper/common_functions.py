@@ -58,12 +58,11 @@ def set_morning_message(context: CallbackContext, chat_id, user_id, language_cod
     if job_name not in context.chat_data:
         new_job = context.job_queue.run_daily(
             callback=send_morning_message,
-            time=user_parameters.get_user_time(user_id),
+            time=user_parameters.get_user_mailing_time_with_offset(user_id),
             days=(0, 1, 2, 3, 4, 5),
             context=[chat_id, user_id, language_code],
             name=job_name,
         )
-        print(user_parameters.get_user_time(user_id))
         context.chat_data[job_name] = new_job
         return new_job
 
@@ -118,7 +117,9 @@ def subject_handler(sub_name):
 
         main_info = get_subject_main_info(sub_name, user_id, language_code)
 
-        subtype, attendance = user_parameters.get_user_course(user_id, sub_name)
+        subtype = user_parameters.get_user_subtype(user_id, sub_name)
+        attendance = user_parameters.get_user_attendance(user_id)
+
         additional_info = get_subject_timetable(sub_name, subtype, attendance, language_code)
         main_info = main_info % additional_info
 

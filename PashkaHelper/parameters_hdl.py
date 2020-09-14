@@ -19,7 +19,7 @@ def parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
+        text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id, language_code),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
     return MAIN_LVL
@@ -30,7 +30,8 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
     user_id = update.effective_user.id
     try:
         update.callback_query.edit_message_text(
-            text=get_text(f'{page_name}_parameters_text', language_code) % user_parameters.get_user(user_id),
+            text=get_text(f'{page_name}_parameters_text', language_code) % user_parameters.get_user(user_id,
+                                                                                                    language_code),
             reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
         )
     finally:
@@ -74,7 +75,7 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     try:
         update.callback_query.edit_message_text(
-            text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id),
+            text=get_text('parameters_text', language_code) % user_parameters.get_user(user_id, language_code),
             reply_markup=keyboard.parameters_keyboard(language_code),
         )
     finally:
@@ -86,7 +87,7 @@ def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     current_status = user_parameters.get_user_message_status(user_id)
     update.callback_query.edit_message_text(
-        text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id),
+        text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id, language_code),
         reply_markup=keyboard.mailing_keyboard(current_status, language_code),
     )
     return MAIN_LVL
@@ -107,7 +108,7 @@ def __update_course(update: Update, context: CallbackContext, data, language_cod
 
     user_id = update.effective_user.id
     sub_name, subtype = __get_button_vars(data)
-    user_parameters.set_user_course(user_id, sub_name, subtype)
+    user_parameters.set_user_subtype(user_id, sub_name, subtype)
     return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
 
 
@@ -135,7 +136,7 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
 def name_parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     new_name = update.message.text
-    user_parameters.set_user_name(user_id, new_name)
+    user_parameters.set_username(user_id, new_name)
     return parameters(update, context)
 
 
@@ -168,7 +169,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
         current_status = user_parameters.get_user_message_status(user_id)
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id),
+            text=get_text('mailing_parameters_text', language_code) % user_parameters.get_user(user_id, language_code),
             reply_markup=keyboard.mailing_keyboard(current_status, language_code),
         )
         return MAIN_LVL
@@ -184,8 +185,8 @@ def tzinfo_parameters(update: Update, context: CallbackContext):
     return __user_time_input_chg(
         update=update,
         context=context,
-        validation=user_parameters.valid_tzinfo,
-        setter=user_parameters.set_user_tzinfo,
+        validation=user_parameters.valid_utcoffset,
+        setter=user_parameters.set_user_utcoffset,
         error_lvl=TZINFO_LVL,
     )
 
@@ -196,7 +197,7 @@ def time_message_parameters(update: Update, context: CallbackContext):
         update=update,
         context=context,
         validation=user_parameters.valid_time,
-        setter=user_parameters.set_user_message_time,
+        setter=user_parameters.set_user_mailing_time,
         error_lvl=TIME_LVL,
     )
 
@@ -210,6 +211,7 @@ def parameters_error(name):
             text=get_text(f'{name}_parameters_error_text', language_code),
         )
         return
+
     return MessageHandler(callback=error, filters=Filters.all)
 
 
