@@ -27,13 +27,7 @@ def get_user(user_id, language_code):
     data = users[user_id]
     retval = {}
     for key, value in data.items():
-        if key == 'name' and value != 'unknown':
-            retval[key] = value
-            continue
-        elif key == 'message_time':
-            retval[key] = value
-            continue
-        elif key == 'utcoffset':
+        if (key == 'name' and value != 'unknown') or (key == 'message_time') or (key == 'utcoffset'):
             retval[key] = value
             continue
         elif not value:
