@@ -90,12 +90,10 @@ def __everyday_msg_callback(update: Update, context: CallbackContext, language_c
 
 
 def __get_button_vars(data):
-    first = None
+    data = data[:-7]
     for a in range(len(data)):
-        if data[a] == '_' and not first:
-            first = a
-        elif data[a] == '_':
-            return data[:first], data[first + 1:a]
+        if data[a] == '_':
+            return data[:a], data[a + 1:]
 
 
 def __update_course(update: Update, context: CallbackContext, data, language_code):
@@ -105,8 +103,8 @@ def __update_course(update: Update, context: CallbackContext, data, language_cod
         return __chg_parameters_page(update, 'eng', language_code, keyboard.eng1_keyboard)
 
     user_id = update.effective_user.id
-    subject, new_course = __get_button_vars(data)
-    user_parameters.set_user_course(user_id, subject, new_course)
+    sub_name, subtype = __get_button_vars(data)
+    user_parameters.set_user_course(user_id, sub_name, subtype)
     return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
 
 
