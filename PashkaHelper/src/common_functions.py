@@ -1,14 +1,13 @@
 from telegram.ext import CallbackContext, MessageHandler, CommandHandler
 from telegram import Update
 
-import keyboard
-import user_parameters
-from timetable import get_timetable_by_index, BOTH_ATTENDANCE, get_subject_timetable
-from time_management import get_weekday
-from log import log_handler
-from message import get_text
+from src import keyboard, user_parameters
+from src.timetable import get_timetable_by_index, get_subject_timetable
+from src.time_management import get_weekday
+from src.log import log_handler
+from src.message import get_text
 
-from subject import subjects
+from src.subject import subjects
 
 import logging
 
@@ -26,7 +25,7 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
         text=get_timetable_by_index(
             day=get_weekday(utcoffset),
             subject_names=user_parameters.get_user_subject_names(user_id),
-            attendance=BOTH_ATTENDANCE,
+            attendance=user_parameters.get_user_attendance(user_id),
             language_code=language_code,
         ),
         reply_markup=keyboard.timetable_keyboard(language_code=language_code),

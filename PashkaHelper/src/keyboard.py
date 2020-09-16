@@ -1,8 +1,8 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from message import get_text
+from src.message import get_text
 
-from buttons import *
+from src.buttons import *
 
 
 def make_button(button, language_code):

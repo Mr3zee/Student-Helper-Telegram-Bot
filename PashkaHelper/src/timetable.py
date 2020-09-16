@@ -1,9 +1,7 @@
-from subject import subjects
-from message import get_text
+from src.subject import subjects
+from src.message import get_text
 from config import service_file_path, timetable_url
-from time_management import get_week_parity
-
-import user_parameters
+from src.time_management import get_week_parity
 
 import logging
 import pygsheets

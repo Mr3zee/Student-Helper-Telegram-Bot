@@ -14,6 +14,7 @@ class Subject:
         if not subtypes_have_eq_tt_names:
             for subtype_tt in subtypes.values():
                 self.__all_timetable_names = self.__all_timetable_names.union(subtype_tt)
+        self.__subtypes_have_eq_tt_names = subtypes_have_eq_tt_names
         self.__subtypes = subtypes
 
     def __eq__(self, other):
@@ -38,7 +39,7 @@ class Subject:
         return [self.get_subtype_full_name(subtype) for subtype in self.__subtypes]
 
     def get_all_timetable_names(self, subtype):
-        if subtype and subtype in self.__subtypes:
+        if not self.__subtypes_have_eq_tt_names and subtype in self.__subtypes:
             return self.__subtypes[subtype]
         return self.__all_timetable_names
 

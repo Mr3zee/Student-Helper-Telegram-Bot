@@ -1,13 +1,11 @@
 from telegram import Update
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, Filters, CommandHandler
 
-from log import log_handler
-from message import get_text
-from buttons import *
+from src.log import log_handler
+from src.message import get_text
+from src.buttons import *
 
-import keyboard
-import user_parameters
-import common_functions as cf
+from src import keyboard, user_parameters, common_functions as cf
 
 # ConversationHandler's states:
 MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)

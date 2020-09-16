@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from subject import subjects
+from src.subject import subjects
 
-from time_management import timezone_converter
-from message import get_text
+from src.time_management import timezone_converter
+from src.message import get_text
 
 users = {}
 

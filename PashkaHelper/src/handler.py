@@ -2,17 +2,14 @@ from telegram import Update, error
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
 
-import keyboard
-import buttons
-import user_parameters
-import common_functions as cf
-from parameters_hdl import parameters, parameters_callback, parameters_error, \
+from src import keyboard, buttons, user_parameters, common_functions as cf
+from src.parameters_hdl import parameters, parameters_callback, parameters_error, \
     name_parameters, tzinfo_parameters, time_message_parameters, exit_parameters_hdl, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
-from log import log_handler
-from message import get_text
-from timetable import get_weekday_timetable
+from src.log import log_handler
+from src.message import get_text
+from src.timetable import get_weekday_timetable
 
 handlers = {}
 
