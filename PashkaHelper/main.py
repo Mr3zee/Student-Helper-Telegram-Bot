@@ -1,24 +1,16 @@
-from flask import Flask, request
-from flask_sslify import SSLify
-
 from telegram import ParseMode, Bot, Update
 from telegram.ext import Dispatcher, Defaults, JobQueue
 
 import config
 from src import handler as hdl
+from src.app import app, get_app_route
 
 import logging
-import os
 
 from queue import Queue
 from threading import Thread
 
 logger = logging.getLogger(__name__)
-
-PORT = int(os.environ.get('PORT', 5000))
-
-app = Flask(__name__)
-sslify = SSLify(app)
 
 
 def connect_bot():
@@ -59,14 +51,7 @@ dispatcher, bot, update_queue = connect_bot()
 
 add_handlers()
 
-
-@app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
-def get_updates():
-    if request.method == 'POST':
-        update = Update.de_json(request.json, bot)
-        update_queue.put(update)
-    return {'ok': True}
-
+get_app_route(bot, update_queue)
 
 if __name__ == '__main__':
 
@@ -78,10 +63,10 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  make inline mode
 #  fix buttons copypaste
-#  make database
+#  make database +
 #  таблица отметки дз очно / заочно
 #  fix /today +
 #  fix /discra
 #  fix dont show eng timetable when eng group set +
-#  make auto parameters exit
+#  make auto exit parameters
 

@@ -19,7 +19,7 @@ weekdays = {
     6: 'sunday',
 }
 
-INTRAMURAL, EXTRAMURAL, BOTH_ATTENDANCE = 'offline', 'online', 'both'
+OFFLINE, ONLINE, BOTH_ATTENDANCE = 'offline', 'online', 'both'
 EVEN, ODD, BOTH_PARITY = 'even', 'odd', 'both'
 subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 subject_template_parity = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
@@ -51,7 +51,7 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, language_code
 
 
 def __put_together(subjects1, subjects2, attendance, template, language_code):
-    timetable = get_text('{}_text'.format('intramural' if attendance != EXTRAMURAL else 'extramural'), language_code)
+    timetable = get_text('{}_text'.format('intramural' if attendance != ONLINE else 'extramural'), language_code)
     timetable += '\n' + __make_timetable(subjects1, template)
 
     if subjects2:
@@ -94,8 +94,8 @@ class Server:
     __number_of_cols = 14
 
     __attendance = {
-        INTRAMURAL: [0, 6],
-        EXTRAMURAL: [7, 13],
+        OFFLINE: [0, 6],
+        ONLINE: [7, 13],
         BOTH_ATTENDANCE: [0, 13],
     }
 
@@ -153,8 +153,8 @@ class Server:
         week_parity = get_week_parity()
         sub_filter = Server.__subject_compare(subject_names)
         if attendance == BOTH_ATTENDANCE:
-            offline_dict = Server.__parse_and_make(values, start_row, end_row, INTRAMURAL, week_parity, sub_filter)
-            online_dict = Server.__parse_and_make(values, start_row, end_row, EXTRAMURAL, week_parity, sub_filter)
+            offline_dict = Server.__parse_and_make(values, start_row, end_row, OFFLINE, week_parity, sub_filter)
+            online_dict = Server.__parse_and_make(values, start_row, end_row, ONLINE, week_parity, sub_filter)
             return offline_dict, online_dict, week_parity
         else:
             return Server.__parse_and_make(values, start_row, end_row, attendance, week_parity, sub_filter), None, week_parity
@@ -213,9 +213,9 @@ class Server:
         for weekday in Server.__weekdays_map.keys():
             start_row, end_row = Server.__find_weekday_table(values, weekday)
             if attendance == BOTH_ATTENDANCE:
-                offline_dict = Server.__parse_and_make(values, start_row, end_row, INTRAMURAL,
+                offline_dict = Server.__parse_and_make(values, start_row, end_row, OFFLINE,
                                                        sub_filter=subject_filter)
-                online_dict = Server.__parse_and_make(values, start_row, end_row, EXTRAMURAL, sub_filter=subject_filter)
+                online_dict = Server.__parse_and_make(values, start_row, end_row, ONLINE, sub_filter=subject_filter)
                 if offline_dict or online_dict:
                     retval[weekday] = [offline_dict, online_dict]
             else:

@@ -2,7 +2,7 @@ from telegram import Update, error
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
 
-from src import keyboard, buttons, user_parameters, common_functions as cf
+from src import keyboard, buttons, database, common_functions as cf
 from src.parameters_hdl import parameters, parameters_callback, parameters_error, \
     name_parameters, tzinfo_parameters, time_message_parameters, exit_parameters_hdl, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
@@ -20,7 +20,7 @@ def start(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    user_parameters.set_default_user_parameters(user_id)
+    database.add_user(user_id)
 
     cf.set_morning_message(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
 
@@ -39,13 +39,13 @@ def callback(update: Update, context: CallbackContext):
 
 @log_handler
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
-    subject_names = user_parameters.get_user_subject_names(user_id=update.effective_user.id)
+    subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
     try:
         update.callback_query.edit_message_text(
             text=get_weekday_timetable(
                 weekday=data[:-7],
                 subject_names=subject_names,
-                attendance=user_parameters.get_user_attendance(update.effective_user.id),
+                attendance=database.get_user_attr(update.effective_user.id, 'attendance'),
                 language_code=language_code,
             ),
             reply_markup=keyboard.timetable_keyboard(language_code=language_code)

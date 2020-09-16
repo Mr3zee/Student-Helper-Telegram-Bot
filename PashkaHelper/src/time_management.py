@@ -8,10 +8,10 @@ MOSCOW_TZ = pytz.timezone('Europe/Moscow')
 
 
 def get_weekday(utcoffset: timedelta):
-    return timezone_converter(datetime.utcnow(), utcoffset).weekday()
+    return (datetime.utcnow() + utcoffset).weekday()
 
 
-def timezone_converter(input_date: datetime, utcoffset: timedelta):
+def to_utc_converter(input_date: datetime, utcoffset: timedelta):
     return input_date - utcoffset
 
 

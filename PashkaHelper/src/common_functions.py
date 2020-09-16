@@ -1,14 +1,14 @@
 from telegram.ext import CallbackContext, MessageHandler, CommandHandler
 from telegram import Update
 
-from src import keyboard, user_parameters
+from src import keyboard, database
 from src.timetable import get_timetable_by_index, get_subject_timetable
 from src.time_management import get_weekday
 from src.log import log_handler
 from src.message import get_text
-
 from src.subject import subjects
 
+from datetime import timedelta
 import logging
 
 MESSAGE, COMMAND = range(2)
@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
                          disable_notification=False):
-    utcoffset = user_parameters.get_user_utcoffset(user_id)
+    attendance, utcoffset = database.get_user_attrs(user_id, ['attendance', 'utcoffset']).values()
     context.bot.send_message(
         chat_id=chat_id,
         text=get_timetable_by_index(
-            day=get_weekday(utcoffset),
-            subject_names=user_parameters.get_user_subject_names(user_id),
-            attendance=user_parameters.get_user_attendance(user_id),
+            day=get_weekday(timedelta(hours=utcoffset)),
+            subject_names=database.get_user_subject_names(user_id),
+            attendance=attendance,
             language_code=language_code,
         ),
         reply_markup=keyboard.timetable_keyboard(language_code=language_code),
@@ -57,7 +57,7 @@ def set_morning_message(context: CallbackContext, chat_id, user_id, language_cod
     if job_name not in context.chat_data:
         new_job = context.job_queue.run_daily(
             callback=send_morning_message,
-            time=user_parameters.get_user_mailing_time_with_offset(user_id),
+            time=database.get_user_mailing_time_with_offset(user_id),
             days=(0, 1, 2, 3, 4, 5),
             context=[chat_id, user_id, language_code],
             name=job_name,
@@ -97,7 +97,7 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
 
 def get_subject_main_info(sub_name, user_id, language_code):
     header = get_text(f'{sub_name}_text', language_code)
-    subtype = subjects[sub_name].get_subtype_full_name(user_parameters.get_user_subtype(user_id, sub_name))
+    subtype = subjects[sub_name].get_subtype_full_name(database.get_user_attr(user_id, sub_name))
     main_info = '\n\n'.join([
         get_text(f'{name}_text', language_code)
         for name in (
@@ -116,8 +116,7 @@ def subject_handler(sub_name):
 
         main_info = get_subject_main_info(sub_name, user_id, language_code)
 
-        subtype = user_parameters.get_user_subtype(user_id, sub_name)
-        attendance = user_parameters.get_user_attendance(user_id)
+        subtype, attendance = database.get_user_attrs(user_id, [sub_name, 'attendance']).values()
 
         additional_info = get_subject_timetable(sub_name, subtype, attendance, language_code)
         main_info = main_info % additional_info

@@ -6,7 +6,7 @@ class Subject:
     def __init__(self, main: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
                  subtypes_have_eq_tt_names: bool = True):
         if not subtypes:
-            subtypes = set()
+            subtypes = dict()
         if not main_timetable_names:
             main_timetable_names = set()
         self.__name = main
