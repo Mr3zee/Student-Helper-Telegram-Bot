@@ -4,7 +4,7 @@ from telegram import Update
 from src import keyboard, database
 from src.timetable import get_timetable_by_index, get_subject_timetable
 from src.time_management import get_weekday
-from src.log import log_handler
+from src.log import log_function
 from src.message import get_text
 from src.subject import subjects
 
@@ -74,7 +74,7 @@ def rm_morning_message(context: CallbackContext):
 
 
 def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_lvl=None):
-    @log_handler
+    @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id
@@ -108,7 +108,7 @@ def get_subject_main_info(sub_name, user_id, language_code):
 
 
 def subject_handler(sub_name):
-    @log_handler
+    @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id

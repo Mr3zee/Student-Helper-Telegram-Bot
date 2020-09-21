@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, Filters, CommandHandler
 
-from src.log import log_handler
+from src.log import log_function
 from src.message import get_text
 from src.buttons import *
 
@@ -11,7 +11,7 @@ from src import keyboard, database, common_functions as cf
 MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)
 
 
-@log_handler
+@log_function
 def parameters(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     user_id = update.effective_user.id
@@ -23,13 +23,18 @@ def parameters(update: Update, context: CallbackContext):
     return MAIN_LVL
 
 
-@log_handler
+@log_function
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
     user_id = update.effective_user.id
     try:
+        text = get_text(f'{page_name}_parameters_text', language_code)
+        # print(text)
+        user_info = database.get_user(user_id, language_code)
+        # print(user_info)
+        text = text % user_info
+        # print(text)
         update.callback_query.edit_message_text(
-            text=get_text(f'{page_name}_parameters_text', language_code) % database.get_user(user_id,
-                                                                                             language_code),
+            text=text,
             reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
         )
     finally:
@@ -68,7 +73,7 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
         return __chg_parameters_page(update, 'attendance', language_code, keyboard.attendance_keyboard)
 
 
-@log_handler
+@log_function
 def __return_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     try:
@@ -80,7 +85,7 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
         return MAIN_LVL
 
 
-@log_handler
+@log_function
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     current_status = database.get_user_attr(user_id, 'mailing_status')
@@ -130,7 +135,7 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
     return __return_callback(update, context, language_code)
 
 
-@log_handler
+@log_function
 def name_parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     new_name = update.message.text
@@ -178,7 +183,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
     return error_lvl
 
 
-@log_handler
+@log_function
 def tzinfo_parameters(update: Update, context: CallbackContext):
     return __user_time_input_chg(
         update=update,
@@ -189,7 +194,7 @@ def tzinfo_parameters(update: Update, context: CallbackContext):
     )
 
 
-@log_handler
+@log_function
 def time_message_parameters(update: Update, context: CallbackContext):
     return __user_time_input_chg(
         update=update,
@@ -201,7 +206,7 @@ def time_message_parameters(update: Update, context: CallbackContext):
 
 
 def parameters_error(name):
-    @log_handler
+    @log_function
     def error(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         context.bot.send_message(
@@ -213,7 +218,7 @@ def parameters_error(name):
     return MessageHandler(callback=error, filters=Filters.all)
 
 
-@log_handler
+@log_function
 def exit_parameters(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(

@@ -7,14 +7,14 @@ from src.parameters_hdl import parameters, parameters_callback, parameters_error
     name_parameters, tzinfo_parameters, time_message_parameters, exit_parameters_hdl, \
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
-from src.log import log_handler
+from src.log import log_function
 from src.message import get_text
 from src.timetable import get_weekday_timetable
 
 handlers = {}
 
 
-@log_handler
+@log_function
 def start(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     chat_id = update.effective_chat.id
@@ -30,14 +30,14 @@ def start(update: Update, context: CallbackContext):
     )
 
 
-@log_handler
+@log_function
 def callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     if data in buttons.WEEKDAYS_SET:
         return timetable_callback(update, context, data, language_code)
 
 
-@log_handler
+@log_function
 def timetable_callback(update: Update, context: CallbackContext, data, language_code):
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
     try:
@@ -54,7 +54,7 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
         pass
 
 
-@log_handler
+@log_function
 def today(update: Update, context: CallbackContext):
     cf.send_today_timetable(
         context=context,

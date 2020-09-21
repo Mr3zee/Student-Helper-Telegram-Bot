@@ -30,11 +30,10 @@ for key, value in subjects.items():
     if domains:
         DOMAINS[key] = domains
 
-ENV = 'development'
 
-if ENV == 'development':
+if config.ENV == 'development':
     app.config['SQLALCHEMY_DATABASE_URI'] = config.local_db_uri
-elif ENV == 'production':
+elif config.ENV == 'production':
     app.config['SQLALCHEMY_DATABASE_URI'] = config.production_db_url
 else:
     raise ValueError('app running mode does not specified')
@@ -47,7 +46,7 @@ db = SQLAlchemy(app)
 class Users(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(100))
     attendance = db.Column(db.String(20))
     mailing_status = db.Column(db.String(20))
     mailing_time = db.Column(db.String(10))
@@ -57,7 +56,7 @@ class Users(db.Model):
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
 
-    def __init__(self, user_id, username=None, attendance='both', mailing_status='allowed', mailing_time='7:30',
+    def __init__(self, user_id, username='unknown', attendance='both', mailing_status='allowed', mailing_time='7:30',
                  utcoffset=3, os=None, sp=None, history=None, eng=None):
         self.user_id = user_id
         self.username = username
@@ -86,7 +85,7 @@ def get_user(user_id, language_code):
     retval = {}
     values = get_user_attrs(user_id, ATTR_NAMES)
     for attr_name, attr_value in values.items():
-        if (attr_name == 'username' and attr_value != 'unknown') \
+        if (attr_name == 'username' and attr_value) \
                 or (attr_name == 'mailing_time') \
                 or (attr_name == 'utcoffset'):
             retval[attr_name] = attr_value
