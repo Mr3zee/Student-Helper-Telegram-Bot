@@ -1,6 +1,6 @@
 from src.subject import subjects
 from src.message import get_text
-from config import service_file_path, timetable_url
+from static.config import service_file_path, timetable_url
 from src.time_management import get_week_parity
 
 import logging

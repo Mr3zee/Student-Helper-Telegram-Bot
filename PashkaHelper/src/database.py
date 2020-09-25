@@ -6,7 +6,7 @@ from src.time_management import to_utc_converter
 from src.message import get_text
 from src.app import app
 
-import config
+from static import config
 
 ATTR_NAMES = [
     'username',

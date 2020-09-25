@@ -1,5 +1,5 @@
 from json import load
-from config import text_file_path
+from static.config import text_file_path
 
 with open(text_file_path, 'r', encoding='UTF-8') as json_file:
     data = load(json_file)
