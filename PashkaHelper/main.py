@@ -1,7 +1,7 @@
-from telegram import ParseMode, Bot, Update
+from telegram import ParseMode, Bot
 from telegram.ext import Dispatcher, Defaults, JobQueue
 
-import config
+from static import config
 from src import handler as hdl
 from src.app import app, get_app_route
 
@@ -74,4 +74,7 @@ if __name__ == '__main__':
 #  add to today links
 #  error handler
 #  make message constructor
+#  make teachers in english
+#  teachers info
+#  /timetable [n]
 

@@ -1,0 +1,797 @@
+####################################################################
+# TEXT
+####################################################################
+
+[start_text]
+[body]
+Привет!
+Я бот-помощник, который готов поддержать тебя в трудные минуты жизни на КТ
+
+Я умею делать много разных полезных ништяков, например, показывать тебе всю полезную информацию об указанном предмете или отмечать домашние задания в таблицах
+Полных список моих возможностей можно узнать, введя специальную команду, которую я дам тебе позже, чтобы дочитал сначала этот текст
+
+Меня можно и нужно настроить под себя. По умолчанию я буду показывать тебе всю доступную информацию о всех предметах, однако тебе наверное будет не так интересно знать, чо там у системщиков, когда ты на стандартных осях, поэтому выбери все настройки под себя и наслаждайся моими безграничными (в разработке) возможностями
+
+<u>P.s</u> Нажав /start, ты включил у себя ежедневную рассылку расписания занятий, что на мой взгляд ну очень полезная вещь. Однако обрати внимание, что время рассылки по умолчанию 7:30 утра по Москве. Конечно же ты можешь это время поменять или вовсе отключить рассылку (правда зачем, она же прекрасна)
+
+<u>P.s.s</u> естественно рассылка отправляется в бесшумном режиме, чтобы не дай б-г не разбудить тебя
+
+<u>P.s*3</u> Чуть не забыл дать тебе команды:
+/parameters - изменить настройки бота
+/help - главная страница бота
+
+Развлекайся
+[/body]
+[/start_text]
+
+
+[help_text]
+[vars]
+
+# Resources
+&google_doc_link: [raw]https://drive.google.com/drive/folders/10eoyhsa0APvKT--vIuQY5nLVSY1UO99r[/raw]
+&wiki_conspectus_link: [raw]http://neerc.ifmo.ru/wiki/index.php?title=%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0[/raw]
+&github_link: [raw]https://github.com/Jovvik/M3137year2019[/raw]
+&youtube_link: [raw]https://www.youtube.com/channel/UCc8_XiJXPMz699NvDmtGoTA[/raw]
+
+# Telegram
+&main_channel_link: [raw]https://t.me/y2019_news[/raw]
+&main_chat_link: [raw][/raw] # todo
+&our_channel_link: [raw]https://t.me/CT36_37_thebest[/raw]
+&our_channel_link: [raw][/raw] # todo
+
+# Other
+&masha_and_cs_link: [raw]http://t.me/masha_and_cs[/raw]
+
+[/vars]
+[body]
+<b>Главная менюшка:</b>
+
+<u>Расписание:</u>
+ /timetable - вся доступная информация по расписанию
+ /today - узнать расписание на сегодня
+
+<u>Информация по предметам:</u>
+ /algo - "Алгоритмы и структуры данных"
+ /discra - "Дискретная математика"
+ /diffur - "Дифференциальные уравнения"
+ /matan - "Математический анализ"
+ /os - "Операционные системы"
+ /sp - "Современное программирование"
+ /eng - "Английский язык"
+ /bjd - "БЖД"
+ /history - "История"
+
+<u>Материалы по курсу:</u>
+ <a href = '&google_doc_link'>Гуголдок</a> с лекциями
+ <a href = '&wiki_conspectus_link'>Сайт</a> викиконспектов
+ <a href = '&github_link'>Github</a> Макса с конспектами
+ <a href = '&youtube_link'>Youtube</a> с большим количеством лекций
+
+<u>Telegram-чаты и Discord</u>
+ Большой <a href = '&main_channel_link'>канал</a> КТ | Большой <a href = '&main_chat_link'>чат</a> КТ
+ Лучший в истории <a href = '&our_channel_link'>канал</a> | Лучший в истории <a href = '&our_channel_link'>чатик</a>
+
+<u>Расслабиться</u>
+ - <a href = '&masha_and_cs_link'>кт, маша и панк максим</a>
+[/body]
+[/help_text]
+
+
+[timetable_text]
+[vars]
+&main_link: [raw]https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vT75PMrZrIGt_Wcs59q25FsTRk3zQNpFOmuDOIF72F9q2m4qUJ4RQJyUOWsqw-iJxahvZPwnLsn6whP/pubhtml?gid=2143740747&single=true[/raw]
+&our_link: [raw]https://docs.google.com/spreadsheets/d/1FEmuGdsihGz_YO-fNTxD-m_RghEMEhzOL1PDQdlcZW8/edit#gid=0[/raw]
+[/vars]
+[body]
+<b>Расписание:</b>
+
+Ссылочки: <a href = '&main_link>Общее</a> расписание, <a href = '&our_link'>Наше</a> расписание
+
+Вернуться на главную /help
+
+Выбери день, чтобы узнать чо там надо учить вообще:
+[/body]
+[/timetable_text]
+
+
+[weekday_text]
+[body]
+<b>^weekday, ^week_parity неделя</b> - расписание пар на день:
+
+^timetable
+
+Равлекайся
+
+Вернуться на главную /help
+
+Узнать расписание на другой день:
+[/body]
+[/weekday_text]
+
+
+[today_sunday_text]
+[body]
+Сегодня же воскресенье!!!
+
+<s>Отдыхай</s> сиди домашку делай
+
+Узнать расписание на другой день:
+[/body]
+[/today_sunday_text]
+
+
+[algo_subject_text]
+[vars]
+# Main
+&hw_link: [raw]http://neerc.ifmo.ru/teaching/algo/year2019/tasks_sem3_34-37.pdf[/raw]
+&hw_table_offline_link: [raw]https://docs.google.com/spreadsheets/d/1jS5lSPjPNHWBPoOfp-surYWslmDClsGGkDMWV-Rwfr4/edit[/raw]
+&hw_table_online_link: [raw]https://docs.google.com/spreadsheets/d/12YtBrSYMQZ5r6lXCkbnQvsjWiFeuEXyVLLaEJvyuTHA/edit#gid=0[/raw]
+&points_link: [raw][/raw] # todo
+&labs_link: [raw]https://codeforces.com/group/QmrArgR1Jp/contests[/raw]
+
+# Social networking
+&yt_link: [raw]https://www.youtube.com/user/pavelmavrin[/raw]
+&tw_link: [raw]https://www.twitch.tv/pmavrin[/raw]
+
+# Telegram
+&ds_link: [raw][/raw] # todo
+&tg_link: [raw]https://t.me/joinchat/AlaSRB0zCWAx8cHBIcwxoA[/raw]
+
+[/vars]
+[body]
+<b>Алгориты и структуры данных:</b>
+
+<u>Основное</u>
+ <a href = '&hw_link'>Файл</a> заданий для домашнего решения
+ Таблицы для отметки дз:
+ [case ^attendance]
+ offline: <a href = '&hw_table_offline_link'>очно</a>
+ online: <a href = '&hw_table_online_link'>заочно</a>
+ both: <a href = '&hw_table_offline_link'>очно</a> / <a href = '&hw_table_online_link'>заочно</a>
+ [/case]
+ Твои прекрасные <a href = '&points_link'>баллы</a> по алгосикам
+ Самые увлекательные лабы <a href = '&labs_link'>здесь</a>
+
+<u>Где можно найти Пашу:</u>
+ Ламповый <a href = '&yt_link'>Youtube</a> Паши
+ Еще более ламповый <a href = '&tw_link'>Twitch</a> Паши
+ Не менее ламповый <a href = '&ds_link'>Discord</a> Паши (в разработке)
+
+<u>Telegram-чаты</u>
+ <a href = '&tg_link'>Чат</a> АиСД y2019 34-37
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/algo_text]
+
+
+[discra_subject_text]
+[vars]
+
+# Main
+&main_page_link: [raw]http://neerc.ifmo.ru/teaching/dm2/2020-2021/[/raw]
+&hw_page_link: [raw]http://neerc.ifmo.ru/wiki/index.php?title=%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B9_%D0%BF%D0%BE_%D0%94%D0%9C_2%D0%BA_2020_%D0%BE%D1%81%D0%B5%D0%BD%D1%8C[/raw]
+&hw_table_offline_link: [raw]https://docs.google.com/spreadsheets/d/1A3ffe-hlvl4vyBCLC7s7R9Y0Gfrs7DgHu2VyPlyZTSg/edit?usp=sharing[/raw]
+&hw_table_online_link: [raw]https://docs.google.com/spreadsheets/d/1sTy8uQj_SSUse1jd7odnyeNqrXXhWtiWTxHFRz6sPLk/edit#gid=0[/raw]
+&point_link: [raw]https://docs.google.com/spreadsheets/d/1AwMIB9hiiAB-0m6JSPdeTwYUga_nfynFcWWiD8lfAg8/edit#gid=0[/raw]
+&pcms_link: [raw]https://pcms.itmo.ru/pcms2client/login.xhtml[/raw]
+
+# Social networks
+&youtube_link: [raw]https://www.youtube.com/user/andrewzt[/raw]
+&twitch_link: [raw]https://www.twitch.tv/andrewzta[/raw]
+&discord_link: [raw]https://discord.com/invite/kBZr25[/raw]
+
+# Telegram
+&tg_main_link: [raw]https://t.me/joinchat/A7DERxgqRK3Uw-3rTWIiLw[/raw]
+&tg_practice_link: [raw]https://t.me/joinchat/B0_QUhluhaRh2CIfC7CFeQ[/raw]
+
+[/vars]
+[body]
+<b>Дискретная математика</b>
+
+<u>Основное</u>
+ Главная <a href = '&main_page_link'>страница</a> курса
+ <a href = '&hw_page_link'>Страница</a> с домашними заданиями
+ Таблицы для отметки дз:
+ [case ^attendance]
+ offline: <a href = '&hw_table_offline_link'>очно</a>
+ online: <a href = '&hw_table_online_link'>заочно</a>
+ both: <a href = '&hw_table_offline_link'>очно</a> / <a href = '&hw_table_online_link'>заочно</a>
+ [/case]
+ Твои великолепные <a href = '&point_link'>баллы</a>
+ Познавательные лабы только по этой <a href = '&pcms_link'>ссылке</a>
+
+<u>Где можно послушать дискреточку:</u>
+ Уютный <a href = '&youtube_link'>Youtube</a> Андрея Сергеевича
+ Дружелюбный <a href = '&twitch_link'>Twitch</a> Андрея Сергеевича
+ Просто хороший <a href = '&discord_link'>Discord</a> для практик
+
+<u>Telegram-чаты</u>
+ <a href = '&tg_main_link'>Чат</a> ДМ year2019
+ <a href = '&tg_practice_link'>Чат</a> Практика ДМ M323(6|7), 2020, Осень
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/discra_text]
+
+
+[eng_subject_text]
+[vars]
+# Main
+&vk_link: [raw]https://vk.com/fltc.itmo[/raw]
+
+# John Cuti
+&cuti_email: [raw]1@johnkuti.net[/raw]
+&cuti_hw_link: [raw]https://fltc.ifmo.ru/m/my/[/raw]
+&c2_3_discord: [raw]https://discord.gg/nRYDKev[/raw]
+&c2_3_tg: [raw][/raw] # todo
+&c2_1_tg: [raw]https://t.me/itipktc21[/raw]
+
+# Cipo
+&c1_1_zoom: [raw]https://itmo.zoom.us/j/4050414098[/raw]
+&c1_1_tg: [raw][/raw] # todo
+&c1_2_tg: [raw][/raw] # todo
+
+# Белянина С.
+&b2_3_zoom: [raw]https://itmo.zoom.us/j/7402973580[/raw]
+&b2_3_tg: [raw][/raw] # todo
+&b2_1_tg: [raw][/raw] # todo
+
+# Захарова А.
+&c2_2_zoom: [raw]https://us02web.zoom.us/j/82431670213[/raw]
+&c2_2_tg: [raw][/raw] # todo
+&b2_2_tg: [raw][/raw] # todo
+
+# Трофимова Т.А.
+&b12_1_zoom: [raw]https://itmo.zoom.us/j/2618374805[/raw]
+&b12_1_tg: [raw][/raw] # todo
+&b12_2_tg: [raw][/raw] # todo
+
+# Малышева А.
+&b11_1_zoom: [raw]https://itmo.zoom.us/j/2310285249[/raw]
+&b11_1_tg: [raw][/raw] # todo
+&b11_2_tg: [raw][/raw] # todo
+
+[/vars]
+[body]
+<b>Английский язык</b>
+
+<a href = '&vk_link'>Группа</a> ВК по английскому
+[case ^eng_teacher]
+
+# John Cuti
+cuti: [m]
+<em>2-ИТИПКТ-[case ^group]
+c2_1: C2/1
+c2_3: C2/3
+[/case] - Джон Кути</em>
+Почта Джона Кути: &cuti_email
+<a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
+[case ^group]
+c2_3: [m]
+  - <a href = '&c2_3_discord'>Discord</a> of native speakers
+  - <a href = '&c2_3_tg'>Chat</a> of native speakers
+[/m]
+c2_1: [m]
+  - Кабинет: 412
+  - <a href = '&c2_1_tg'>Чатик</a> истинных англичан
+[/m]
+[/case]
+[/m]
+
+# Cipo
+cipo: [m]
+<em>2-ИТИПКТ-[case ^group]
+c1_1: C1/1
+c1_2: C1/2
+[/case] - Cipo</em>
+[case ^group]
+c1_1: [m]
+ - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
+ - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа
+[/m]
+c1_2: [m]
+ - Кабинет: 409
+ - <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую
+[/m]
+[/case]
+[/m]
+
+# Белянина С.
+belyanina: [m]
+<em>2-ИТИПКТ-[case ^group]
+b2_1: B2/1
+b2_3: B2/3
+[/case] - Белянина С.</em>
+[case ^group]
+b2_3: [m]
+  - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
+  - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства
+[/m]
+b2_1: [m]
+  - Кабинет: 315
+  - <a href = '&b2_1_tg'>Чат</a> иностранных агентов
+[/m]
+[/case]
+[/m]
+
+# Захарова А.
+zaharova: [m]
+<em>2-ИТИПКТ-[case ^group]
+c2_2: C2/2
+b2_2: B2/2
+[/case] - Захарова А.</em>
+[case ^group]
+c2_2: [m]
+  - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
+  - Идентификатор конференции: 824 3167 0213
+  - Код доступа: 121611 (или какой-то из 121611-121622)
+  - <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов
+[/m]
+b2_2: [m]
+  - Кабинет: 319
+  - <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров
+[/m]
+[/case]
+[/m]
+
+# Трофимова Т.А.
+trofimova: [m]
+<em>2-ИТИПКТ-[case ^group]
+b12_1: B1.2/1
+b12_2: B1.2/2
+[/case] - Трофимова Т.А.</em>
+[case ^group]
+b12_1: [m]
+  - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
+  - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"
+[/m]
+b12_2: [m]
+  - Кабинет: 313
+  - <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"
+[/m]
+[/case]
+[/m]
+
+# Малышева А.
+malysheva: [m]
+<em>2-ИТИПКТ-[case ^group]
+c2_1: B1.1/1
+c2_3: B1.1/2
+[/case] - Малышева А.</em>
+[case ^group]
+b11_1: [m]
+  - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
+  - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit
+[/m]
+b11_2: [m]
+  - Кабинет: 410
+  - <a href = '&b11_2_tg'>Чат</a> противников Brexit
+[/m]
+[/case]
+[/m]
+
+[/case]
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/eng_text]
+
+
+[diffur_subject_text]
+[vars]
+# Лекции
+&all_topics_link: [raw]https://docs.google.com/spreadsheets/d/e/2PACX-1vShj9Xg2k8LOtCpGPjXscwzYAsbnMayzXrGqWqM_iHHfJk-xopRjTkKfTu3W9WlNVSAc8bjQcPFOH-A/pubhtml[/raw]
+&conspectus_link: [raw]https://drive.google.com/file/d/1TqHI2O5LrefkXu-EQhX3Y0NXAtxvJv8F/view[/raw]
+&twitch_link: [raw]https://www.twitch.tv/ex1zt_?sr=a[/raw]
+
+# Практики
+&main_folder_link: [raw]https://drive.google.com/drive/folders/1_3Nrz5l1gqvfRJtUGEpjFkfpX5OQwn4M?usp=sharing[/raw]
+&tasks_link: [raw]https://docs.google.com/document/d/1yosLjIHj4IG3Bd2M6jnhRaCdiQkAYwOVqupkHDHAv7k/edit[/raw]
+&hw_table_link: [raw]https://docs.google.com/spreadsheets/d/17ERTig_OgLmvJv0rGmg8gMW6hauUjmMzcAZW_5vQiy8/edit#gid=0[/raw]
+&points_link: [raw]https://docs.google.com/spreadsheets/d/1B52D85mRRVqPN5yymM0RyaxXLvgiy1xNeFfW-5OVdIM/edit#gid=0[/raw]
+&recordings_link: [raw]https://docs.google.com/spreadsheets/d/e/2PACX-1vShj9Xg2k8LOtCpGPjXscwzYAsbnMayzXrGqWqM_iHHfJk-xopRjTkKfTu3W9WlNVSAc8bjQcPFOH-A/pubhtml[/raw]
+
+# Zoom
+&lecture_zoom: [raw]https://itmo.zoom.us/j/81975522370?pwd=MVBiWmVoeEx0amlYS3JodXpwVUFrUT09[/raw]
+&practice_zoom: [raw]https://itmo.zoom.us/j/81500027625?pwd=aUFFZW96T1NGWHFlc045WUNmSjI4dz09[/raw]
+
+# Telegram
+&practice_tg: [raw]https://t.me/joinchat/EHpWqlAk7MKWGW0eHOJqfQ[/raw]
+
+[/vars]
+[body]
+<b>Дифференциальные уравнения</b>
+
+<u>Лекции</u>
+ Все пройденные <a href = '&all_topics_link'>темы</a>
+ Оказывается у нас есть <a href = '&conspectus_link'>конспект</a>
+ <a href = '&twitch_link'>Тут</a> стримят лекции, залетайте
+
+<u>Практики</u>
+ Главная <a href = '&main_folder_link'>папка</a> по практикам
+ <a href = '&tasks_link'>Гуглдок</a> с условиями домашних заданий
+ <a href = '&hw_table_link'>Таблица</a> для отметки домашних заданий
+ Твои заоблачные <a href = '&points_link'>баллы</a>
+ <a href = '&recordings_link'>Записи</a> лекций
+
+<u>Zoom:</u>
+ Для лекций:
+  - Свежая <a href = '&lecture_zoom'>ссылочка</a>
+ Для практик:
+  - Идентификатор: 850 0856 9716
+  - Пароль: 317851
+  - Свежая <a href = '&practice_zoom'>ссылочка</a>
+
+<u>Telegram-чаты</u>
+ <a href = '&practice_tg'>Чат</a> М323* Диффуры, практика
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/diffur_text]
+
+
+[os_subject_text]
+[vars]
+
+# Advanced
+&adv_hw_link: [raw]https://os.ctditmo.site/[/raw]
+
+&adv_zoom: [raw]https://itmo.zoom.us/j/86444295524?pwd=MVBndXJ5Q0xMZzVKaDVkTW5OT1pxZz09[/raw]
+&adv_youtube: [raw]https://www.youtube.com/c/nsychev/videos[/raw]
+&adv_tg: [raw]https://t.me/itmo2020os[/raw]
+
+# Lite
+&lite_twitch: [raw]https://www.twitch.tv/mayatin[/raw]
+&lite_youtube: [raw]https://www.youtube.com/c/AlexanderMayatin[/raw]
+&lite_tg: [raw]https://t.me/os_lite_y2019[/raw]
+
+[/vars]
+[body]
+<b>Операционные системы</b>
+
+[case ^course]
+adv: [m]
+<u>Advanced</u>
+ Домашние <a href = '&adv_hw_link'>задания</a> все по ним же
+ Занимательный <a href = '&adv_zoom'>Zoom</a> по системкам
+ Классный <a href = '&adv_youtube'>YouTube</a> по системкам
+ <a href = '&adv_tg'>Чат</a> ИТМО 2020, ОС
+[/m]
+
+lite: [m]
+<u>Lite</u>
+ Познавательный <a href = '&lite_twitch'>Twitch</a> Маятина
+ Расслабляющий <a href = '&lite_youtube'>YouTube</a> Маятина
+ <a href = '&lite_tg'>Канал</a> OS lite y2019
+[/m]
+[/case]
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/os_text]
+
+
+[sp_subject_text]
+[vars]
+
+# Web
+&web_twitch: [raw]https://www.twitch.tv/mmirzayanov[/raw]
+&web_points_link: [raw]https://docs.google.com/spreadsheets/d/1x7w7USlmA7FYWPcBbtWSkw0wovzitLkbDmmgGCGFdvI/edit#gid=0[/raw]
+&web_tg: [raw]https://t.me/joinchat/JCVn5UkMFnJn21ttJAFQ8A[/raw]
+
+# Android
+&android_twitch: [raw]https://www.twitch.tv/livepenguin[/raw]
+&android_youtube: [raw]https://www.youtube.com/channel/UCUNTIifSxTAgTCuH1R9N9zA[/raw]
+&android_discord: [raw]https://discord.gg/qugj3sS[/raw]
+&android_points_link: [raw]https://docs.google.com/spreadsheets/d/1yuP4zvM5DgZJ4iVus1vS4eUHHaVErwWZGy9nad_gitw/edit#gid=0[/raw]
+
+# IOS
+&ios_twitch: [raw]https://www.twitch.tv/pr0gl[/raw]
+&ios_discord: [raw]https://discord.gg/6zBGqbf[/raw]
+
+# CPP
+&cpp_twitch: [raw]http://twitch.tv/sorokin_ivan[/raw]
+&cpp_slack: [raw]http://join.slack.com/t/cpp-year2019/shared_invite/zt-fc7698lt-wG9QBbkUhYA18JkRVXBoFQ[/raw]
+&cpp_tg: [raw]https://t.me/y2019cpp[/raw]
+
+# Kotlin
+&kotlin_zoom: [raw]https://itmo.zoom.us/j/83520681100?pwd=emRydGV5MnZiRmNKUVp6Vk5SS1FRdz09[/raw]
+&kotlin_tg: [raw]https://t.me/joinchat/AA0lfErjI_WZ-c1I3oXKWQ[/raw]
+
+[/vars]
+[body]
+<b>Современное программирование</b>
+
+[case ^course]
+web: [m]
+<em>Web-программирование</em>
+ Стильный веб <a href = '&web_twitch'>Twitch</a>
+ Стильные веб <a href = '&web_points_link'>баллы</a>
+ Стильный веб <a href = '&web_tg'>чатик</a> ИТМО 2020, Web
+[/m]
+
+android: [m]
+<em>Android разработка</em>
+ Лучший чем у Apple <a href = '&android_twitch'>Twitch</a>
+ Лучший чем у Apple <a href = '&android_youtube'>YouTube</a>
+ Лучший чем у Apple <a href = '&android_discord'>Discord</a>
+ Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>
+[/m]
+
+ios: [m]
+<em>IOS разработка</em>
+ Элегантный яблочный <a href = '&ios_twitch'>Twitch</a>
+ Элегантный яблочный <a href = '&ios_discord'>Discord</a>
+[/m]
+
+cpp: [m]
+<em>Язык программирования C++</em>
+ Зато самый быстрый <a href = '&cpp_twitch'>Twitch</a>
+ Зато очень гибкий <a href = '&cpp_slack'>Slack</a>
+ Да все понятно в этом <a href = '&cpp_tg'>чате</a>
+[/m]
+
+kotlin: [m]
+<em>Клиент-серверное приложение на Kotlin</em>
+ Дерзкий, модный, молодежный <a href = '&kotlin_zoom'>Zoom</a>
+ Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin
+[/m]
+[/case]
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/sp_text]
+
+
+[bjd_subject_text]
+[vars]
+&main_link: [raw]https://openedu.ru/my/#timeline=current[/raw]
+[/vars]
+[body]
+<b>БЖД</b> (да-да, я существую)
+
+К сожалению, задания по этой <a href = '&main_link'>ссылке</a> надо тоже делать
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/bjd_text]
+
+
+[history_subject_text]
+[vars]
+
+# Международные отношения
+&internation_tg: [raw]https://t.me/joinchat/Dq_pJBiX_CcXeQEG32l9Sg[/raw]
+&internation_recordings: [raw]https://drive.google.com/folderview?id=14hpU-oORZIl8Q9EnQl5AEcgemT8EURk7[/raw]
+
+# Реформы
+&reforms_tg: [raw]https://t.me/joinchat/Bva9iVe9fMb47_Hug717ig[/raw]
+
+# Государственность
+&statehood_tg: [raw][/raw] # todo
+
+# Культура
+&culture_tg: [raw]https://t.me/joinchat/KlfmBRiyP1CMoxUQQLqiXw[/raw]
+
+# Проблемы Европы
+&problems_tg: [raw][/raw] # todo
+
+# Наука и техника
+&science_tg: [raw][/raw] # todo
+
+[/vars]
+[body]
+<b>История</b>
+
+[case ^course]
+international: [m]
+<em>Россия в истории современных международных отношений</em>
+ <s>политический</s> исторический <a href = '&internation_tg'>чатик</a>
+ <a href = '&internation_recordings'>Гуглдок</a> с записями
+[/m]
+
+reforms: [m]
+<em>Реформы и реформаторы в истории России</em>
+ Progressive <a href = '&reforms_tg'>chat</a>
+[/m]
+
+statehood: [m]
+<em>История становления российской государственности</em>
+ Патриотическая <a href = '&statehood_tg'>беседа</a>
+[/m]
+
+culture: [m]
+<em>История западноевропейской и русской культуры</em>
+ Изысканная <a href = '&culture_tg'>беседа</a>
+[/m]
+
+eu_problems: [m]
+<em>Проблемы истории Европы XХ века</em>
+ Westeuropäischer <a href = '&problems_tg'>chat</a>
+[/m]
+
+science: [m]
+<em>Наука и техника в истории цивилизации</em>
+11010000 10011101 11010000 10110000 11010001 10000011 11010001 10000111 11010000 10111101 11010000 10111110 101101 11010001 10000010 11010000 10110101 11010001 10000101 11010000 10111101 11010000 10111000 11010001 10000111 11010000 10110101 11010001 10000001 11010000 10111010 11010000 10111000 11010000 10111001 100000 <a href = '&science_tg'>11010001 10000111 11010000 10110000 11010001 10000010</a>
+[/m]
+
+[/case]
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/history_text]
+
+
+[matan_subject_text]
+[vars]
+
+# Main
+&themes_link: [raw]https://docs.google.com/spreadsheets/d/1WyW_48ZFJFKsRIyG4ngizGZT-5XRcBS9RBkc048OZC4/edit#gid=1254545595[/raw]
+&hw_link: [raw]https://docs.google.com/spreadsheets/d/1WyW_48ZFJFKsRIyG4ngizGZT-5XRcBS9RBkc048OZC4/edit#gid=488114147[/raw]
+&points_link: [raw]https://docs.google.com/spreadsheets/d/1WyW_48ZFJFKsRIyG4ngizGZT-5XRcBS9RBkc048OZC4/edit#gid=488114147[/raw]
+
+# Zoom
+&lecture_zoom: [raw]https://us02web.zoom.us/j/84651725399?pwd=MEU5R1hBSFVLWnRsQmdGQVd5WG9Xdz09[/raw]
+&practice_zoom: [raw]https://us02web.zoom.us/j/86187899036?pwd=M0ltOHN3eXdWQSt0RDQ4TW1BdDB5Zz09[/raw]
+
+[/vars]
+[body]
+<b>Математический анализ</b>
+
+<a href = '&themes_link'>Список</a> пройденных тем
+ Домашние <a href = '&hw_link'>задания</a> (ищи внизу таблицы)
+ Твои скромные <a href = '&points_link'>баллы</a> по матану
+
+<em>А чо там по зуму?</em>
+ Для лекций:
+  - Идентификатор: 807856
+  - Ссылка: <a href = '&lecture_zoom'>нажми на меня</a>
+ Для практик:
+  - Идентификатор: 473211
+  - Ссылка: <a href = '&practice_zoom'>нажми на меня</a>
+
+^timetable
+Вернуться на главную /help
+[/body]
+[/matan_text]
+
+
+[main_parameters_text]
+[body]
+<b>Личный Кабинет</b>
+
+<u>Основное:</u>
+Имя пользователя: <em>^username</em>
+Способ посещения: <em>^attendance</em>
+
+<u>Рассылка:</u>
+Статус рассылки: <em>^mailing_status</em>
+Время рассылки: <em>^mailing_time</em>
+Временная зона: <em>UTC ^utcoffset</em>
+
+<u>Курсы:</u>
+Группа английского: <em>^eng</em>
+Преподаватель английского: <em>^eng_teacher</em>
+Курс по истории: <em>^history</em>
+Курс СП: <em>^sp</em>
+Курс ОС: <em>^os</em>
+
+Изменить настройки аккаунта:
+[/body]
+[/parameters_text]
+
+
+[courses_parameters_text]
+[body]
+<b>Страница изменения выбора курсов:</b>
+
+Здесь можно изменить выбор предметов, информация о которых будет отбражаться на их странице, а также у тебя в расписании
+
+<u>Текущие настройки:</u>
+Группа английского: <em>^eng</em>
+Преподаватель английского: <em>^eng_teacher</em>
+Курс по истории: <em>^history</em>
+Курс СП: <em>^sp</em>
+Курс ОС: <em>^os</em>
+
+Изменить выбор:
+[/body]
+[/courses_parameters_text]
+
+
+[mailing_parameters_text]
+[body]
+<b>Страница изменения настроек ежедневной рассылки расписания:</b>
+
+Я могу отправлять тебе твое раписание на день, чтобы ты ничего не забыд, только скажи)
+
+<u>Текущие настройки:</u>
+Статус рассылки: <em>^mailing_status</em>
+Время рассылки: <em>^mailing_time</em>
+Временная зона: <em>UTC ^utcoffset</em>
+
+Поменять настройки:
+[/body]
+[/mailing_parameters_text]
+
+
+[attendance_parameters_text]
+[body]
+Здесь ты можешь выбрать свой способ посещения занятий (либо просто тот, информацию о котором ты хочешь видеть)
+
+Текущий способ посещения: <em>^attendance</em>
+
+Изменить выбор:
+[/body]
+[/attendance_parameters_text]
+
+
+[os_parameters_text]
+[body]
+Здесь можно выбрать курс операционных систем, информацию о котором ты хочешь видеть (кстати, можно смотреть информацию про оба курса)
+
+Текущий курс: <em>^os</em>
+
+Изменить выбор:
+[/body]
+[/os_parameters_text]
+
+
+[sp_parameters_text]
+[body]
+Здесь можно выбрать курс современного программирования, информация о котором будет появляться
+
+Текущий курс: <em>^sp</em>
+
+Изменить выбор:
+[/body]
+[/sp_parameters_text]
+
+
+[history_parameters_text]
+[body]
+Здесь можно выбрать свой курс истории (или все, если настолько любознательный)
+
+Текущий курс: <em>^history</em>
+
+Изменить выбор:
+[/body]
+[/history_parameters_text]
+
+
+[eng_parameters_text]
+[body]
+Хочешь другую свою группу английского? (а может все сразу?)
+
+Текущая группа: <em>^eng</em>
+Преподаватель: <em>^eng_teacher</em>
+
+Изменить выбор:
+[/body]
+[/eng_parameters_text]
+
+
+[eng_std_user_data_text]
+[body]
+2-ИТИПКТ-^group
+[/body]
+[/eng_std_user_data_text]
+
+
+[subject_day_template_text]
+[body]
+<u><em>^subject:</em></u>
+^timetable
+
+[/body]
+[/subject_day_template_text]

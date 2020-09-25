@@ -3,7 +3,7 @@ from flask_sslify import SSLify
 
 from telegram import Update
 
-import config
+from static import config
 import os
 
 PORT = int(os.environ.get('PORT', 5000))
