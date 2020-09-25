@@ -2,23 +2,54 @@ from typing import Dict
 
 
 class MLWText:
-    def __init__(self, name, parsed_seq, local_vars, cases, global_vars: Dict[str, str] = None):
+    def __init__(self, name, parsed_seq: list, local_vars: Dict[str, list], cases: Dict[str, list],
+                 global_vars: Dict[str, str] = None):
         self.__name = name
         self.__parsed_seq = parsed_seq
         self.__local_vars = local_vars
         self.__cases = cases
-        self.__global_vars = global_vars
+        self.__global_vars = (global_vars if global_vars else {})
 
-    def print_(self):
-        print(self.__parsed_seq)
-        print(self.__local_vars)
-        print(self.__cases)
+    def __get_text(self, seq: list) -> str:
+        for i in range(len(seq)):
+            part = seq[i]
+            if len(part) and (part[0] == '&' or part[0] == '^'):
+                seq[i] = self.__substitute_vars(part)
+            elif part.startswith('_case'):
+                seq[i] = self.__substitute_case(part)
+        return ''.join(seq)
 
-    def __substitute_local_vars(self, var_name: str) -> list:
-        retval = self.__local_vars.get(var_name)
-        if retval:
-            return retval
-        raise ValueError('Undefined local variable')
+    def __substitute_vars(self, var_name: str) -> str:
+        if var_name[0] == '&':
+            retval = self.__local_vars.get(var_name)
+            if retval:
+                return self.__get_text(retval)
+            raise ValueError('Undefined local variable')
+        elif var_name[0] == '^':
+            retval = self.__global_vars.get(var_name)
+            if retval:
+                return retval
+            raise ValueError('Undefined global variable')
+        raise ValueError(f'Invalid var name: {var_name}')
+
+    def __substitute_case(self, case_name: str) -> str:
+        case_var, states = self.__cases[case_name]
+        if case_var[0] == '&' or case_var[0] == '^':
+            case_var = self.__substitute_vars(case_var)
+        substitution = states.get(case_var)
+        return self.__get_text(substitution) if substitution else ''
+
+    def add_global_var(self, key, value):
+        self.__global_vars[key] = value
+
+    def text(self, global_vars: Dict[str, str] = None) -> str:
+        if global_vars:
+            self.__global_vars.update(global_vars)
+        # print(self.__parsed_seq)
+        # print(self.__cases)
+        # print(self.__local_vars)
+        # print(self.__global_vars)
+        return self.__get_text(self.__parsed_seq)
 
 
 class Source:
@@ -296,31 +327,24 @@ class MLWParser(BaseParser):
 
 
 test = '''
-[test] # comment
-[vars] # comment
+[test] 
+[vars] 
 &a : [raw]abcd[/raw]
 &b : [m]hello, # not comment
-there[/m]
-[/vars] # comment
-[body] # comment
-Hello, world!
-How are you?
-&a_bgh#comment
-- I, m fine
-\^ # comment
-not comment # comment
-[case &d]
-a: case1
-b: [m]
-case
-2
-[/m]
-text: ^case3
+there: ^a[/m]
+[/vars]
+[body]
+--------------
+^a
+&a
+&b
+[case ^b]
+o: one
+t: two
 [/case]
-\[m\]
-^dfghj
-[/body] # comment
+--------------
+[/body]
 [/test]
 '''
 
-MLWParser(test).parse().print_()
+print(MLWParser(test).parse().text({'^a': 'Hello, World', '^b': 'r'}))
