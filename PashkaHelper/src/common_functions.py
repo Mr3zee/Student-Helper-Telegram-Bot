@@ -5,8 +5,7 @@ from src import keyboard, database
 from src.timetable import get_timetable_by_index, get_subject_timetable
 from src.time_management import get_weekday
 from src.log import log_function
-from src.message import get_text
-from src.subject import subjects
+from src.text import get_text
 
 from datetime import timedelta
 import logging
@@ -81,7 +80,7 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
 
         context.bot.send_message(
             chat_id=chat_id,
-            text=get_text(f'{hdl_name}_text', language_code),
+            text=get_text(f'{hdl_name}_text', language_code).text(),
             reply_markup=(get_reply_markup(language_code) if get_reply_markup else None),
         )
         return ret_lvl
@@ -95,16 +94,15 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
     return ret_handler
 
 
-def get_subject_main_info(sub_name, user_id, language_code):
-    header = get_text(f'{sub_name}_text', language_code)
-    subtype = subjects[sub_name].get_subtype_full_name(database.get_user_attr(user_id, sub_name))
-    main_info = '\n\n'.join([
-        get_text(f'{name}_text', language_code)
-        for name in (
-            subjects[sub_name].get_subtypes_full_names() if not subtype else [subtype]
-        )
-    ])
-    return header.format(main_info)
+def get_subject_info(sub_name, user_id, language_code):
+    subtype, attendance = database.get_user_attrs(user_id, [sub_name, 'attendance']).values()
+
+    timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
+    return get_text(f'{sub_name}_subject_text', language_code).text({
+        'course': subtype,
+        'timetable': timetable,
+        'attendance': attendance,
+    })
 
 
 def subject_handler(sub_name):
@@ -114,13 +112,7 @@ def subject_handler(sub_name):
         chat_id = update.effective_chat.id
         user_id = update.effective_user.id
 
-        main_info = get_subject_main_info(sub_name, user_id, language_code)
-
-        subtype, attendance = database.get_user_attrs(user_id, [sub_name, 'attendance']).values()
-
-        additional_info = get_subject_timetable(sub_name, subtype, attendance, language_code)
-        main_info = main_info % additional_info
-
+        main_info = get_subject_info(sub_name, user_id, language_code)
         context.bot.send_message(
             chat_id=chat_id,
             text=main_info,

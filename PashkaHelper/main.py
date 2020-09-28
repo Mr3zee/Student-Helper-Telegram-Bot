@@ -63,18 +63,18 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  make inline mode
 #  fix buttons copypaste
-#  make database +
 #  таблица отметки дз очно / заочно
-#  fix /today +
-#  fix /discra
 #  make notification on/off in parameters
-#  fix dont show eng timetable when eng group set +
 #  make auto exit parameters
 #  UTC 3
 #  add to today links
 #  error handler
-#  make message constructor
+#  make message constructor +
 #  make teachers in english
 #  teachers info
 #  /timetable [n]
+#  fix /today
+#  fix /timetable
+#  fix /parameters
+#  fix /eng
 

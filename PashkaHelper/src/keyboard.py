@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from src.message import get_text
+from src.text import get_text
 
 from src.buttons import *
 
