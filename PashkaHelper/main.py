@@ -61,17 +61,16 @@ if __name__ == '__main__':
 
 # TODO:
 #  mark tasks in tables
-#  make inline mode
 #  fix buttons copypaste
-#  make notification on/off in parameters
-#  make auto exit parameters
-#  add to /today links
-#  error handler
+#  ! make notification on/off in parameters
+#  ! make auto exit parameters
+#  ! add to /today links
+#  ! error handler
 #  teachers info
 #  /timetable [n]
-#  ! fix /eng +
-#  ! mlw case all +
-#  mlw eng all looks bad
-#  add return timetable links to weekdays messages
+#  ! mlw eng all looks bad +
+#  ! add return timetable links to weekdays messages
 #  make 'all' special name
+#  mlw parser all cases in one (found in eng_text)
+#  make online info available for offline and vice versa
 
