@@ -39,7 +39,9 @@ class MLWText:
         if case_var[0] == '&' or case_var[0] == '^':
             case_var = self.__substitute_vars(case_var)
         if case_var == 'all' and 'all' not in states.keys():
-            substitution = [f'{self.__get_text(value)}\n' for value in states.values()]
+            all_values = list(states.values())
+            substitution = [f'{self.__get_text(value)}\n\n' for value in all_values[:-1]]
+            substitution.append(self.__get_text(all_values[-1]))
         else:
             substitution = states.get(case_var)
         return self.__get_text(substitution) if substitution else ''
@@ -255,6 +257,8 @@ class MLWParser(BaseParser):
         self._skip_redundant_symbols()
         while True:
             retval.extend(self._parse_single_line_text())
+            while self._is_ch('\n'):
+                retval.extend([self._take_char()])
             self._skip_redundant_symbols()
             if self._is_closing_tag():
                 break

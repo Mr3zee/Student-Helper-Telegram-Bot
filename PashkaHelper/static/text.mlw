@@ -86,7 +86,7 @@
 [body]
 <b>Расписание:</b>
 
-Ссылочки: <a href = '&xmain_link'>Общее</a> расписание, <a href = '&our_link'>Наше</a> расписание
+Ссылочки: <a href = '&main_link'>Общее</a> расписание, <a href = '&our_link'>Наше</a> расписание
 
 Вернуться на главную /help
 
@@ -161,6 +161,7 @@
 <u>Telegram-чаты</u>
  <a href = '&tg_link'>Чат</a> АиСД y2019 34-37
 
+
 ^timetable
 Вернуться на главную /help
 [/body]
@@ -211,6 +212,7 @@
 <u>Telegram-чаты</u>
  <a href = '&tg_main_link'>Чат</a> ДМ year2019
  <a href = '&tg_practice_link'>Чат</a> Практика ДМ M323(6|7), 2020, Осень
+
 
 ^timetable
 Вернуться на главную /help
@@ -281,117 +283,123 @@ all: all
 
 # John Cuti
 cuti: [m]
-<em>2-ИТИПКТ-[case ^course]
-c2_1: C2/1
-c2_3: C2/3
+<em>[case ^course]
+c2_1: 2-ИТИПКТ-C2/1
+c2_3: 2-ИТИПКТ-C2/3
+all: 2-ИТИПКТ-C2/1 | 2-ИТИПКТ-C2/3
 [/case] - Джон Кути</em>
 Почта Джона Кути: &cuti_email
 <a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
+
 [case ^course]
 c2_3: [m]
+Заочно:
   - <a href = '&c2_3_discord'>Discord</a> of native speakers
-  - <a href = '&c2_3_tg'>Chat</a> of native speakers
-[/m]
+  - <a href = '&c2_3_tg'>Chat</a> of native speakers[/m]
 c2_1: [m]
+Очно:
   - Кабинет: 412
-  - <a href = '&c2_1_tg'>Чатик</a> истинных англичан
-[/m]
-[/case]
-[/m]
+  - <a href = '&c2_1_tg'>Чатик</a> истинных англичан[/m]
+[/case][/m]
 
 # Cipo
 cipo: [m]
-<em>2-ИТИПКТ-[case ^course]
-c1_1: C1/1
-c1_2: C1/2
+<em>[case ^course]
+c1_1: 2-ИТИПКТ-C1/1
+c1_2: 2-ИТИПКТ-C1/2
+all: 2-ИТИПКТ-C1/1 | 2-ИТИПКТ-C1/2
 [/case] - Cipo</em>
+
 [case ^course]
 c1_1: [m]
+Заочно:
  - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
- - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа
-[/m]
+ - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа[/m]
 c1_2: [m]
+Очно:
  - Кабинет: 409
- - <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую
-[/m]
-[/case]
-[/m]
+ - <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую[/m]
+[/case][/m]
 
 # Белянина С.
 belyanina: [m]
-<em>2-ИТИПКТ-[case ^course]
-b2_1: B2/1
-b2_3: B2/3
+<em>[case ^course]
+b2_1: 2-ИТИПКТ-B2/1
+b2_3: 2-ИТИПКТ-B2/3
+all: 2-ИТИПКТ-B2/1 | 2-ИТИПКТ-B2/3
 [/case] - Белянина С.</em>
+
 [case ^course]
 b2_3: [m]
+Заочно:
   - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
-  - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства
-[/m]
+  - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства[/m]
 b2_1: [m]
+Очно:
   - Кабинет: 315
-  - <a href = '&b2_1_tg'>Чат</a> иностранных агентов
-[/m]
-[/case]
-[/m]
+  - <a href = '&b2_1_tg'>Чат</a> иностранных агентов[/m]
+[/case][/m]
 
 # Захарова А.
 zaharova: [m]
-<em>2-ИТИПКТ-[case ^course]
-c2_2: C2/2
-b2_2: B2/2
+<em>[case ^course]
+c2_2: 2-ИТИПКТ-C2/2
+b2_2: 2-ИТИПКТ-B2/2
+all: 2-ИТИПКТ-C2/2 | 2-ИТИПКТ-B2/2
 [/case] - Захарова А.</em>
+
 [case ^course]
 c2_2: [m]
+Заочно:
   - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
   - Идентификатор конференции: 824 3167 0213
   - Код доступа: 121611 (или какой-то из 121611-121622)
-  - <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов
-[/m]
+  - <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов[/m]
 b2_2: [m]
+Очно:
   - Кабинет: 319
-  - <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров
-[/m]
-[/case]
-[/m]
+  - <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров[/m]
+[/case][/m]
 
 # Трофимова Т.А.
 trofimova: [m]
-<em>2-ИТИПКТ-[case ^course]
-b12_1: B1.2/1
-b12_2: B1.2/2
+<em>[case ^course]
+b12_1: 2-ИТИПКТ-B1.2/1
+b12_2: 2-ИТИПКТ-B1.2/2
+all: 2-ИТИПКТ-B1.2/1 | 2-ИТИПКТ-B1.2/2
 [/case] - Трофимова Т.А.</em>
+
 [case ^course]
 b12_1: [m]
+Заочно:
   - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
-  - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"
-[/m]
+  - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"[/m]
 b12_2: [m]
+Очно:
   - Кабинет: 313
-  - <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"
-[/m]
-[/case]
-[/m]
+  - <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"[/m]
+[/case][/m]
 
 # Малышева А.
 malysheva: [m]
-<em>2-ИТИПКТ-[case ^course]
-b11_1: B1.1/1
-b11_2: B1.1/2
+<em>[case ^course]
+b11_1: 2-ИТИПКТ-B1.1/1
+b11_2: 2-ИТИПКТ-B1.1/2
+all: 2-ИТИПКТ-B1.1/1 | 2-ИТИПКТ-B1.1/2
 [/case] - Малышева А.</em>
+
 [case ^course]
 b11_1: [m]
+Заочно:
   - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
-  - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit
-[/m]
+  - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit[/m]
 b11_2: [m]
+Очно:
   - Кабинет: 410
-  - <a href = '&b11_2_tg'>Чат</a> противников Brexit
-[/m]
+  - <a href = '&b11_2_tg'>Чат</a> противников Brexit[/m]
+[/case][/m]
 [/case]
-[/m]
 
-[/case]
 
 ^timetable
 Вернуться на главную /help
@@ -447,6 +455,7 @@ b11_2: [m]
 <u>Telegram-чаты</u>
  <a href = '&practice_tg'>Чат</a> М323* Диффуры, практика
 
+
 ^timetable
 Вернуться на главную /help
 [/body]
@@ -478,16 +487,15 @@ adv: [m]
  Домашние <a href = '&adv_hw_link'>задания</a> все по ним же
  Занимательный <a href = '&adv_zoom'>Zoom</a> по системкам
  Классный <a href = '&adv_youtube'>YouTube</a> по системкам
- <a href = '&adv_tg'>Чат</a> ИТМО 2020, ОС
-[/m]
+ <a href = '&adv_tg'>Чат</a> ИТМО 2020, ОС[/m]
 
 lite: [m]
 <u>Lite</u>
  Познавательный <a href = '&lite_twitch'>Twitch</a> Маятина
  Расслабляющий <a href = '&lite_youtube'>YouTube</a> Маятина
- <a href = '&lite_tg'>Канал</a> OS lite y2019
-[/m]
+ <a href = '&lite_tg'>Канал</a> OS lite y2019[/m]
 [/case]
+
 
 ^timetable
 Вернуться на главную /help
@@ -531,36 +539,32 @@ web: [m]
 <em>Web-программирование</em>
  Стильный веб <a href = '&web_twitch'>Twitch</a>
  Стильные веб <a href = '&web_points_link'>баллы</a>
- Стильный веб <a href = '&web_tg'>чатик</a> ИТМО 2020, Web
-[/m]
+ Стильный веб <a href = '&web_tg'>чатик</a> ИТМО 2020, Web[/m]
 
 android: [m]
 <em>Android разработка</em>
  Лучший чем у Apple <a href = '&android_twitch'>Twitch</a>
  Лучший чем у Apple <a href = '&android_youtube'>YouTube</a>
  Лучший чем у Apple <a href = '&android_discord'>Discord</a>
- Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>
-[/m]
+ Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>[/m]
 
 ios: [m]
 <em>IOS разработка</em>
  Элегантный яблочный <a href = '&ios_twitch'>Twitch</a>
- Элегантный яблочный <a href = '&ios_discord'>Discord</a>
-[/m]
+ Элегантный яблочный <a href = '&ios_discord'>Discord</a>[/m]
 
 cpp: [m]
 <em>Язык программирования C++</em>
  Зато самый быстрый <a href = '&cpp_twitch'>Twitch</a>
  Зато очень гибкий <a href = '&cpp_slack'>Slack</a>
- Да все понятно в этом <a href = '&cpp_tg'>чате</a>
-[/m]
+ Да все понятно в этом <a href = '&cpp_tg'>чате</a>[/m]
 
 kotlin: [m]
 <em>Клиент-серверное приложение на Kotlin</em>
  Дерзкий, модный, молодежный <a href = '&kotlin_zoom'>Zoom</a>
- Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin
-[/m]
+ Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin[/m]
 [/case]
+
 
 ^timetable
 Вернуться на главную /help
@@ -613,35 +617,29 @@ kotlin: [m]
 international: [m]
 <em>Россия в истории современных международных отношений</em>
  <s>политический</s> исторический <a href = '&internation_tg'>чатик</a>
- <a href = '&internation_recordings'>Гуглдок</a> с записями
-[/m]
+ <a href = '&internation_recordings'>Гуглдок</a> с записями[/m]
 
 reforms: [m]
 <em>Реформы и реформаторы в истории России</em>
- Progressive <a href = '&reforms_tg'>chat</a>
-[/m]
+ Progressive <a href = '&reforms_tg'>chat</a>[/m]
 
 statehood: [m]
 <em>История становления российской государственности</em>
- Патриотическая <a href = '&statehood_tg'>беседа</a>
-[/m]
+ Патриотическая <a href = '&statehood_tg'>беседа</a>[/m]
 
 culture: [m]
 <em>История западноевропейской и русской культуры</em>
- Изысканная <a href = '&culture_tg'>беседа</a>
-[/m]
+ Изысканная <a href = '&culture_tg'>беседа</a>[/m]
 
 eu_problems: [m]
 <em>Проблемы истории Европы XХ века</em>
- Westeuropäischer <a href = '&problems_tg'>chat</a>
-[/m]
+ Westeuropäischer <a href = '&problems_tg'>chat</a>[/m]
 
 science: [m]
 <em>Наука и техника в истории цивилизации</em>
-11010000 10011101 11010000 10110000 11010001 10000011 11010001 10000111 11010000 10111101 11010000 10111110 101101 11010001 10000010 11010000 10110101 11010001 10000101 11010000 10111101 11010000 10111000 11010001 10000111 11010000 10110101 11010001 10000001 11010000 10111010 11010000 10111000 11010000 10111001 100000 <a href = '&science_tg'>11010001 10000111 11010000 10110000 11010001 10000010</a>
-[/m]
-
+11010000 10011101 11010000 10110000 11010001 10000011 11010001 10000111 11010000 10111101 11010000 10111110 101101 11010001 10000010 11010000 10110101 11010001 10000101 11010000 10111101 11010000 10111000 11010001 10000111 11010000 10110101 11010001 10000001 11010000 10111010 11010000 10111000 11010000 10111001 100000 <a href = '&science_tg'>11010001 10000111 11010000 10110000 11010001 10000010</a>[/m]
 [/case]
+
 
 ^timetable
 Вернуться на главную /help
@@ -676,6 +674,7 @@ science: [m]
  Для практик:
   - Идентификатор: 473211
   - Ссылка: <a href = '&practice_zoom'>нажми на меня</a>
+
 
 ^timetable
 Вернуться на главную /help
