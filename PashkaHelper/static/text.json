@@ -32,6 +32,8 @@
     "attendance_offline_user_data_text": "Очно",
     "mailing_status_allowed_user_data_text": "Рассылка разрешена",
     "mailing_status_forbidden_user_data_text": "Рассылка запрещена",
+    "notification_status_enabled_user_data_text": "Звук уведомлений включен",
+    "notification_status_disabled_user_data_text": "Звук уведомлений выключен",
 
     "os_all_user_data_text": "Все оси",
     "os_lite_user_data_text": "Стандартные оси",
@@ -121,6 +123,8 @@
     "both_attendance_button": "Все сразу",
     "allowed_mailing_button": "Разрешить отправку",
     "forbidden_mailing_button": "Запретить отправку",
+    "enabled_notification_mailing_button": "Включить звук уведомлений",
+    "disabled_notification_mailing_button": "Выключть звук уведомлений",
     "tz_info_button": "Временная зона",
     "message_time_button": "Время отправки сообщения"
   }

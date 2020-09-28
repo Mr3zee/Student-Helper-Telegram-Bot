@@ -151,17 +151,15 @@ class BaseParser:
 
 
 class MLWParser(BaseParser):
-    __text_seq = []
-
-    __local_vars = {}
-
-    __cases = {}
 
     def _next_var(self):
         return self._next_word({'&', '^'})
 
     def __init__(self, input_text):
         super().__init__(input_text)
+        self.__text_seq = []
+        self.__local_vars = {}
+        self.__cases = {}
 
     def parse(self) -> (MLWText, str):
         self._skip_redundant_symbols()

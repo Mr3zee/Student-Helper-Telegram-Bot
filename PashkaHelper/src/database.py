@@ -12,6 +12,7 @@ ATTR_NAMES = [
     'username',
     'attendance',
     'mailing_status',
+    'notification_status',
     'mailing_time',
     'utcoffset',
     'os',
@@ -31,7 +32,6 @@ for key, value in subjects.items():
         DOMAINS[key] = domains
         DOMAINS[key].add('all')
 
-
 if config.ENV == 'development':
     app.config['SQLALCHEMY_DATABASE_URI'] = config.local_db_uri
 elif config.ENV == 'production':
@@ -50,6 +50,7 @@ class Users(db.Model):
     username = db.Column(db.String(100))
     attendance = db.Column(db.String(20))
     mailing_status = db.Column(db.String(20))
+    notification_status = db.Column(db.String(20))
     mailing_time = db.Column(db.String(10))
     utcoffset = db.Column(db.Integer)
     os = db.Column(db.String(20))
@@ -57,12 +58,14 @@ class Users(db.Model):
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
 
-    def __init__(self, user_id, username='unknown', attendance='both', mailing_status='allowed', mailing_time='7:30',
+    def __init__(self, user_id, username='unknown', attendance='both',
+                 mailing_status='allowed', notification_status='enabled', mailing_time='7:30',
                  utcoffset=3, os=None, sp=None, history=None, eng=None):
         self.user_id = user_id
         self.username = username
         self.attendance = attendance
         self.mailing_status = mailing_status
+        self.notification_status = notification_status
         self.mailing_time = mailing_time
         self.utcoffset = utcoffset
         self.os = os

@@ -692,6 +692,7 @@ science: [m]
 
 <u>Рассылка:</u>
 Статус рассылки: <em>^mailing_status</em>
+Уведомления: <em>^notification_status</em>
 Время рассылки: <em>^mailing_time</em>
 Временная зона: <em>UTC ^utcoffset</em>
 
@@ -731,6 +732,7 @@ science: [m]
 
 <u>Текущие настройки:</u>
 Статус рассылки: <em>^mailing_status</em>
+Уведомления: <em>^notification_status</em>
 Время рассылки: <em>^mailing_time</em>
 Временная зона: <em>UTC ^utcoffset</em>
 

@@ -28,10 +28,13 @@ ATTENDANCE_SET = {ATTENDANCE_BOTH, ATTENDANCE_OFFLINE, ATTENDANCE_ONLINE}
 # everyday message buttons
 ALLOW_MESSAGE = 'allowed_mailing_button'
 FORBID_MESSAGE = 'forbidden_mailing_button'
+ENABLE_NOTIFICATION_MESSAGE = 'enabled_notification_mailing_button'
+DISABLE_NOTIFICATION_MESSAGE = 'disabled_notification_mailing_button'
 TZINFO = 'tz_info_button'
 MESSAGE_TIME = 'message_time_button'
 
-EVERYDAY_MESSAGE_SET = {ALLOW_MESSAGE, FORBID_MESSAGE, MESSAGE_TIME, TZINFO}
+EVERYDAY_MESSAGE_SET = {ALLOW_MESSAGE, FORBID_MESSAGE, ENABLE_NOTIFICATION_MESSAGE, DISABLE_NOTIFICATION_MESSAGE,
+                        MESSAGE_TIME, TZINFO}
 
 # courses buttons
 OS_TYPE = 'os_type_button'
