@@ -1,5 +1,5 @@
 from src.subject import subjects
-from src.message import get_text
+from src.text import get_text
 from static.config import service_file_path, timetable_url
 from src.time_management import get_week_parity
 
@@ -36,26 +36,31 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, language_code
         return get_text('today_sunday_text', language_code=language_code)
 
     template = get_text('weekday_text', language_code)
-    weekday_text = get_text(f'{weekday}_name', language_code)
+    weekday_text = get_text(f'{weekday}_timetable_text', language_code).text()
 
     subjects1, subjects2, parity = SERVER.get_timetable(weekday=weekday, subject_names=subject_names,
                                                         attendance=attendance)
-    parity_text = get_text(f'{parity}_week_text', language_code=language_code)
+    parity_text = get_text(f'{parity}_week_text', language_code=language_code).text()
+
+    template.add_global_vars({
+        'weekday': weekday_text,
+        'week_parity': parity_text,
+    })
 
     if not subjects1:
-        happy_text = get_text('happy_text', language_code=language_code)
-        return template.format(weekday_text, parity_text, happy_text)
+        happy_text = get_text('happy_text', language_code=language_code).text()
+        return template.text({'timetable': happy_text})
 
     weekday_timetable = __put_together(subjects1, subjects2, attendance, subject_template, language_code)
-    return template.format(weekday_text, parity_text, weekday_timetable)
+    return template.text({'timetable': weekday_timetable})
 
 
 def __put_together(subjects1, subjects2, attendance, template, language_code):
-    timetable = get_text('{}_text'.format('intramural' if attendance != ONLINE else 'extramural'), language_code)
+    timetable = get_text('{}_timetable_text'.format('offline' if attendance != ONLINE else 'online'), language_code).text()
     timetable += '\n' + __make_timetable(subjects1, template)
 
     if subjects2:
-        timetable += '\n\n' + get_text('extramural_text', language_code) + '\n'
+        timetable += '\n\n' + get_text('online_timetable_text', language_code).text() + '\n'
         timetable += __make_timetable(subjects2, template)
     return timetable
 
@@ -73,13 +78,16 @@ def get_subject_timetable(sub_name, subtype, attendance, language_code):
     if not timetable:
         return ''
 
-    template = get_text('subject_timetable_text', language_code=language_code)
+    template = get_text('subject_timetable_text', language_code=language_code).text()
 
     for weekday, [sub1, sub2] in timetable.items():
-        weekday_name = get_text(f'{weekday}_name', language_code=language_code)
-        day_template = get_text('subject_day_template_text', language_code=language_code)
+        weekday_name = get_text(f'{weekday}_timetable_text', language_code=language_code).text()
         subject_timetable = __put_together(sub1, sub2, attendance, subject_template_parity, language_code)
-        template += day_template.format(weekday_name, subject_timetable)
+        day_template = get_text('subject_day_template_text', language_code=language_code).text({
+            'timetable': subject_timetable,
+            'weekday': weekday_name,
+        })
+        template += day_template
 
     return template
 
@@ -157,7 +165,8 @@ class Server:
             online_dict = Server.__parse_and_make(values, start_row, end_row, ONLINE, week_parity, sub_filter)
             return offline_dict, online_dict, week_parity
         else:
-            return Server.__parse_and_make(values, start_row, end_row, attendance, week_parity, sub_filter), None, week_parity
+            return Server.__parse_and_make(values, start_row, end_row, attendance, week_parity,
+                                           sub_filter), None, week_parity
 
     @staticmethod
     def __find_weekday_table(table, weekday):

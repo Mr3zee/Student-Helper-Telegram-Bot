@@ -1,35 +1,37 @@
-from typing import Dict
+from typing import Dict, TextIO
 
 
 class MLWText:
-    def __init__(self, name, parsed_seq: list, local_vars: Dict[str, list], cases: Dict[str, list],
+    def __init__(self, name, parsed_seq: list, local_vars: Dict[str, list] = None, cases: Dict[str, list] = None,
                  global_vars: Dict[str, str] = None):
-        self.__name = name
+        self.name = name
         self.__parsed_seq = parsed_seq
-        self.__local_vars = local_vars
-        self.__cases = cases
+        self.__local_vars = (local_vars if local_vars else {})
+        self.__cases = (cases if cases else {})
         self.__global_vars = (global_vars if global_vars else {})
 
     def __get_text(self, seq: list) -> str:
-        for i in range(len(seq)):
-            part = seq[i]
+        new_seq = []
+        for part in seq:
             if len(part) and (part[0] == '&' or part[0] == '^'):
-                seq[i] = self.__substitute_vars(part)
+                new_seq.append(self.__substitute_vars(part))
             elif part.startswith('_case'):
-                seq[i] = self.__substitute_case(part)
-        return ''.join(seq)
+                new_seq.append(self.__substitute_case(part))
+            else:
+                new_seq.append(part)
+        return ''.join(new_seq)
 
     def __substitute_vars(self, var_name: str) -> str:
         if var_name[0] == '&':
             retval = self.__local_vars.get(var_name)
-            if retval:
+            if retval is not None:
                 return self.__get_text(retval)
-            raise ValueError('Undefined local variable')
+            raise ValueError(f'Undefined local variable: {var_name}')
         elif var_name[0] == '^':
             retval = self.__global_vars.get(var_name)
-            if retval:
+            if retval is not None:
                 return retval
-            raise ValueError('Undefined global variable')
+            raise ValueError(f'Undefined global variable: {var_name}')
         raise ValueError(f'Invalid var name: {var_name}')
 
     def __substitute_case(self, case_name: str) -> str:
@@ -39,16 +41,13 @@ class MLWText:
         substitution = states.get(case_var)
         return self.__get_text(substitution) if substitution else ''
 
-    def add_global_var(self, key, value):
-        self.__global_vars[key] = value
+    def add_global_vars(self, values: dict):
+        self.__global_vars.update({f'^{key}': value for key, value in values.items()})
 
     def text(self, global_vars: Dict[str, str] = None) -> str:
         if global_vars:
-            self.__global_vars.update(global_vars)
-        # print(self.__parsed_seq)
-        # print(self.__cases)
-        # print(self.__local_vars)
-        # print(self.__global_vars)
+            self.add_global_vars(global_vars)
+
         return self.__get_text(self.__parsed_seq)
 
 
@@ -68,8 +67,11 @@ class Source:
         self.__pos += 1
         return retval
 
-    def rollback(self, i):
+    def roll_back(self, i):
         self.__pos -= i
+
+    def get_tail(self):
+        return self.__source[max(self.__pos - (1 if self.has_next() else 0), 0):]
 
 
 class BaseParser:
@@ -82,8 +84,8 @@ class BaseParser:
     def _next_char(self):
         self.__current = self.__source.next()
 
-    def _rollback(self, i):
-        self.__source.rollback(i + 1)
+    def _roll_back(self, i):
+        self.__source.roll_back(i + 1)
         self._next_char()
 
     def _next_word(self, first_symbols: set = None):
@@ -102,7 +104,9 @@ class BaseParser:
         return retval
 
     def _next_line(self):
-        return self._next_with_filter(lambda ch: ch != '\n')
+        retval = self._next_with_filter(lambda ch: ch != '\n')
+        self._next_char()
+        return retval
 
     def _next_with_filter(self, char_filter):
         ch_list = []
@@ -120,6 +124,9 @@ class BaseParser:
 
     def _get_current(self):
         return self.__current
+
+    def _get_tail(self):
+        return self.__source.get_tail()
 
     @staticmethod
     def _is_valid_var_name(var_name):
@@ -151,7 +158,7 @@ class MLWParser(BaseParser):
     def __init__(self, input_text):
         super().__init__(input_text)
 
-    def parse(self) -> MLWText:
+    def parse(self) -> (MLWText, str):
         self._skip_redundant_symbols()
         main_tag, args = self._take_tag()
         if len(args) != 0:
@@ -170,7 +177,8 @@ class MLWParser(BaseParser):
         else:
             raise SyntaxError(f'Unexpected tag: {tag}')
         self._validate_tag(f'/{main_tag}')
-        return MLWText(main_tag, self.__text_seq, self.__local_vars, self.__cases)
+        self._skip_redundant_symbols()
+        return MLWText(main_tag, self.__text_seq, self.__local_vars, self.__cases), self._get_tail()
 
     def _parse_vars(self):
         self._skip_redundant_symbols()
@@ -191,7 +199,9 @@ class MLWParser(BaseParser):
         while True:
             if self._is_ch('#'):
                 self._next_line()
-                continue
+                if text:
+                    retval.append(''.join(text))
+                return retval
             elif self._is_ch('&') or self._is_ch('^'):
                 if text:
                     retval.append((''.join(text)))
@@ -313,7 +323,7 @@ class MLWParser(BaseParser):
 
     def _skip_redundant_symbols(self):
         self._skip_whitespaces()
-        if self._is_ch('#'):
+        while self._is_ch('#'):
             self._next_line()
         self._skip_whitespaces()
 
@@ -322,7 +332,7 @@ class MLWParser(BaseParser):
         if self._is_ch('['):
             self._next_char()
             retval = self._is_ch('/')
-            self._rollback(1)
+            self._roll_back(1)
         return retval
 
 
@@ -347,4 +357,16 @@ t: two
 [/test]
 '''
 
-print(MLWParser(test).parse().text({'^a': 'Hello, World', '^b': 'r'}))
+# parsed_test, rest = MLWParser(test).parse()
+# print(parsed_test.text({'^a': 'Hello, World', '^b': 'r'}))
+
+
+def mlw_load(file: TextIO) -> Dict[str, MLWText]:
+    retval = {}
+    tail = file.read()
+    while True:
+        head, tail = MLWParser(tail).parse()
+        retval[head.name] = head
+        if not tail:
+            break
+    return retval

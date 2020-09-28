@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from src.subject import subjects
 from src.time_management import to_utc_converter
-from src.message import get_text
+from src.text import get_text
 from src.app import app
 
 from static import config

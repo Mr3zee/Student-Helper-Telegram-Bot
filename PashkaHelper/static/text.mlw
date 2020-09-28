@@ -133,9 +133,9 @@
 # Social networking
 &yt_link: [raw]https://www.youtube.com/user/pavelmavrin[/raw]
 &tw_link: [raw]https://www.twitch.tv/pmavrin[/raw]
+&ds_link: [raw][/raw] # todo
 
 # Telegram
-&ds_link: [raw][/raw] # todo
 &tg_link: [raw]https://t.me/joinchat/AlaSRB0zCWAx8cHBIcwxoA[/raw]
 
 [/vars]
@@ -164,7 +164,7 @@
 ^timetable
 Вернуться на главную /help
 [/body]
-[/algo_text]
+[/algo_subject_text]
 
 
 [discra_subject_text]
@@ -215,7 +215,7 @@
 ^timetable
 Вернуться на главную /help
 [/body]
-[/discra_text]
+[/discra_subject_text]
 
 
 [eng_subject_text]
@@ -379,7 +379,7 @@ b11_2: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/eng_text]
+[/eng_subject_text]
 
 
 [diffur_subject_text]
@@ -433,7 +433,7 @@ b11_2: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/diffur_text]
+[/diffur_subject_text]
 
 
 [os_subject_text]
@@ -475,7 +475,7 @@ lite: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/os_text]
+[/os_subject_text]
 
 
 [sp_subject_text]
@@ -548,7 +548,7 @@ kotlin: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/sp_text]
+[/sp_subject_text]
 
 
 [bjd_subject_text]
@@ -563,7 +563,7 @@ kotlin: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/bjd_text]
+[/bjd_subject_text]
 
 
 [history_subject_text]
@@ -629,7 +629,7 @@ science: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/history_text]
+[/history_subject_text]
 
 
 [matan_subject_text]
@@ -663,7 +663,7 @@ science: [m]
 ^timetable
 Вернуться на главную /help
 [/body]
-[/matan_text]
+[/matan_subject_text]
 
 
 [main_parameters_text]
@@ -688,7 +688,7 @@ science: [m]
 
 Изменить настройки аккаунта:
 [/body]
-[/parameters_text]
+[/main_parameters_text]
 
 
 [courses_parameters_text]
@@ -790,7 +790,7 @@ science: [m]
 
 [subject_day_template_text]
 [body]
-<u><em>^subject:</em></u>
+<u><em>^weekday:</em></u>
 ^timetable
 
 [/body]

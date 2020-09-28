@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, Filters, CommandHandler
 
 from src.log import log_function
-from src.message import get_text
+from src.text import get_text
 from src.buttons import *
 
 from src import keyboard, database, common_functions as cf

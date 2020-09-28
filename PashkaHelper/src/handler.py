@@ -8,8 +8,9 @@ from src.parameters_hdl import parameters, parameters_callback, parameters_error
     MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
 
 from src.log import log_function
-from src.message import get_text
+from src.text import get_text
 from src.timetable import get_weekday_timetable
+from src.subject import subjects
 
 handlers = {}
 
@@ -26,7 +27,7 @@ def start(update: Update, context: CallbackContext):
 
     context.bot.send_message(
         chat_id=chat_id,
-        text=get_text('start_text', language_code=language_code),
+        text=get_text('start_text', language_code=language_code).text(),
     )
 
 
@@ -101,7 +102,7 @@ handlers['today'] = CommandHandler(command='today', callback=today)
 
 handlers['callback'] = CallbackQueryHandler(callback=callback)
 
-for sub in cf.subjects:
+for sub in subjects:
     handlers[sub] = cf.subject_handler(sub)
 
 handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
