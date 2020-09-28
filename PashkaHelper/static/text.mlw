@@ -234,6 +234,7 @@ b11_1: malysheva
 b11_2: malysheva
 b12_1: trofimova
 b12_2: trofimova
+all: all
 [/case]
 
 # Main

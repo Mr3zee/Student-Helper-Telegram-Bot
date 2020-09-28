@@ -38,7 +38,10 @@ class MLWText:
         case_var, states = self.__cases[case_name]
         if case_var[0] == '&' or case_var[0] == '^':
             case_var = self.__substitute_vars(case_var)
-        substitution = states.get(case_var)
+        if case_var == 'all' and 'all' not in states.keys():
+            substitution = [f'{self.__get_text(value)}\n' for value in states.values()]
+        else:
+            substitution = states.get(case_var)
         return self.__get_text(substitution) if substitution else ''
 
     def add_global_vars(self, values: dict):

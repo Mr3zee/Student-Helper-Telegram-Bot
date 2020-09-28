@@ -70,6 +70,8 @@ if __name__ == '__main__':
 #  teachers info
 #  /timetable [n]
 #  ! fix /eng +
-#  ! mlw case all
+#  ! mlw case all +
+#  mlw eng all looks bad
 #  add return timetable links to weekdays messages
+#  make 'all' special name
 
