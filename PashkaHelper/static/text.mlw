@@ -220,6 +220,22 @@
 
 [eng_subject_text]
 [vars]
+# Teacher
+&eng_teacher: [case ^course]
+c2_1: cuti
+c2_2: zaharova
+c2_3: cuti
+c1_1: cipo
+c1_2: cipo
+b2_1: belyanina
+b2_2: zaharova
+b2_3: belyanina
+b11_1: malysheva
+b11_2: malysheva
+b12_1: trofimova
+b12_2: trofimova
+[/case]
+
 # Main
 &vk_link: [raw]https://vk.com/fltc.itmo[/raw]
 
@@ -260,17 +276,17 @@
 <b>Английский язык</b>
 
 <a href = '&vk_link'>Группа</a> ВК по английскому
-[case ^eng_teacher]
+[case &eng_teacher]
 
 # John Cuti
 cuti: [m]
-<em>2-ИТИПКТ-[case ^group]
+<em>2-ИТИПКТ-[case ^course]
 c2_1: C2/1
 c2_3: C2/3
 [/case] - Джон Кути</em>
 Почта Джона Кути: &cuti_email
 <a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
-[case ^group]
+[case ^course]
 c2_3: [m]
   - <a href = '&c2_3_discord'>Discord</a> of native speakers
   - <a href = '&c2_3_tg'>Chat</a> of native speakers
@@ -284,11 +300,11 @@ c2_1: [m]
 
 # Cipo
 cipo: [m]
-<em>2-ИТИПКТ-[case ^group]
+<em>2-ИТИПКТ-[case ^course]
 c1_1: C1/1
 c1_2: C1/2
 [/case] - Cipo</em>
-[case ^group]
+[case ^course]
 c1_1: [m]
  - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
  - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа
@@ -302,11 +318,11 @@ c1_2: [m]
 
 # Белянина С.
 belyanina: [m]
-<em>2-ИТИПКТ-[case ^group]
+<em>2-ИТИПКТ-[case ^course]
 b2_1: B2/1
 b2_3: B2/3
 [/case] - Белянина С.</em>
-[case ^group]
+[case ^course]
 b2_3: [m]
   - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
   - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства
@@ -320,11 +336,11 @@ b2_1: [m]
 
 # Захарова А.
 zaharova: [m]
-<em>2-ИТИПКТ-[case ^group]
+<em>2-ИТИПКТ-[case ^course]
 c2_2: C2/2
 b2_2: B2/2
 [/case] - Захарова А.</em>
-[case ^group]
+[case ^course]
 c2_2: [m]
   - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
   - Идентификатор конференции: 824 3167 0213
@@ -340,11 +356,11 @@ b2_2: [m]
 
 # Трофимова Т.А.
 trofimova: [m]
-<em>2-ИТИПКТ-[case ^group]
+<em>2-ИТИПКТ-[case ^course]
 b12_1: B1.2/1
 b12_2: B1.2/2
 [/case] - Трофимова Т.А.</em>
-[case ^group]
+[case ^course]
 b12_1: [m]
   - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
   - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"
@@ -358,11 +374,11 @@ b12_2: [m]
 
 # Малышева А.
 malysheva: [m]
-<em>2-ИТИПКТ-[case ^group]
-c2_1: B1.1/1
-c2_3: B1.1/2
+<em>2-ИТИПКТ-[case ^course]
+b11_1: B1.1/1
+b11_2: B1.1/2
 [/case] - Малышева А.</em>
-[case ^group]
+[case ^course]
 b11_1: [m]
   - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
   - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit
@@ -681,7 +697,6 @@ science: [m]
 
 <u>Курсы:</u>
 Группа английского: <em>^eng</em>
-Преподаватель английского: <em>^eng_teacher</em>
 Курс по истории: <em>^history</em>
 Курс СП: <em>^sp</em>
 Курс ОС: <em>^os</em>
@@ -699,7 +714,6 @@ science: [m]
 
 <u>Текущие настройки:</u>
 Группа английского: <em>^eng</em>
-Преподаватель английского: <em>^eng_teacher</em>
 Курс по истории: <em>^history</em>
 Курс СП: <em>^sp</em>
 Курс ОС: <em>^os</em>
@@ -774,7 +788,6 @@ science: [m]
 Хочешь другую свою группу английского? (а может все сразу?)
 
 Текущая группа: <em>^eng</em>
-Преподаватель: <em>^eng_teacher</em>
 
 Изменить выбор:
 [/body]
@@ -783,7 +796,7 @@ science: [m]
 
 [eng_std_user_data_text]
 [body]
-2-ИТИПКТ-^group
+2-ИТИПКТ-^eng
 [/body]
 [/eng_std_user_data_text]
 

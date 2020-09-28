@@ -4,7 +4,7 @@ from typing import Dict
 class Subject:
 
     def __init__(self, main: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
-                 subtypes_have_eq_tt_names: bool = True):
+                 subtypes_have_eq_tt_names: bool = True, teachers: set = None):
         if not subtypes:
             subtypes = dict()
         if not main_timetable_names:
@@ -16,6 +16,7 @@ class Subject:
                 self.__all_timetable_names = self.__all_timetable_names.union(subtype_tt)
         self.__subtypes_have_eq_tt_names = subtypes_have_eq_tt_names
         self.__subtypes = subtypes
+        self.__teachers = teachers
 
     def __eq__(self, other):
         return str(self) == str(other)
