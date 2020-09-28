@@ -19,14 +19,16 @@ logger = logging.getLogger(__name__)
 def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
                          disable_notification=False):
     attendance, utcoffset = database.get_user_attrs(user_id, ['attendance', 'utcoffset']).values()
+    text = get_timetable_by_index(
+        day=get_weekday(timedelta(hours=utcoffset)),
+        subject_names=database.get_user_subject_names(user_id),
+        attendance=attendance,
+        language_code=language_code,
+    )
+    print(type(text))
     context.bot.send_message(
         chat_id=chat_id,
-        text=get_timetable_by_index(
-            day=get_weekday(timedelta(hours=utcoffset)),
-            subject_names=database.get_user_subject_names(user_id),
-            attendance=attendance,
-            language_code=language_code,
-        ),
+        text=text,
         reply_markup=keyboard.timetable_keyboard(language_code=language_code),
         disable_notification=disable_notification,
     )
@@ -78,9 +80,11 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id
 
+        text = get_text(f'{hdl_name}_text', language_code).text()
+
         context.bot.send_message(
             chat_id=chat_id,
-            text=get_text(f'{hdl_name}_text', language_code).text(),
+            text=text,
             reply_markup=(get_reply_markup(language_code) if get_reply_markup else None),
         )
         return ret_lvl

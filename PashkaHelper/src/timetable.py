@@ -31,16 +31,16 @@ def __rm_blanks(subject_row):
             return subject_row[:a + 1]
 
 
-def get_weekday_timetable(weekday: str, subject_names, attendance, language_code):
+def get_weekday_timetable(weekday: str, subject_names, attendance, language_code) -> str:
     if weekday == 'sunday':
-        return get_text('today_sunday_text', language_code=language_code)
+        return get_text('today_sunday_text', language_code=language_code).text()
 
     template = get_text('weekday_text', language_code)
     weekday_text = get_text(f'{weekday}_timetable_text', language_code).text()
 
     subjects1, subjects2, parity = SERVER.get_timetable(weekday=weekday, subject_names=subject_names,
                                                         attendance=attendance)
-    parity_text = get_text(f'{parity}_week_text', language_code=language_code).text()
+    parity_text = get_text(f'{parity}_week_timetable_text', language_code=language_code).text()
 
     template.add_global_vars({
         'weekday': weekday_text,
@@ -48,7 +48,7 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, language_code
     })
 
     if not subjects1:
-        happy_text = get_text('happy_text', language_code=language_code).text()
+        happy_text = get_text('happy_timetable_text', language_code=language_code).text()
         return template.text({'timetable': happy_text})
 
     weekday_timetable = __put_together(subjects1, subjects2, attendance, subject_template, language_code)

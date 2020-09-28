@@ -6,7 +6,7 @@ from src.buttons import *
 
 
 def make_button(button, language_code):
-    return InlineKeyboardButton(text=get_text(button, language_code), callback_data=button)
+    return InlineKeyboardButton(text=get_text(button, language_code).text(), callback_data=button)
 
 
 def timetable_keyboard(language_code):
