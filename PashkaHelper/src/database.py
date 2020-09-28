@@ -18,7 +18,6 @@ ATTR_NAMES = [
     'sp',
     'history',
     'eng',
-    'eng_teacher',
 ]
 
 DOMAINS = {
@@ -56,10 +55,9 @@ class Users(db.Model):
     sp = db.Column(db.String(20))
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
-    eng_teacher = db.Column(db.String(40))
 
     def __init__(self, user_id, username='unknown', attendance='both', mailing_status='allowed', mailing_time='7:30',
-                 utcoffset=3, os=None, sp=None, history=None, eng=None, eng_teacher=None):
+                 utcoffset=3, os=None, sp=None, history=None, eng=None):
         self.user_id = user_id
         self.username = username
         self.attendance = attendance
@@ -70,7 +68,6 @@ class Users(db.Model):
         self.sp = sp
         self.history = history
         self.eng = eng
-        self.eng_teacher = eng_teacher
 
 
 def add_user(user_id):
@@ -99,7 +96,7 @@ def get_user(user_id, language_code):
             attr_value = 'all'
         text = get_text(f'{f"{attr_name}_{attr_value}"}_user_data_text', language_code).text()
         if attr_name == 'eng' and attr_value != 'all':
-            text = get_text('eng_std_user_data_text', language_code).text({'group': text})
+            text = get_text('eng_std_user_data_text', language_code).text({'eng': text})
         retval[attr_name] = text
     return retval
 
