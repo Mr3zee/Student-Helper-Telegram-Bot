@@ -71,22 +71,23 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
 @log_function
 def __return_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
-    try:
-        update.callback_query.edit_message_text(
-            text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
-            reply_markup=keyboard.parameters_keyboard(language_code),
-        )
-    finally:
-        return MAIN_LVL
+    update.callback_query.edit_message_text(
+        text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
+        reply_markup=keyboard.parameters_keyboard(language_code),
+    )
+    return MAIN_LVL
 
 
 @log_function
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
-    current_status = database.get_user_attr(user_id, 'mailing_status')
+    attrs = database.get_user_attrs(
+        user_id,
+        ['mailing_status', 'notification_status'],
+    )
     update.callback_query.edit_message_text(
         text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
-        reply_markup=keyboard.mailing_keyboard(current_status, language_code),
+        reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
     )
     return MAIN_LVL
 
@@ -149,6 +150,11 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
             new_status = 'forbidden'
         database.set_user_attr(user_id, 'mailing_status', new_status)
         return __mailing_callback(update, context, language_code)
+    elif data == ENABLE_NOTIFICATION_MESSAGE or data == DISABLE_NOTIFICATION_MESSAGE:
+        new_status = 'enabled' if data == ENABLE_NOTIFICATION_MESSAGE else 'disabled'
+        database.set_user_attr(user_id, 'notification_status', new_status)
+        cf.reset_mailing(context, update.effective_chat.id, user_id, language_code)
+        return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
         return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
     elif data == MESSAGE_TIME:
@@ -162,13 +168,15 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
     if validation(new_info):
         user_id = update.effective_user.id
         database.set_user_attr(user_id, attr_name, new_info)
-        cf.rm_morning_message(context)
-        cf.set_morning_message(context, update.effective_chat.id, user_id, language_code)
-        current_status = database.get_user_attr(user_id, 'mailing_status')
+        cf.reset_mailing(context, update.effective_chat.id, user_id, language_code)
+        attrs = database.get_user_attrs(
+            user_id,
+            ['mailing_status', 'notification_status'],
+        )
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
-            reply_markup=keyboard.mailing_keyboard(current_status, language_code),
+            reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
         )
         return MAIN_LVL
     context.bot.send_message(

@@ -40,10 +40,12 @@ def parameters_keyboard(language_code):
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def mailing_keyboard(current_status, language_code):
+def mailing_keyboard(mailing_status, notification_status, language_code):
     keyboard = [
         [
-            make_button((ALLOW_MESSAGE if current_status == 'forbidden' else FORBID_MESSAGE), language_code)
+            make_button((ALLOW_MESSAGE if mailing_status == 'forbidden' else FORBID_MESSAGE), language_code),
+            make_button((DISABLE_NOTIFICATION_MESSAGE if notification_status == 'enabled'
+                         else ENABLE_NOTIFICATION_MESSAGE), language_code),
         ],
         [
             make_button(MESSAGE_TIME, language_code),
