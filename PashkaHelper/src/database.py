@@ -27,8 +27,9 @@ DOMAINS = {
 
 for key, value in subjects.items():
     domains = set(value.get_subtypes().keys())
-    if domains:
+    if domains is not None:
         DOMAINS[key] = domains
+        DOMAINS[key].add('all')
 
 
 if config.ENV == 'development':
