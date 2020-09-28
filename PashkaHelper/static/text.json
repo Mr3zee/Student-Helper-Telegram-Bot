@@ -32,15 +32,18 @@
     "attendance_offline_user_data_text": "Очно",
     "mailing_status_allowed_user_data_text": "Рассылка разрешена",
     "mailing_status_forbidden_user_data_text": "Рассылка запрещена",
+
     "os_all_user_data_text": "Все оси",
     "os_lite_user_data_text": "Стандартные оси",
     "os_adv_user_data_text": "Системные оси",
+
     "sp_all_user_data_text": "Все СП",
     "sp_kotlin_user_data_text": "Client-Server and Kotlin",
     "sp_cpp_user_data_text": "Язык программирования С++",
     "sp_web_user_data_text": "Web разработка",
     "sp_ios_user_data_text": "Ios разработка",
     "sp_android_user_data_text": "Android разработка",
+
     "history_international_user_data_text": "Россия в истории современных международных отношений",
     "history_science_user_data_text": "Наука и техника в истории цивилизации",
     "history_eu_problems_user_data_text": "Проблемы истории Европы XХ века",
@@ -48,6 +51,7 @@
     "history_reforms_user_data_text": "Реформы и реформаторы в истории России",
     "history_statehood_user_data_text": "История становления российской государственности",
     "history_all_user_data_text": "Вся история, совсем вся",
+
     "eng_c2_1_user_data_text": "C2/1",
     "eng_c2_2_user_data_text": "C2/2",
     "eng_c2_3_user_data_text": "C2/3",
@@ -61,6 +65,8 @@
     "eng_b12_1_user_data_text": "B1.2/1",
     "eng_b12_2_user_data_text": "B1.2/2",
     "eng_all_user_data_text": "Not enough gold, mine more gold",
+
+    "eng_teacher_all_user_data_text": "Teachers?",
 
     "monday_button": "Понедельник",
     "tuesday_button": "Вторник",

@@ -17,7 +17,7 @@ def parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('parameters_text', language_code) % database.get_user(user_id, language_code),
+        text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
     return MAIN_LVL
@@ -26,26 +26,21 @@ def parameters(update: Update, context: CallbackContext):
 @log_function
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
     user_id = update.effective_user.id
-    try:
-        text = get_text(f'{page_name}_parameters_text', language_code)
-        # print(text)
-        user_info = database.get_user(user_id, language_code)
-        # print(user_info)
-        text = text % user_info
-        # print(text)
-        update.callback_query.edit_message_text(
-            text=text,
-            reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
-        )
-    finally:
-        return ret_lvl
+    text = get_text(f'{page_name}_parameters_text', language_code)
+    user_info = database.get_user(user_id, language_code)
+    text = text.text(user_info)
+    update.callback_query.edit_message_text(
+        text=text,
+        reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
+    )
+    return ret_lvl
 
 
 def parameters_callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     if data == EXIT_PARAMETERS:
         update.callback_query.edit_message_text(
-            text=get_text('exit_parameters_text', language_code),
+            text=get_text('exit_parameters_text', language_code).text(),
         )
         return ConversationHandler.END
     elif data in MAIN_SET:
@@ -57,7 +52,7 @@ def parameters_callback(update: Update, context: CallbackContext):
     elif data in ATTENDANCE_SET:
         return __update_attendance(update, context, data, language_code)
     elif data in EVERYDAY_MESSAGE_SET:
-        return __update_everyday_msg(update, context, data, language_code)
+        return __update_mailing_timetable(update, context, data, language_code)
 
 
 def __main_callback(update: Update, context: CallbackContext, data, language_code):
@@ -78,7 +73,7 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     try:
         update.callback_query.edit_message_text(
-            text=get_text('parameters_text', language_code) % database.get_user(user_id, language_code),
+            text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
             reply_markup=keyboard.parameters_keyboard(language_code),
         )
     finally:
@@ -90,7 +85,7 @@ def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     current_status = database.get_user_attr(user_id, 'mailing_status')
     update.callback_query.edit_message_text(
-        text=get_text('mailing_parameters_text', language_code) % database.get_user(user_id, language_code),
+        text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
         reply_markup=keyboard.mailing_keyboard(current_status, language_code),
     )
     return MAIN_LVL
@@ -143,7 +138,7 @@ def name_parameters(update: Update, context: CallbackContext):
     return parameters(update, context)
 
 
-def __update_everyday_msg(update: Update, context: CallbackContext, data, language_code):
+def __update_mailing_timetable(update: Update, context: CallbackContext, data, language_code):
     user_id = update.effective_user.id
     if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
         if data == ALLOW_MESSAGE:
@@ -155,9 +150,9 @@ def __update_everyday_msg(update: Update, context: CallbackContext, data, langua
         database.set_user_attr(user_id, 'mailing_status', new_status)
         return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
-        return __chg_parameters_page(update, 'tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
+        return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
     elif data == MESSAGE_TIME:
-        return __chg_parameters_page(update, 'time', language_code=language_code, ret_lvl=TIME_LVL)
+        return __chg_parameters_page(update, 'enter_time', language_code=language_code, ret_lvl=TIME_LVL)
 
 
 # todo optimize
@@ -172,13 +167,13 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
         current_status = database.get_user_attr(user_id, 'mailing_status')
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=get_text('mailing_parameters_text', language_code) % database.get_user(user_id, language_code),
+            text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
             reply_markup=keyboard.mailing_keyboard(current_status, language_code),
         )
         return MAIN_LVL
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('error_parameters_text', language_code),
+        text=get_text('error_parameters_text', language_code).text(),
     )
     return error_lvl
 
@@ -211,7 +206,7 @@ def parameters_error(name):
         language_code = update.effective_user.language_code
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=get_text(f'{name}_parameters_error_text', language_code),
+            text=get_text(f'{name}_parameters_error_text', language_code).text(),
         )
         return
 
@@ -223,7 +218,7 @@ def exit_parameters(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('exit_parameters_text', language_code),
+        text=get_text('exit_parameters_text', language_code).text(),
     )
     return ConversationHandler.END
 

@@ -17,7 +17,8 @@ ATTR_NAMES = [
     'os',
     'sp',
     'history',
-    'eng'
+    'eng',
+    'eng_teacher',
 ]
 
 DOMAINS = {
@@ -55,9 +56,10 @@ class Users(db.Model):
     sp = db.Column(db.String(20))
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
+    eng_teacher = db.Column(db.String(40))
 
     def __init__(self, user_id, username='unknown', attendance='both', mailing_status='allowed', mailing_time='7:30',
-                 utcoffset=3, os=None, sp=None, history=None, eng=None):
+                 utcoffset=3, os=None, sp=None, history=None, eng=None, eng_teacher=None):
         self.user_id = user_id
         self.username = username
         self.attendance = attendance
@@ -68,6 +70,7 @@ class Users(db.Model):
         self.sp = sp
         self.history = history
         self.eng = eng
+        self.eng_teacher = eng_teacher
 
 
 def add_user(user_id):
@@ -86,15 +89,17 @@ def get_user(user_id, language_code):
     values = get_user_attrs(user_id, ATTR_NAMES)
     for attr_name, attr_value in values.items():
         if (attr_name == 'username' and attr_value) \
-                or (attr_name == 'mailing_time') \
-                or (attr_name == 'utcoffset'):
+                or (attr_name == 'mailing_time'):
             retval[attr_name] = attr_value
+            continue
+        elif attr_name == 'utcoffset':
+            retval[attr_name] = (str(attr_value) if attr_value < 0 else f'+{attr_value}')
             continue
         elif not attr_value:
             attr_value = 'all'
-        text = get_text(f'{f"{attr_name}_{attr_value}"}_user_data_text', language_code)
+        text = get_text(f'{f"{attr_name}_{attr_value}"}_user_data_text', language_code).text()
         if attr_name == 'eng' and attr_value != 'all':
-            text = get_text('eng_std_user_data_text', language_code).format(text)
+            text = get_text('eng_std_user_data_text', language_code).text({'group': text})
         retval[attr_name] = text
     return retval
 
