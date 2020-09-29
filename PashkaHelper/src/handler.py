@@ -60,6 +60,44 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
         pass
 
 
+def timetable_args_error(context: CallbackContext, chat_id, error_type, language_code):
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=get_text('timetable_args_error_text', language_code).text({'error_type': error_type}),
+    )
+
+
+def timetable(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    args = context.args
+
+    if len(args) > 1:
+        return timetable_args_error(context, chat_id, 'many', language_code)
+    elif len(args) == 1:
+        try:
+            day = int(args[0])
+        except ValueError:
+            return timetable_args_error(context, chat_id, 'type', language_code)
+        if day > 6 or day < 0:
+            return timetable_args_error(context, chat_id, 'value', language_code)
+        text = cf.get_timetable_by_index(
+            day=day,
+            subject_names=database.get_user_subject_names(user_id),
+            attendance=database.get_user_attr(user_id, 'attendance'),
+            language_code=language_code,
+        )
+    else:
+        text = get_text('timetable_text', language_code).text()
+
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=text,
+        reply_markup=(keyboard.timetable_keyboard(language_code)),
+    )
+
+
 @log_function
 def today(update: Update, context: CallbackContext):
     cf.send_today_timetable(
@@ -112,7 +150,8 @@ handlers['parameters'] = ConversationHandler(
         ],
         ptrs.TZINFO_LVL: [
             ptrs.exit_parameters_hdl,
-            MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True, pass_job_queue=True),
+            MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True,
+                           pass_job_queue=True),
             ptrs.parameters_error('tzinfo'),
         ],
     },
@@ -124,7 +163,7 @@ handlers['parameters'] = ConversationHandler(
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
 
 handlers['help'] = cf.simple_handler('help', cf.COMMAND)
-handlers['timetable'] = cf.simple_handler('timetable', cf.COMMAND, get_reply_markup=keyboard.timetable_keyboard)
+handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
 
 handlers['today'] = CommandHandler(command='today', callback=today)
 

@@ -95,6 +95,22 @@
 [/timetable_text]
 
 
+[timetable_args_error_text]
+[vars]
+&error_text: [case ^error_type]
+type: Аргумент должен быть числом
+many: Слишком много аргументов
+value: Аргумент должен быть больше -1 и меньше 7
+[/case]
+[/vars]
+[body]
+Ошибка аргумента команды /timetable \[n\]:
+
+&error_text
+[/body]
+[/timetable_args_error_text]
+
+
 [weekday_text]
 [body]
 <b>^weekday, ^week_parity неделя</b> - расписание пар на день:
@@ -103,7 +119,7 @@
 
 Равлекайся
 
-Вернуться на главную /help
+Вернуться на главную /help, на страницу расписания /timetable
 
 Узнать расписание на другой день:
 [/body]
