@@ -165,8 +165,8 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
 def __user_time_input_chg(update: Update, context: CallbackContext, validation, attr_name, error_lvl):
     language_code = update.effective_user.language_code
     new_info = update.message.text
+    user_id = update.effective_user.id
     if validation(new_info):
-        user_id = update.effective_user.id
         database.set_user_attr(user_id, attr_name, new_info)
         cf.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         attrs = database.get_user_attrs(
@@ -216,7 +216,6 @@ def parameters_error(name):
             chat_id=update.effective_chat.id,
             text=get_text(f'{name}_parameters_error_text', language_code).text(),
         )
-        return
 
     return MessageHandler(callback=error, filters=Filters.all)
 
