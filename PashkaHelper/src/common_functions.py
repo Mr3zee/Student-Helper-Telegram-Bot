@@ -33,49 +33,6 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
     )
 
 
-def send_morning_message(context: CallbackContext):
-    job = context.job
-    chat_id = job.context[0]
-    user_id = job.context[1]
-    language_code = job.context[2]
-    notification_status = job.context[3]
-    disable_notification = notification_status == 'disabled'
-    context.bot.send_message(
-        chat_id=chat_id,
-        text=get_text('everyday_greeting_text', language_code),
-        disable_notification=disable_notification,
-    )
-    send_today_timetable(
-        context=context,
-        chat_id=chat_id,
-        user_id=user_id,
-        language_code=language_code,
-        disable_notification=disable_notification,
-    )
-
-
-def set_morning_message(context: CallbackContext, chat_id, user_id, language_code):
-    notification_status = database.get_user_attr(user_id, 'notification_status')
-    job_name = 'job'
-    if job_name not in context.chat_data:
-        new_job = context.job_queue.run_daily(
-            callback=send_morning_message,
-            time=database.get_user_mailing_time_with_offset(user_id),
-            days=(0, 1, 2, 3, 4, 5),
-            context=[chat_id, user_id, language_code, notification_status],
-            name=job_name,
-        )
-        context.chat_data[job_name] = new_job
-        return new_job
-
-
-def rm_morning_message(context: CallbackContext):
-    if 'job' in context.chat_data:
-        old_job = context.chat_data['job']
-        old_job.schedule_removal()
-        del context.chat_data['job']
-
-
 def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_lvl=None):
     @log_function
     def inner(update: Update, context: CallbackContext):
@@ -134,7 +91,3 @@ def manage_callback_query(update: Update):
     query.answer()
     return data, language_code
 
-
-def reset_mailing(context: CallbackContext, chat_id, user_id, language_code):
-    rm_morning_message(context)
-    set_morning_message(context, chat_id, user_id, language_code)

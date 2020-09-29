@@ -1,10 +1,13 @@
+from datetime import timedelta
+
 from telegram import ParseMode, Bot
-from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
+from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence, Job
 
 from static import config
 from src import handler as hdl
 from src.app import app, get_app_route
 import src.database as db
+import src.jobs as jobs
 
 import logging
 
@@ -65,22 +68,22 @@ def connect_bot():
             parse_mode=ParseMode.HTML,
         )
     )
-    job_queue = JobQueue()
+    jq = JobQueue()
     queue = Queue()
     persistence = PGPersistence()
     dp = Dispatcher(
         bot=new_bot,
         update_queue=queue,
         use_context=True,
-        job_queue=job_queue,
+        job_queue=jq,
         persistence=persistence,
     )
-    job_queue.set_dispatcher(dp)
-    job_queue.start()
+    jq.set_dispatcher(dp)
+    jq.start()
     thread = Thread(target=dp.start)
     thread.start()
     logger.info('Bot connected successfully')
-    return dp, new_bot, queue
+    return dp, new_bot, queue, jq
 
 
 def add_handlers():
@@ -90,12 +93,21 @@ def add_handlers():
         logger.info('Handler added successfully')
 
 
+# defining logger
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
-dispatcher, bot, update_queue = connect_bot()
+# setting bot
+dispatcher, bot, update_queue, job_queue = connect_bot()
 
+# load saved jobs
+jobs.load_jobs(job_queue)
+
+job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=1), name='util')
+
+# add handlers to dispatcher
 add_handlers()
 
+# making webhook process function
 get_app_route(bot, update_queue)
 
 
@@ -104,6 +116,8 @@ if __name__ == '__main__':
     logger.info('Staring bot...')
 
     app.run()
+
+    jobs.save_jobs(job_queue)
 
 # TODO:
 #  mark tasks in tables
@@ -117,5 +131,8 @@ if __name__ == '__main__':
 #  ! make online info available for offline and vice versa
 #  ! replace with Nikita's text
 #  ! make /admin send notifications
-#  conversation persistence +
+#  ! job_queues persistence +
+#  add deadlines
+#  add everyday deadlines
+#  ! mailing and parameters collision
 

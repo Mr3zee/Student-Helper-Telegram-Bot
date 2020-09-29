@@ -5,7 +5,7 @@ from src.log import log_function
 from src.text import get_text
 from src.buttons import *
 
-from src import keyboard, database, common_functions as cf
+from src import keyboard, database, common_functions as cf, jobs
 
 # ConversationHandler's states:
 MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)
@@ -143,17 +143,17 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
     user_id = update.effective_user.id
     if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
         if data == ALLOW_MESSAGE:
-            cf.set_morning_message(context, update.effective_chat.id, user_id, language_code)
+            jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
             new_status = 'allowed'
         else:
-            cf.rm_morning_message(context)
+            jobs.rm_mailing_job(context)
             new_status = 'forbidden'
         database.set_user_attr(user_id, 'mailing_status', new_status)
         return __mailing_callback(update, context, language_code)
     elif data == ENABLE_NOTIFICATION_MESSAGE or data == DISABLE_NOTIFICATION_MESSAGE:
         new_status = 'enabled' if data == ENABLE_NOTIFICATION_MESSAGE else 'disabled'
         database.set_user_attr(user_id, 'notification_status', new_status)
-        cf.reset_mailing(context, update.effective_chat.id, user_id, language_code)
+        jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
         return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
@@ -168,7 +168,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
     user_id = update.effective_user.id
     if validation(new_info):
         database.set_user_attr(user_id, attr_name, new_info)
-        cf.reset_mailing(context, update.effective_chat.id, user_id, language_code)
+        jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         attrs = database.get_user_attrs(
             user_id,
             ['mailing_status', 'notification_status'],
