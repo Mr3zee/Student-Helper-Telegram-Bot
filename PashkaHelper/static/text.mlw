@@ -810,3 +810,15 @@ science: [m]
 
 [/body]
 [/subject_day_template_text]
+
+
+[error_handler_dev_text]
+[body]
+Такс, такс, такс, что тут у нас?
+Произошла \#ошибка у пользователя ^user.
+
+<code>^error</code>, traceback:
+
+<code>^trace</code>
+[/body]
+[/error_handler_dev_text]

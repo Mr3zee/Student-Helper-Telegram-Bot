@@ -1,6 +1,10 @@
+import sys
+import traceback
+
 from telegram import Update, error
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
+from telegram.utils.helpers import mention_html
 
 from src import keyboard, buttons, database, common_functions as cf
 
@@ -11,7 +15,7 @@ from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src.subject import subjects
-
+from static import config
 
 handlers = {}
 
@@ -64,6 +68,27 @@ def today(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         language_code=update.effective_user.language_code,
     )
+
+
+def error_callback(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('error_handler_user_text', language_code).text()
+    )
+    data = {'trace': "".join(traceback.format_tb(sys.exc_info()[2])), 'error': str(context.error)}
+    if update.effective_user:
+        data['user'] = mention_html(update.effective_user.id, update.effective_user.first_name)
+    else:
+        data['user'] = 'unavailable'
+
+    text = get_text('error_handler_dev_text', language_code).text(data)
+    for dev_id in config.DEVS:
+        context.bot.send_message(
+            chat_id=dev_id,
+            text=text,
+        )
+    raise
 
 
 handlers['parameters'] = ConversationHandler(
