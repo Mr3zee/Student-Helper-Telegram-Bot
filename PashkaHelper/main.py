@@ -126,16 +126,15 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  fix buttons copypaste
 #  ! add to /today links
-#  ! error handler +
 #  teachers info
-#  /timetable [n]
-#  ! add return timetable links to weekdays messages
+#  /timetable [n] +
+#  ! add return timetable links to weekdays messages +
 #  make 'all' a special name
 #  ! make online info available for offline and vice versa
 #  ! replace with Nikita's text
 #  ! make /admin send notifications
 #  add deadlines
 #  add everyday deadlines
-#  ! mailing and parameters collision
+#  mailing and parameters collision
 #  make comments
 
