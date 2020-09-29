@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from telegram import ParseMode, Bot
-from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence, Job
+from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence, MessageHandler, Filters
 
 from static import config
 from src import handler as hdl
@@ -99,6 +99,9 @@ logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(leveln
 # setting bot
 dispatcher, bot, update_queue, job_queue = connect_bot()
 
+# setting error handler
+dispatcher.add_error_handler(callback=hdl.error_callback)
+
 # load saved jobs
 jobs.load_jobs(job_queue)
 
@@ -123,7 +126,7 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  fix buttons copypaste
 #  ! add to /today links
-#  ! error handler
+#  ! error handler +
 #  teachers info
 #  /timetable [n]
 #  ! add return timetable links to weekdays messages
@@ -131,8 +134,8 @@ if __name__ == '__main__':
 #  ! make online info available for offline and vice versa
 #  ! replace with Nikita's text
 #  ! make /admin send notifications
-#  ! job_queues persistence +
 #  add deadlines
 #  add everyday deadlines
 #  ! mailing and parameters collision
+#  make comments
 
