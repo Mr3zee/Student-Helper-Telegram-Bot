@@ -181,19 +181,31 @@ class Persistence(db.Model):
         self.data = data
 
 
-def get_db_conversations_row():
-    return Persistence.query.filter_by(name='conversations').first()
+def get_db_conversations_row(name):
+    return Persistence.query.filter_by(name=name).first()
 
 
 def get_conversations() -> dict:
-    conversations = get_db_conversations_row().data
+    conversations = get_db_conversations_row('conversations').data
     if conversations is None:
         return {}
     return decode_conversations_from_json(json.dumps(conversations))
 
 
 def update_conversations(conversations: dict):
-    db_conversations = get_db_conversations_row()
+    db_conversations = get_db_conversations_row('conversations')
     db_conversations.data = json.loads(encode_conversations_to_json(conversations))
     db.session.commit()
 
+
+def load_jobs() -> dict:
+    jobs = get_db_conversations_row('jobs').data
+    if jobs is None:
+        return {}
+    return jobs
+
+
+def save_jobs(jobs: dict):
+    db_jobs = get_db_conversations_row('jobs')
+    db_jobs.data = json.loads(json.dumps(jobs, default=str))
+    db.session.commit()

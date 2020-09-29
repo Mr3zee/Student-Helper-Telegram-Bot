@@ -3,11 +3,15 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
     ConversationHandler
 
 from src import keyboard, buttons, database, common_functions as cf
+
 import src.parameters_hdl as ptrs
+import src.jobs as jobs
+
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src.subject import subjects
+
 
 handlers = {}
 
@@ -20,7 +24,7 @@ def start(update: Update, context: CallbackContext):
 
     database.add_user(user_id)
 
-    cf.set_morning_message(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
+    jobs.set_mailing_job(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
 
     context.bot.send_message(
         chat_id=chat_id,
