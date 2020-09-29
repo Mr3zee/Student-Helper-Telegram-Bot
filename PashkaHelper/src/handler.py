@@ -3,10 +3,7 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
     ConversationHandler
 
 from src import keyboard, buttons, database, common_functions as cf
-from src.parameters_hdl import parameters, parameters_callback, parameters_error, \
-    name_parameters, tzinfo_parameters, time_message_parameters, exit_parameters_hdl, \
-    MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL
-
+import src.parameters_hdl as ptrs
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
@@ -67,30 +64,32 @@ def today(update: Update, context: CallbackContext):
 
 handlers['parameters'] = ConversationHandler(
     entry_points=[
-        CommandHandler(command='parameters', callback=parameters)
+        CommandHandler(command='parameters', callback=ptrs.parameters)
     ],
     states={
-        MAIN_LVL: [
-            CallbackQueryHandler(callback=parameters_callback, pass_chat_data=True, pass_job_queue=True),
-            exit_parameters_hdl,
-            parameters_error('main'),
+        ptrs.MAIN_LVL: [
+            CallbackQueryHandler(callback=ptrs.parameters_callback, pass_chat_data=True, pass_job_queue=True),
+            ptrs.exit_parameters_hdl,
+            ptrs.parameters_error('main'),
         ],
-        NAME_LVL: [
-            exit_parameters_hdl,
-            MessageHandler(filters=Filters.all, callback=name_parameters),
+        ptrs.NAME_LVL: [
+            ptrs.exit_parameters_hdl,
+            MessageHandler(filters=Filters.all, callback=ptrs.name_parameters),
         ],
-        TIME_LVL: [
-            exit_parameters_hdl,
-            MessageHandler(filters=Filters.all, callback=time_message_parameters, pass_chat_data=True,
+        ptrs.TIME_LVL: [
+            ptrs.exit_parameters_hdl,
+            MessageHandler(filters=Filters.all, callback=ptrs.time_message_parameters, pass_chat_data=True,
                            pass_job_queue=True),
         ],
-        TZINFO_LVL: [
-            exit_parameters_hdl,
-            MessageHandler(filters=Filters.all, callback=tzinfo_parameters, pass_chat_data=True, pass_job_queue=True),
-            parameters_error('tzinfo'),
+        ptrs.TZINFO_LVL: [
+            ptrs.exit_parameters_hdl,
+            MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True, pass_job_queue=True),
+            ptrs.parameters_error('tzinfo'),
         ],
     },
     fallbacks=[],
+    persistent=True,
+    name='parameters',
 )
 
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)

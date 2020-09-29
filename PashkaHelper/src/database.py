@@ -1,3 +1,7 @@
+import json
+
+from telegram.utils.helpers import decode_conversations_from_json, encode_conversations_to_json
+
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 
@@ -165,3 +169,31 @@ def valid_utcoffset(new_tzinfo: str):
         return abs(int(new_tzinfo)) < 13
     except ValueError:
         return False
+
+
+class Persistence(db.Model):
+    __tablename__ = 'persistence'
+    name = db.Column(db.String(50), primary_key=True)
+    data = db.Column(db.JSON)
+
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+
+
+def get_db_conversations_row():
+    return Persistence.query.filter_by(name='conversations').first()
+
+
+def get_conversations() -> dict:
+    conversations = get_db_conversations_row().data
+    if conversations is None:
+        return {}
+    return decode_conversations_from_json(json.dumps(conversations))
+
+
+def update_conversations(conversations: dict):
+    db_conversations = get_db_conversations_row()
+    db_conversations.data = json.loads(encode_conversations_to_json(conversations))
+    db.session.commit()
+

@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_sslify import SSLify
+import pprint as pp
 
 from telegram import Update
 
@@ -16,6 +17,7 @@ def get_app_route(bot, update_queue):
     @app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
     def get_updates():
         if request.method == 'POST':
+            # pp.pprint(request.json)
             update = Update.de_json(request.json, bot)
             update_queue.put(update)
         return {'ok': True}
