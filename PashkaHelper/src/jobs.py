@@ -34,7 +34,7 @@ def mailing_job_callback(context: CallbackContext):
 
 
 def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
-    notification_status = db.get_user_attr(user_id, 'notification_status')
+    notification_status = db.get_user_attr('notification_status', user_id=user_id)
     job_name = 'job'
     if job_name not in context.chat_data:
         new_job = context.job_queue.run_daily(
@@ -78,6 +78,7 @@ def load_jobs(jq: JobQueue):
         )
         data['days'] = tuple(data['days'])
         data['tzinfo'] = pytz.timezone(data['tzinfo'])
+
         job = Job(**data)
 
         # Restore the state it had

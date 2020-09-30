@@ -82,8 +82,8 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
     user_id = update.effective_user.id
     attrs = database.get_user_attrs(
-        user_id,
         ['mailing_status', 'notification_status'],
+        user_id=user_id,
     )
     update.callback_query.edit_message_text(
         text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
@@ -107,7 +107,7 @@ def __update_course(update: Update, context: CallbackContext, data, language_cod
 
     user_id = update.effective_user.id
     sub_name, subtype = __get_button_vars(data)
-    database.set_user_attr(user_id, sub_name, subtype)
+    database.set_user_attrs(user_id, {sub_name: subtype})
     return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
 
 
@@ -127,7 +127,7 @@ def __chg_course(update: Update, context: CallbackContext, data, language_code):
 def __update_attendance(update: Update, context: CallbackContext, data, language_code):
     user_id = update.effective_user.id
     new_attendance, _blank = __get_button_vars(data)
-    database.set_user_attr(user_id, 'attendance', new_attendance)
+    database.set_user_attrs(user_id, {'attendance': new_attendance})
     return __return_callback(update, context, language_code)
 
 
@@ -135,7 +135,7 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
 def name_parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     new_name = update.message.text
-    database.set_user_attr(user_id, 'username', new_name)
+    database.set_user_attrs(user_id, {'username': new_name})
     return parameters(update, context)
 
 
@@ -148,11 +148,11 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
         else:
             jobs.rm_mailing_job(context)
             new_status = 'forbidden'
-        database.set_user_attr(user_id, 'mailing_status', new_status)
+        database.set_user_attrs(user_id, {'mailing_status': new_status})
         return __mailing_callback(update, context, language_code)
     elif data == ENABLE_NOTIFICATION_MESSAGE or data == DISABLE_NOTIFICATION_MESSAGE:
         new_status = 'enabled' if data == ENABLE_NOTIFICATION_MESSAGE else 'disabled'
-        database.set_user_attr(user_id, 'notification_status', new_status)
+        database.set_user_attrs(user_id, {'notification_status': new_status})
         jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
@@ -167,11 +167,11 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
     new_info = update.message.text
     user_id = update.effective_user.id
     if validation(new_info):
-        database.set_user_attr(user_id, attr_name, new_info)
+        database.set_user_attrs(user_id, {attr_name: new_info})
         jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         attrs = database.get_user_attrs(
-            user_id,
             ['mailing_status', 'notification_status'],
+            user_id=user_id,
         )
         context.bot.send_message(
             chat_id=update.effective_chat.id,

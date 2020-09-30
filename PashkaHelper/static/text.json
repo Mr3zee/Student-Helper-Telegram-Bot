@@ -128,6 +128,18 @@
     "enabled_notification_mailing_button": "Включить звук уведомлений",
     "disabled_notification_mailing_button": "Выключть звук уведомлений",
     "tz_info_button": "Временная зона",
-    "message_time_button": "Время отправки сообщения"
+    "message_time_button": "Время отправки сообщения",
+
+    "unauthorized_user_admin_text": "У тебя нет прав доступа к данной команде",
+    "no_args_admin_text": "У данной команды должны быть аргументы",
+    "no_args_notify_admin_text": "Флаг -n подразумевает наличие аргументов после",
+    "too_many_args_notify_admin_text": "Предоставлено слишком много аргументов",
+    "all_users_notify_admin_text": "Оправь текст следующим сообщением\n\nОн будет отправлен всем пользователям",
+    "user_notify_admin_text": "Оправь текст следующим сообщением\n\nОн будет отправлен указанному пользователю",
+    "invalid_username_notify_admin_text": "Указанного пользователя нет в базе данных",
+    "empty_user_id_notify_admin_text": "Не указано имя пользователя",
+    "unavailable_flag_notify_admin_text": "Неизвестный флаг для -n",
+    "unavailable_flag_admin_text": "Неизвестный флаг",
+    "notification_sent_notify_admin_text": "Уведомление успешно отправлено"
   }
 }
