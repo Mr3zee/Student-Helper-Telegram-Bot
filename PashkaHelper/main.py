@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from telegram import ParseMode, Bot
-from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence, MessageHandler, Filters
+from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
 from static import config
 from src import handler as hdl
@@ -111,7 +111,7 @@ job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=
 add_handlers()
 
 # making webhook process function
-get_app_route(bot, update_queue)
+get_app_route(bot, update_queue, db.update_user_info)
 
 
 if __name__ == '__main__':
@@ -127,14 +127,18 @@ if __name__ == '__main__':
 #  fix buttons copypaste
 #  ! add to /today links
 #  teachers info
-#  /timetable [n] +
-#  ! add return timetable links to weekdays messages +
 #  make 'all' a special name
 #  ! make online info available for offline and vice versa
 #  ! replace with Nikita's text
-#  ! make /admin send notifications
+#  ! make /admin send notifications +
 #  add deadlines
 #  add everyday deadlines
 #  mailing and parameters collision
 #  make comments
+#  make normal logging
+#  ! store usernames and chat_ids +
+#  ! make chat_data persistent
+#  ! make /doc
+#  optimize database
+#  ! handle tracebacks errors in error handler (BadRequest)
 

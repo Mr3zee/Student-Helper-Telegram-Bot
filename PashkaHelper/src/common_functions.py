@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
                          disable_notification=False):
-    attendance, utcoffset = database.get_user_attrs(user_id, ['attendance', 'utcoffset']).values()
+    attendance, utcoffset = database.get_user_attrs(['attendance', 'utcoffset'], user_id=user_id).values()
     text = get_timetable_by_index(
         day=get_weekday(timedelta(hours=utcoffset)),
         subject_names=database.get_user_subject_names(user_id),
@@ -58,7 +58,7 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
 
 
 def get_subject_info(sub_name, user_id, language_code):
-    subtype, attendance = database.get_user_attrs(user_id, [sub_name, 'attendance']).values()
+    subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
 
     timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
     return get_text(f'{sub_name}_subject_text', language_code).text({
@@ -91,3 +91,19 @@ def manage_callback_query(update: Update):
     query.answer()
     return data, language_code
 
+
+def send_message(context: CallbackContext, user_nik, text):
+    chat_id = database.get_user_attr('chat_id', user_nik=user_nik)
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=text,
+    )
+
+
+def send_message_to_all(context: CallbackContext, text):
+    chat_ids = database.gat_all_attrs('chat_id')
+    for chat_id in chat_ids:
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=text,
+        )

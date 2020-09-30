@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from telegram import Update, error
+from telegram import Update, error, ParseMode
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
 from telegram.utils.helpers import mention_html
@@ -19,6 +19,8 @@ from static import config
 
 handlers = {}
 
+ADMIN_NOTIFY, = range(1)
+
 
 @log_function
 def start(update: Update, context: CallbackContext):
@@ -26,7 +28,7 @@ def start(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    database.add_user(user_id)
+    database.add_user(user_id, update.effective_user.username, chat_id)
 
     jobs.set_mailing_job(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
 
@@ -127,6 +129,87 @@ def error_callback(update: Update, context: CallbackContext):
             text=text,
         )
     raise
+
+
+@log_function
+def admin(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    args = context.args
+    if not database.check_admin(user_id=update.effective_user.id):
+        text = get_text('unauthorized_user_admin_text', language_code).text()
+        ret_lvl = ConversationHandler.END
+    elif len(args) == 0:
+        text = get_text('no_args_admin_text', language_code).text()
+        ret_lvl = ConversationHandler.END
+    elif args[0] == '-n':
+        if len(args) == 1:
+            text = get_text('no_args_notify_admin_text', language_code).text()
+            ret_lvl = ConversationHandler.END
+        elif args[1] == '--all':
+            if len(args) > 2:
+                text = get_text('too_many_args_notify_admin_text', language_code).text()
+                ret_lvl = ConversationHandler.END
+            else:
+                text = get_text('all_users_notify_admin_text', language_code).text()
+                ret_lvl = ADMIN_NOTIFY
+        elif args[1] == '--user':
+            if len(args) == 3:
+                user_nik = args[2]
+                if database.check_user_nik(user_nik):
+                    context.chat_data['notify_username_admin'] = args[2]
+                    text = get_text('user_notify_admin_text', language_code).text()
+                    ret_lvl = ADMIN_NOTIFY
+                else:
+                    text = get_text('invalid_username_notify_admin_text', language_code).text()
+                    ret_lvl = ConversationHandler.END
+            elif len(args < 3):
+                text = get_text('empty_user_id_notify_admin_text', language_code)
+                ret_lvl = ConversationHandler.END
+            else:
+                text = get_text('too_many_args_notify_admin_text', language_code).text()
+                ret_lvl = ConversationHandler.END
+        else:
+            text = get_text('unavailable_flag_notify_admin_text', language_code).text()
+            ret_lvl = ConversationHandler.END
+    else:
+        text = get_text('unavailable_flag_admin_text', language_code).text()
+        ret_lvl = ConversationHandler.END
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+    )
+    return ret_lvl
+
+
+@log_function
+def admin_notify(update: Update, context: CallbackContext):
+    user_nik = context.chat_data.get('notify_username_admin')
+    context.chat_data.pop('notify_username_admin', None)
+    notification_text = update.message.text
+    if user_nik is not None:
+        cf.send_message(context, user_nik=user_nik, text=notification_text)
+    else:
+        cf.send_message_to_all(context, text=notification_text)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('notification_sent_notify_admin_text', update.effective_user.language_code).text()
+    )
+    return ConversationHandler.END
+
+
+handlers['admin'] = ConversationHandler(
+    entry_points=[
+        CommandHandler(command='admin', callback=admin),
+    ],
+    states={
+        ADMIN_NOTIFY: [
+            MessageHandler(filters=Filters.all, callback=admin_notify),
+        ],
+    },
+    fallbacks=[],
+    persistent=True,
+    name='admin',
+)
 
 
 handlers['parameters'] = ConversationHandler(
