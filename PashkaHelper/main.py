@@ -125,18 +125,18 @@ if __name__ == '__main__':
 # TODO:
 #  mark tasks in tables
 #  fix buttons copypaste
-#  ! add to /today links
+#  add to /today links
 #  teachers info
 #  make 'all' a special name
-#  ! make online info available for offline and vice versa
+#  make online info available for offline and vice versa
 #  ! replace with Nikita's text
 #  add deadlines
 #  add everyday deadlines
 #  mailing and parameters collision
 #  make comments
 #  make normal logging
-#  ! make chat_data persistent
+#  make chat_data persistent
 #  ! make /doc
 #  optimize database
-#  ! handle tracebacks errors in error handler (BadRequest) +
+#  ! /report +
 

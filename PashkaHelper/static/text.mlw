@@ -74,6 +74,10 @@
 
 <u>Расслабиться</u>
  - <a href = '&masha_and_cs_link'>кт, маша и панк максим</a>
+
+<u>Дополнительно<u>
+/report - отправить сообщение разработчикам
+/doc - документация по командам
 [/body]
 [/help_text]
 
@@ -839,3 +843,12 @@ Traceback:
 <code>^trace</code>
 [/body]
 [/error_handler_dev_text]
+
+[report_template_text]
+[body]
+\#report
+Сообщение от пользователя ^user:
+
+^report_text
+[/body]
+[/report_template_text]

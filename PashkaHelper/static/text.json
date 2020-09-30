@@ -140,6 +140,9 @@
     "empty_user_id_notify_admin_text": "Не указано имя пользователя",
     "unavailable_flag_notify_admin_text": "Неизвестный флаг для -n",
     "unavailable_flag_admin_text": "Неизвестный флаг",
-    "notification_sent_notify_admin_text": "Уведомление успешно отправлено"
+    "notification_sent_notify_admin_text": "Уведомление успешно отправлено",
+
+    "report_text": "Выведи следующим сообщением отзыв. Он будет отправлен разработчикам",
+    "report_sent_text": "Спасибо за отзыв!\n\nВернуться на главную страницу /help"
   }
 }
