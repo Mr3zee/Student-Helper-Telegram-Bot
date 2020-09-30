@@ -19,6 +19,7 @@ from src.subject import subjects
 handlers = {}
 
 ADMIN_NOTIFY, = range(1)
+REPORT_MESSAGE, = range(1)
 
 
 @log_function
@@ -203,6 +204,25 @@ def admin_notify(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
 
+@log_function
+def report_sent(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    data = {
+        'report_text': update.message.text,
+        'user': mention_html(update.effective_user.id, update.effective_user.first_name),
+    }
+    for admin_id in database.get_all_admins_chat_ids():
+        context.bot.send_message(
+            chat_id=admin_id,
+            text=get_text('report_template_text', language_code).text(data),
+        )
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('report_sent_text', language_code).text(),
+    )
+    return ConversationHandler.END
+
+
 handlers['admin'] = ConversationHandler(
     entry_points=[
         CommandHandler(command='admin', callback=admin),
@@ -215,6 +235,21 @@ handlers['admin'] = ConversationHandler(
     fallbacks=[],
     persistent=True,
     name='admin',
+)
+
+
+handlers['report'] = ConversationHandler(
+    entry_points=[
+        cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
+    ],
+    states={
+        REPORT_MESSAGE: [
+            MessageHandler(filters=Filters.all, callback=report_sent)
+        ],
+    },
+    fallbacks=[],
+    persistent=True,
+    name='report',
 )
 
 
