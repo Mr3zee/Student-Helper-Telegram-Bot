@@ -103,6 +103,8 @@ def send_message(context: CallbackContext, user_nik, text):
 def send_message_to_all(context: CallbackContext, text):
     chat_ids = database.gat_all_attrs('chat_id')
     for chat_id in chat_ids:
+        if database.is_admin(chat_id=chat_id):
+            continue
         context.bot.send_message(
             chat_id=chat_id,
             text=text,

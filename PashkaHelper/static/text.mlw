@@ -833,8 +833,9 @@ science: [m]
 Такс, такс, такс, что тут у нас?
 Произошла \#ошибка у пользователя ^user.
 
-<code>^error</code>, traceback:
+Текст ошибки: <code>^error</code>
 
+Traceback:
 <code>^trace</code>
 [/body]
 [/error_handler_dev_text]
