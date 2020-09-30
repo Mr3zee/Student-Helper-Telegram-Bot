@@ -136,7 +136,7 @@ if __name__ == '__main__':
 #  make comments
 #  make normal logging
 #  make chat_data persistent
-#  ! make /doc
+#  ! make /doc +
+#  make /doc [command] +
 #  optimize database
-#  ! /report +
 

@@ -21,6 +21,8 @@ handlers = {}
 ADMIN_NOTIFY, = range(1)
 REPORT_MESSAGE, = range(1)
 
+DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report'}
+
 
 @log_function
 def start(update: Update, context: CallbackContext):
@@ -205,6 +207,26 @@ def admin_notify(update: Update, context: CallbackContext):
 
 
 @log_function
+def doc(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    args = context.args
+    if len(args) > 2:
+        text = get_text('quantity_error_doc_text', language_code).text()
+    else:
+        if len(args) == 0:
+            text = get_text('doc_text', language_code).text({'command': 'all'})
+        else:
+            if args[0] not in DOC_COMMANDS:
+                text = get_text('wrong_command_error_doc_text', language_code).text()
+            else:
+                text = get_text('doc_text', language_code).text({'command': args[0]})
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+    )
+
+
+@log_function
 def report_sent(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     data = {
@@ -288,6 +310,7 @@ handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_da
 
 handlers['help'] = cf.simple_handler('help', cf.COMMAND)
 handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
+handlers['doc'] = CommandHandler(command='doc', callback=doc)
 
 handlers['today'] = CommandHandler(command='today', callback=today)
 
