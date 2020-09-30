@@ -130,15 +130,13 @@ if __name__ == '__main__':
 #  make 'all' a special name
 #  ! make online info available for offline and vice versa
 #  ! replace with Nikita's text
-#  ! make /admin send notifications +
 #  add deadlines
 #  add everyday deadlines
 #  mailing and parameters collision
 #  make comments
 #  make normal logging
-#  ! store usernames and chat_ids +
 #  ! make chat_data persistent
 #  ! make /doc
 #  optimize database
-#  ! handle tracebacks errors in error handler (BadRequest)
+#  ! handle tracebacks errors in error handler (BadRequest) +
 

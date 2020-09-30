@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from telegram import Update, error, ParseMode
+from telegram import Update, error
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
 from telegram.utils.helpers import mention_html
@@ -15,7 +15,6 @@ from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src.subject import subjects
-from static import config
 
 handlers = {}
 
@@ -122,12 +121,19 @@ def error_callback(update: Update, context: CallbackContext):
     else:
         data['user'] = 'unavailable'
 
-    text = get_text('error_handler_dev_text', language_code).text(data)
-    for dev_id in config.DEVS:
-        context.bot.send_message(
-            chat_id=dev_id,
-            text=text,
-        )
+    text = get_text('error_handler_dev_text', language_code)
+    for dev_id in database.get_all_admins_chat_ids():
+        try:
+            context.bot.send_message(
+                chat_id=dev_id,
+                text=text.text(data),
+            )
+        except error.BadRequest:
+            data['trace'] = 'Traceback is unavailable'
+            context.bot.send_message(
+                chat_id=dev_id,
+                text=text.text(data),
+            )
     raise
 
 
@@ -135,7 +141,7 @@ def error_callback(update: Update, context: CallbackContext):
 def admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     args = context.args
-    if not database.check_admin(user_id=update.effective_user.id):
+    if not database.is_admin(user_id=update.effective_user.id):
         text = get_text('unauthorized_user_admin_text', language_code).text()
         ret_lvl = ConversationHandler.END
     elif len(args) == 0:

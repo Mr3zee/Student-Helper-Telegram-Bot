@@ -102,16 +102,28 @@ def check_user_nik(user_nik):
     return Users.query.filter_by(user_nik=user_nik).count() != 0
 
 
-def check_admin(user_id):
-    return __get_user_row(user_id).admin
+def is_admin(user_id=None, user_nik=None, chat_id=None):
+    if user_id is None and user_nik is None and chat_id is None:
+        raise ValueError('All fields cannot be None simultaneously')
+    if user_id is not None:
+        return __get_user_row(user_id=user_id).admin
+    elif user_nik is not None:
+        return __get_user_row(user_nik=user_nik).admin
+    return __get_user_row(chat_id=chat_id).admin
 
 
-def __get_user_row(user_id=None, user_nik=None):
-    if user_id is None and user_nik is None:
-        raise ValueError('user_id and user_nik cannot be None simultaneously')
+def get_all_admins_chat_ids():
+    return [user.chat_id for user in Users.query.filter_by(admin=True).all()]
+
+
+def __get_user_row(user_id=None, user_nik=None, chat_id=None):
+    if user_id is None and user_nik is None and chat_id is None:
+        raise ValueError('All fields cannot be None simultaneously')
     if user_id is not None:
         return Users.query.filter_by(user_id=user_id).first()
-    return Users.query.filter_by(user_nik=user_nik).first()
+    elif user_nik is not None:
+        return Users.query.filter_by(user_nik=user_nik).first()
+    return Users.query.filter_by(chat_id=chat_id).first()
 
 
 def get_user(user_id, language_code):
