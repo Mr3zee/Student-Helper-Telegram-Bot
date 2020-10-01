@@ -69,21 +69,18 @@ def connect_bot():
         )
     )
     jq = JobQueue()
-    queue = Queue()
     persistence = PGPersistence()
     dp = Dispatcher(
         bot=new_bot,
-        update_queue=queue,
+        update_queue=None,
         use_context=True,
         job_queue=jq,
         persistence=persistence,
     )
     jq.set_dispatcher(dp)
     jq.start()
-    thread = Thread(target=dp.start)
-    thread.start()
     logger.info('Bot connected successfully')
-    return dp, new_bot, queue, jq
+    return dp, new_bot, jq
 
 
 def add_handlers():
@@ -97,7 +94,7 @@ def add_handlers():
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
 # setting bot
-dispatcher, bot, update_queue, job_queue = connect_bot()
+dispatcher, bot, job_queue = connect_bot()
 
 # setting error handler
 dispatcher.add_error_handler(callback=hdl.error_callback)
@@ -107,36 +104,37 @@ jobs.load_jobs(job_queue)
 
 job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=1), name='util')
 
-# add handlers to dispatcher
-add_handlers()
-
 # making webhook process function
-get_app_route(bot, update_queue, db.update_user_info)
+get_app_route(bot, dispatcher, db.update_user_info)
 
 
 if __name__ == '__main__':
 
     logger.info('Staring bot...')
 
+    # add handlers to dispatcher
+    add_handlers()
+
     app.run()
 
     jobs.save_jobs(job_queue)
 
 # TODO:
+#  CLIENT
 #  mark tasks in tables
-#  fix buttons copypaste
 #  add to /today links
 #  teachers info
-#  make 'all' a special name
 #  make online info available for offline and vice versa
 #  ! replace with Nikita's text
 #  add deadlines
 #  add everyday deadlines
 #  mailing and parameters collision
+#  missing links
+#  SERVER
+#  fix buttons copypaste
+#  make 'all' a special name
 #  make comments
 #  make normal logging
-#  make chat_data persistent
-#  ! make /doc +
-#  make /doc [command] +
 #  optimize database
+#  make chat_data persistent
 

@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sslify import SSLify
 
 from telegram import Update
+from telegram.ext import Dispatcher
 
 from static import config
 import os
@@ -12,7 +13,7 @@ app = Flask(__name__)
 sslify = SSLify(app)
 
 
-def get_app_route(bot, update_queue, user_updater):
+def get_app_route(bot, dispatcher: Dispatcher, user_updater):
     @app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
     def get_updates():
         if request.method == 'POST':
@@ -22,7 +23,7 @@ def get_app_route(bot, update_queue, user_updater):
                 user_nik=update.effective_user.username,
                 chat_id=update.effective_chat.id,
             )
-            update_queue.put(update)
+            dispatcher.process_update(update)
         return {'ok': True}
 
     return get_updates
