@@ -18,8 +18,7 @@ from src.subject import subjects
 
 handlers = {}
 
-ADMIN_NOTIFY, = range(1)
-REPORT_MESSAGE, = range(1)
+ADMIN_NOTIFY, REPORT_MESSAGE = range(4, 6)
 
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report'}
 
@@ -321,3 +320,21 @@ for sub in subjects:
 
 handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
 handlers['echo_message'] = cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all)
+
+
+# Bot father commands
+# help - главное меню
+# parameters - окно настроек
+# today - расписание на сегодня
+# timetable - окно расписания
+# doc - документация
+# report - сообщение разработчикам
+# algo - алгосики
+# discra - дискретка
+# diffur - диффуры
+# matan - матан
+# bjd - я тебе покушать принес
+# eng - английский
+# history - история
+# sp - современная прога
+# os - операционки
