@@ -5,14 +5,11 @@ from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
 from static import config
 from src import handler as hdl
-from src.app import app, get_app_route
+from src.app import app, get_app_route, PORT
 import src.database as db
 import src.jobs as jobs
 
 import logging
-
-from queue import Queue
-from threading import Thread
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +96,9 @@ dispatcher, bot, job_queue = connect_bot()
 # setting error handler
 dispatcher.add_error_handler(callback=hdl.error_callback)
 
+# add handlers to dispatcher
+add_handlers()
+
 # load saved jobs
 jobs.load_jobs(job_queue)
 
@@ -108,28 +108,27 @@ job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=
 get_app_route(bot, dispatcher, db.update_user_info)
 
 
+logger.info('Staring bot...')
+
 if __name__ == '__main__':
-
-    logger.info('Staring bot...')
-
-    # add handlers to dispatcher
-    add_handlers()
-
-    app.run()
+    app.run(host='0.0.0.0', port=PORT)
 
     jobs.save_jobs(job_queue)
 
 # TODO:
 #  CLIENT
+#  !! make heroku work +
+#  ! mailing and parameters collision
+#  ! replace with Nikita's text
+#  ! missing links
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
 #  make online info available for offline and vice versa
-#  ! replace with Nikita's text
 #  add deadlines
 #  add everyday deadlines
-#  mailing and parameters collision
-#  missing links
+#  user list for admin
+#  notification format
 #  SERVER
 #  fix buttons copypaste
 #  make 'all' a special name
