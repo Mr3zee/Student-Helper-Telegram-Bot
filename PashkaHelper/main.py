@@ -117,9 +117,8 @@ if __name__ == '__main__':
 
 # TODO:
 #  CLIENT
-#  !! make heroku work +
 #  ! mailing and parameters collision
-#  ! replace with Nikita's text
+#  ! replace with Nikita's text +
 #  ! missing links
 #  mark tasks in tables
 #  add to /today links

@@ -38,9 +38,9 @@ for key, value in subjects.items():
         DOMAINS[key] = domains
         DOMAINS[key].add('all')
 
-if config.ENV == 'development':
+if config.ENV == 'dev':
     app.config['SQLALCHEMY_DATABASE_URI'] = config.local_db_uri
-elif config.ENV == 'production':
+elif config.ENV == 'prod':
     app.config['SQLALCHEMY_DATABASE_URI'] = config.production_db_url
 else:
     raise ValueError('app running mode does not specified')
