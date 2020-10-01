@@ -27,3 +27,8 @@ def get_app_route(bot, dispatcher: Dispatcher, user_updater):
         return {'ok': True}
 
     return get_updates
+
+
+@app.route('/', methods=['GET'])
+def hello_world():
+    return {'ok': 'yes but actually no'}
