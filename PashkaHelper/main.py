@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
 # TODO:
 #  CLIENT
-#  ! mailing and parameters collision
+#  ! mailing and parameters collision +
 #  missing links
 #  mark tasks in tables
 #  add to /today links
@@ -125,9 +125,8 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  user list for admin +
-#  notification format +
-#  notification for all admins +
+#  error message text for params
+#  make /cancel
 #  SERVER
 #  fix buttons copypaste
 #  make 'all' a special name

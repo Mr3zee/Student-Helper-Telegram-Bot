@@ -22,6 +22,8 @@ ADMIN_NOTIFY, REPORT_MESSAGE = range(4, 6)
 
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report'}
 
+CONVERSATIONS = {'admin', 'parameters', 'report'}
+
 
 @log_function
 def start(update: Update, context: CallbackContext):
@@ -54,7 +56,7 @@ def timetable_callback(update: Update, context: CallbackContext, data, language_
             text=get_weekday_timetable(
                 weekday=data[:-7],
                 subject_names=subject_names,
-                attendance=database.get_user_attr(update.effective_user.id, 'attendance'),
+                attendance=database.get_user_attr('attendance', update.effective_user.id),
                 language_code=language_code,
             ),
             reply_markup=keyboard.timetable_keyboard(language_code=language_code)
@@ -88,7 +90,7 @@ def timetable(update: Update, context: CallbackContext):
         text = cf.get_timetable_by_index(
             day=day,
             subject_names=database.get_user_subject_names(user_id),
-            attendance=database.get_user_attr(user_id, 'attendance'),
+            attendance=database.get_user_attr('attendance', user_id),
             language_code=language_code,
         )
     else:
