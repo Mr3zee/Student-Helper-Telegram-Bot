@@ -63,7 +63,7 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
     elif data == COURSES:
         return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
     elif data == NAME:
-        return __chg_parameters_page(update, 'name', language_code=language_code, ret_lvl=NAME_LVL)
+        return __chg_parameters_page(update, 'enter_name', language_code=language_code, ret_lvl=NAME_LVL)
     elif data == ATTENDANCE:
         return __chg_parameters_page(update, 'attendance', language_code, keyboard.attendance_keyboard)
 
@@ -181,7 +181,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
         return MAIN_LVL
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('error_parameters_text', language_code).text(),
+        text=get_text('format_error_parameters_text', language_code).text(),
     )
     return error_lvl
 
@@ -220,14 +220,11 @@ def parameters_error(name):
     return MessageHandler(callback=error, filters=Filters.all)
 
 
-@log_function
-def exit_parameters(update: Update, context: CallbackContext):
-    language_code = update.effective_user.language_code
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('exit_parameters_text', language_code).text(),
-    )
-    return ConversationHandler.END
+exit_parameters = cf.simple_handler(
+    name='exit_parameters',
+    command='exit',
+    type=cf.COMMAND,
+    ret_lvl=ConversationHandler.END,
+)
 
-
-exit_parameters_hdl = CommandHandler(command='exit', callback=exit_parameters)
+cancel_parameters = CommandHandler(command='cancel', callback=parameters)
