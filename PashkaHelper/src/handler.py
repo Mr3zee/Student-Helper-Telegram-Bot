@@ -155,7 +155,7 @@ def admin(update: Update, context: CallbackContext):
             ret_lvl = ConversationHandler.END
         elif args[1] == '--all':
             if len(args) > 2:
-                text = get_text('too_many_args_notify_admin_text', language_code).text()
+                text = get_text('too_many_args_admin_text', language_code).text()
                 ret_lvl = ConversationHandler.END
             else:
                 text = get_text('all_users_notify_admin_text', language_code).text()
@@ -174,11 +174,20 @@ def admin(update: Update, context: CallbackContext):
                 text = get_text('empty_user_id_notify_admin_text', language_code)
                 ret_lvl = ConversationHandler.END
             else:
-                text = get_text('too_many_args_notify_admin_text', language_code).text()
+                text = get_text('too_many_args_admin_text', language_code).text()
                 ret_lvl = ConversationHandler.END
         else:
             text = get_text('unavailable_flag_notify_admin_text', language_code).text()
             ret_lvl = ConversationHandler.END
+    elif args[0] == '-ls':
+        if len(args) > 1:
+            text = get_text('too_many_args_admin_text', language_code).text()
+        else:
+            users = database.get_all_users()
+            text = get_text('ls_admin_text', language_code).text(
+                {'users': '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users))}
+            )
+        ret_lvl = ConversationHandler.END
     else:
         text = get_text('unavailable_flag_admin_text', language_code).text()
         ret_lvl = ConversationHandler.END
@@ -191,16 +200,17 @@ def admin(update: Update, context: CallbackContext):
 
 @log_function
 def admin_notify(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
     user_nik = context.chat_data.get('notify_username_admin')
     context.chat_data.pop('notify_username_admin', None)
     notification_text = update.message.text
     if user_nik is not None:
         cf.send_message(context, user_nik=user_nik, text=notification_text)
     else:
-        cf.send_message_to_all(context, text=notification_text)
+        cf.send_message_to_all(context, notification_text, update.effective_user.id, language_code)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('notification_sent_notify_admin_text', update.effective_user.language_code).text()
+        text=get_text('notification_sent_notify_admin_text', language_code).text()
     )
     return ConversationHandler.END
 
@@ -258,7 +268,6 @@ handlers['admin'] = ConversationHandler(
     name='admin',
 )
 
-
 handlers['report'] = ConversationHandler(
     entry_points=[
         cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
@@ -272,7 +281,6 @@ handlers['report'] = ConversationHandler(
     persistent=True,
     name='report',
 )
-
 
 handlers['parameters'] = ConversationHandler(
     entry_points=[
@@ -320,7 +328,6 @@ for sub in subjects:
 
 handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
 handlers['echo_message'] = cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all)
-
 
 # Bot father commands
 # help - главное меню

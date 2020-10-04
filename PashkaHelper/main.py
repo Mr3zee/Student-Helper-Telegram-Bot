@@ -118,16 +118,16 @@ if __name__ == '__main__':
 # TODO:
 #  CLIENT
 #  ! mailing and parameters collision
-#  ! replace with Nikita's text +
-#  ! missing links
+#  missing links
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  user list for admin
-#  notification format
+#  user list for admin +
+#  notification format +
+#  notification for all admins +
 #  SERVER
 #  fix buttons copypaste
 #  make 'all' a special name

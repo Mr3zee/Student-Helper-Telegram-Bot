@@ -116,6 +116,10 @@ def get_all_admins_chat_ids():
     return [user.chat_id for user in Users.query.filter_by(admin=True).all()]
 
 
+def get_all_users():
+    return [(user.user_id, user.user_nik) for user in Users.query.all()]
+
+
 def __get_user_row(user_id=None, user_nik=None, chat_id=None):
     if user_id is None and user_nik is None and chat_id is None:
         raise ValueError('All fields cannot be None simultaneously')
