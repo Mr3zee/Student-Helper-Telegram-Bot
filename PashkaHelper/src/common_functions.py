@@ -33,13 +33,13 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
     )
 
 
-def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_lvl=None):
+def simple_handler(name, type, command=None, filters=None, get_reply_markup=None, ret_lvl=None):
     @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id
 
-        text = get_text(f'{hdl_name}_text', language_code).text()
+        text = get_text(f'{name}_text', language_code).text()
 
         context.bot.send_message(
             chat_id=chat_id,
@@ -48,9 +48,9 @@ def simple_handler(hdl_name, hdl_type, filters=None, get_reply_markup=None, ret_
         )
         return ret_lvl
 
-    if hdl_type == COMMAND:
-        ret_handler = CommandHandler(command=hdl_name, callback=inner)
-    elif hdl_type == MESSAGE:
+    if type == COMMAND:
+        ret_handler = CommandHandler(command=(command if command else name), callback=inner)
+    elif type == MESSAGE:
         ret_handler = MessageHandler(filters=filters, callback=inner)
     else:
         raise ValueError('Unsupported hdl type')

@@ -291,20 +291,24 @@ handlers['parameters'] = ConversationHandler(
     states={
         ptrs.MAIN_LVL: [
             CallbackQueryHandler(callback=ptrs.parameters_callback, pass_chat_data=True, pass_job_queue=True),
-            ptrs.exit_parameters_hdl,
+            ptrs.exit_parameters,
+            ptrs.cancel_parameters,
             ptrs.parameters_error('main'),
         ],
         ptrs.NAME_LVL: [
-            ptrs.exit_parameters_hdl,
+            ptrs.exit_parameters,
+            ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.name_parameters),
         ],
         ptrs.TIME_LVL: [
-            ptrs.exit_parameters_hdl,
+            ptrs.exit_parameters,
+            ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.time_message_parameters, pass_chat_data=True,
                            pass_job_queue=True),
         ],
         ptrs.TZINFO_LVL: [
-            ptrs.exit_parameters_hdl,
+            ptrs.exit_parameters,
+            ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True,
                            pass_job_queue=True),
             ptrs.parameters_error('tzinfo'),
@@ -313,12 +317,14 @@ handlers['parameters'] = ConversationHandler(
     fallbacks=[],
     persistent=True,
     name='parameters',
+    allow_reentry=True,
 )
 
 handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
 
 handlers['help'] = cf.simple_handler('help', cf.COMMAND)
 handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
+handlers['doc'] = CommandHandler(command='doc', callback=doc)
 handlers['doc'] = CommandHandler(command='doc', callback=doc)
 
 handlers['today'] = CommandHandler(command='today', callback=today)

@@ -51,7 +51,7 @@ def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
         new_job = context.job_queue.run_daily(
             callback=mailing_job,
             time=db.get_user_mailing_time_with_offset(user_id),
-            days=(0, 1, 2, 3, 4, 5, 6),
+            days=(0, 1, 2, 3, 4, 5),
             context=[chat_id, user_id, language_code, notification_status],
             name=job_name,
         )
