@@ -192,8 +192,8 @@ value: Аргумент должен быть больше -1 и меньше 7
 # Main
 &main_page_link: [raw]http://neerc.ifmo.ru/teaching/dm2/2020-2021/[/raw]
 &hw_page_link: [raw]http://neerc.ifmo.ru/wiki/index.php?title=%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B9_%D0%BF%D0%BE_%D0%94%D0%9C_2%D0%BA_2020_%D0%BE%D1%81%D0%B5%D0%BD%D1%8C[/raw]
-&hw_table_offline_link: [raw]https://docs.google.com/spreadsheets/d/1A3ffe-hlvl4vyBCLC7s7R9Y0Gfrs7DgHu2VyPlyZTSg/edit?usp=sharing[/raw]
-&hw_table_online_link: [raw]https://docs.google.com/spreadsheets/d/1sTy8uQj_SSUse1jd7odnyeNqrXXhWtiWTxHFRz6sPLk/edit#gid=0[/raw]
+&hw_table_offline_link: [raw]https://docs.google.com/spreadsheets/d/1sZ9gKtMEfEPw15wbQpzMo0fYDfHPYSPvzM4mMqmPWmc/edit#gid=0[/raw]
+&hw_table_online_link: [raw]https://docs.google.com/spreadsheets/d/1sZ9gKtMEfEPw15wbQpzMo0fYDfHPYSPvzM4mMqmPWmc/edit#gid=1318166336[/raw]
 &point_link: [raw]https://docs.google.com/spreadsheets/d/1AwMIB9hiiAB-0m6JSPdeTwYUga_nfynFcWWiD8lfAg8/edit#gid=0[/raw]
 &pcms_link: [raw]https://pcms.itmo.ru/pcms2client/login.xhtml[/raw]
 
@@ -849,6 +849,25 @@ Traceback:
 ^report_text
 [/body]
 [/report_template_text]
+
+
+[notification_admin_text]
+[body]
+\#notification
+Уведомление от администрации президента:
+
+^text
+[/body]
+[/notification_admin_text]
+
+
+[ls_admin_text]
+[body]
+Список всех пользователей:
+
+^users
+[/body]
+[/ls_admin_text]
 
 
 [doc_text]

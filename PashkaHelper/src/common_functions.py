@@ -100,12 +100,12 @@ def send_message(context: CallbackContext, user_nik, text):
     )
 
 
-def send_message_to_all(context: CallbackContext, text):
+def send_message_to_all(context: CallbackContext, text, sender_id, language_code):
     chat_ids = database.gat_all_attrs('chat_id')
     for chat_id in chat_ids:
-        if database.is_admin(chat_id=chat_id):
+        if chat_id == sender_id:
             continue
         context.bot.send_message(
             chat_id=chat_id,
-            text=text,
+            text=get_text('notification_admin_text', language_code).text({'text': text}),
         )
