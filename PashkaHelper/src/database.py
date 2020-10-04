@@ -172,7 +172,7 @@ def get_user_attrs(attrs_name: list, user_id: int = None, user_nik: str = None):
     return retval
 
 
-def get_user_attr(attr_name: str, user_id=None, user_nik=None):
+def get_user_attr(attr_name: str, user_id: int = None, user_nik: str = None):
     return get_user_attrs([attr_name], user_id=user_id, user_nik=user_nik).get(attr_name)
 
 

@@ -1,24 +1,35 @@
 import datetime
 import time
+from typing import List
+
 import pytz
 
-from telegram.ext import CallbackContext, JobQueue, Job
+from telegram.ext import CallbackContext, JobQueue, Job, ConversationHandler
 
 from src.text import get_text
 import src.common_functions as cf
 import src.database as db
+import src.handler as hdl
 
 JOB_DATA = ('callback', 'interval', 'repeat', 'context', 'days', 'name', 'tzinfo')
 JOB_STATE = ('_remove', '_enabled')
 
 
-def mailing_job_callback(context: CallbackContext):
+def nullify_conversations(user_id, chat_id):
+    key = (user_id, chat_id)
+    conversation_hdls: List[ConversationHandler] = [hdl.handlers[i] for i in hdl.CONVERSATIONS]
+    for conversation in conversation_hdls:
+        conversation.update_state(ConversationHandler.END, key)
+
+
+def mailing_job(context: CallbackContext):
     job = context.job
     chat_id = job.context[0]
     user_id = job.context[1]
     language_code = job.context[2]
     notification_status = job.context[3]
     disable_notification = notification_status == 'disabled'
+    nullify_conversations(user_id, chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=get_text('timetable_mailing_greeting_text', language_code).text(),
@@ -38,9 +49,9 @@ def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
     job_name = 'job'
     if job_name not in context.chat_data:
         new_job = context.job_queue.run_daily(
-            callback=mailing_job_callback,
+            callback=mailing_job,
             time=db.get_user_mailing_time_with_offset(user_id),
-            days=(0, 1, 2, 3, 4, 5),
+            days=(0, 1, 2, 3, 4, 5, 6),
             context=[chat_id, user_id, language_code, notification_status],
             name=job_name,
         )
