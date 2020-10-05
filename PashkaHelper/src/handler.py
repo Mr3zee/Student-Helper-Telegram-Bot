@@ -280,11 +280,13 @@ main_hdl = [
     cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
 
     CallbackQueryHandler(callback=callback),
+
+    cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command),
+    cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all),
 ]
 
 for sub in subjects:
     main_hdl.append(cf.subject_handler(sub))
-
 
 handlers['main'] = ConversationHandler(
     entry_points=[
@@ -330,8 +332,21 @@ handlers['main'] = ConversationHandler(
     allow_reentry=True,
 )
 
-handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
-handlers['echo_message'] = cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all)
+handlers['extra_report'] = ConversationHandler(
+    entry_points=[
+        cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
+    ],
+    states={
+        REPORT_MESSAGE: [
+            MessageHandler(filters=Filters.all, callback=report_sent),
+        ],
+    },
+    fallbacks=[],
+    persistent=True,
+    name='extra_report',
+)
+
+handlers['not_start'] = cf.simple_handler(name='not_start', type=cf.MESSAGE, filters=Filters.all)
 
 # Bot father commands
 # help - главное меню

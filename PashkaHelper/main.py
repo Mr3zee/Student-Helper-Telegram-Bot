@@ -125,11 +125,10 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  ! /admin and /report works in /parameters +
 #  ! /cancel report
 #  ! /cancel admin
+#  extra report +
 #  SERVER
-#  set env vars for dev/prod +
 #  update jobs after working, not repeating
 #  fix buttons copypaste
 #  make 'all' a special name
