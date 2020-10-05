@@ -268,6 +268,8 @@ def report_sent(update: Update, context: CallbackContext):
     return MAIN
 
 
+cancel_main = cf.simple_handler(name='cancel_main', type=cf.COMMAND, command='cancel', ret_lvl=MAIN)
+
 main_hdl = [
     CommandHandler(command='parameters', callback=ptrs.parameters),
     cf.simple_handler('help', cf.COMMAND),
@@ -320,9 +322,11 @@ handlers['main'] = ConversationHandler(
             ptrs.parameters_error('tzinfo'),
         ],
         REPORT_MESSAGE: [
+            cancel_main,
             MessageHandler(filters=Filters.all, callback=report_sent),
         ],
         ADMIN_NOTIFY: [
+            cancel_main,
             MessageHandler(filters=Filters.all, callback=admin_notify),
         ],
     },
