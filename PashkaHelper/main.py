@@ -126,6 +126,7 @@ if __name__ == '__main__':
 #  add deadlines
 #  add everyday deadlines
 #  SERVER
+#  many clones of one job +
 #  update jobs after working, not repeating
 #  fix buttons copypaste
 #  make 'all' a special name

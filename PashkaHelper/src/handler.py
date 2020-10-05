@@ -300,6 +300,7 @@ handlers['main'] = ConversationHandler(
         MAIN: main_hdl,
 
         PARAMETERS_MAIN: [
+            CommandHandler(command='parameters', callback=ptrs.parameters),
             CallbackQueryHandler(callback=ptrs.parameters_callback, pass_chat_data=True, pass_job_queue=True),
             ptrs.exit_parameters,
             ptrs.cancel_parameters,
