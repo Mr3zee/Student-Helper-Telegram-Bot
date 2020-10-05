@@ -59,7 +59,6 @@ def simple_handler(name, type, command=None, filters=None, get_reply_markup=None
 
 def get_subject_info(sub_name, user_id, language_code):
     subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
-    print(sub_name, subtype)
     timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
     return get_text(f'{sub_name}_subject_text', language_code).text({
         'course': subtype,

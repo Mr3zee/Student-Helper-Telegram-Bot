@@ -125,8 +125,6 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  ! /cancel report +
-#  ! /cancel admin +
 #  SERVER
 #  update jobs after working, not repeating
 #  fix buttons copypaste

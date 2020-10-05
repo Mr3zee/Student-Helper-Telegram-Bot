@@ -9,7 +9,7 @@ offset = ' ' * 4
 
 
 def log_function(f):
-    if config.ENV == 'production':
+    if config.ENV == 'prod':
         return f
 
     def inner(*args, **kwargs):
