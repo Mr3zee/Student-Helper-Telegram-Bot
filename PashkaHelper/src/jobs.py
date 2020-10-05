@@ -1,5 +1,6 @@
 import datetime
 import time
+import pprint
 
 import pytz
 
@@ -76,7 +77,6 @@ def load_jobs(jq: JobQueue):
     if dct.get('jobs') is None:
         return
     for next_t, data, state in dct.get('jobs'):
-        # New object with the same data
         data['callback'] = globals()[data['callback']]
         time_td = datetime.datetime.strptime(data['interval'], '%d day, %H:%M:%S')
         data['interval'] = datetime.timedelta(
@@ -122,8 +122,10 @@ def save_jobs(jq: JobQueue):
             state = [getattr(job, var).is_set() for var in JOB_STATE]
 
             # Pickle the job
-            dct['jobs'].append((next_t, data, state))
 
+            if not state[0]:
+                dct['jobs'].append((next_t, data, state))
+        pprint.pprint(dct)
         db.save_jobs(dct)
 
 
