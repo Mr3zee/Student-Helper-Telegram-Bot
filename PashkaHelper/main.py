@@ -124,8 +124,8 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  error message text for params +
-#  make /cancel +
+#  handle unknown callbacks +
+#  /admin and /report works in /parameters
 #  SERVER
 #  fix buttons copypaste
 #  make 'all' a special name

@@ -46,6 +46,17 @@ def callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     if data in buttons.WEEKDAYS_SET:
         return timetable_callback(update, context, data, language_code)
+    else:
+        return unknown_callback(update, context)
+
+
+@log_function
+def unknown_callback(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('unknown_callback_text', language_code).text()
+    )
 
 
 @log_function
