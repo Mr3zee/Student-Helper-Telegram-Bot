@@ -69,7 +69,7 @@ class Users(db.Model):
 
     def __init__(self, user_id, user_nik, chat_id, admin=False, username='unknown', attendance='both',
                  mailing_status='allowed', notification_status='enabled', mailing_time='7:30',
-                 utcoffset=3, os=None, sp=None, history=None, eng=None):
+                 utcoffset=3, os='all', sp='all', history='all', eng='all'):
         self.user_id = user_id
         self.user_nik = user_nik
         self.chat_id = chat_id
@@ -143,8 +143,6 @@ def get_user(user_id, language_code):
         elif attr_name == 'utcoffset':
             retval[attr_name] = (str(attr_value) if attr_value < 0 else f'+{attr_value}')
             continue
-        elif not attr_value:
-            attr_value = 'all'
         text = get_text(f'{f"{attr_name}_{attr_value}"}_user_data_text', language_code).text()
         if attr_name == 'eng' and attr_value != 'all':
             text = get_text('eng_std_user_data_text', language_code).text({'eng': text})

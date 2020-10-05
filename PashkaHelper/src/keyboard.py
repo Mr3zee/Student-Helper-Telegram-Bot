@@ -2,7 +2,7 @@ from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 from src.text import get_text
 
-from src.buttons import *
+from static.buttons import *
 
 
 def make_button(button, language_code):
