@@ -270,7 +270,12 @@ def report_sent(update: Update, context: CallbackContext):
 
 cancel_main = cf.simple_handler(name='cancel_main', type=cf.COMMAND, command='cancel', ret_lvl=MAIN)
 
-main_hdl = [
+main_hdl = []
+
+for sub in subjects:
+    main_hdl.append(cf.subject_handler(sub))
+
+main_hdl.extend([
     CommandHandler(command='parameters', callback=ptrs.parameters),
     cf.simple_handler('help', cf.COMMAND),
 
@@ -285,10 +290,7 @@ main_hdl = [
 
     cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command),
     cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all),
-]
-
-for sub in subjects:
-    main_hdl.append(cf.subject_handler(sub))
+])
 
 handlers['main'] = ConversationHandler(
     entry_points=[
