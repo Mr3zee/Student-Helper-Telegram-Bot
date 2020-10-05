@@ -102,6 +102,7 @@ add_handlers()
 # load saved jobs
 jobs.load_jobs(job_queue)
 
+# update jobs
 job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=1), name='util')
 
 # making webhook process function
@@ -124,9 +125,12 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  handle unknown callbacks +
-#  /admin and /report works in /parameters
+#  ! /admin and /report works in /parameters +
+#  ! /cancel report
+#  ! /cancel admin
 #  SERVER
+#  set env vars for dev/prod +
+#  update jobs after working, not repeating
 #  fix buttons copypaste
 #  make 'all' a special name
 #  make comments

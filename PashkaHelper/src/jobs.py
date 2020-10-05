@@ -1,15 +1,15 @@
 import datetime
 import time
-from typing import List
 
 import pytz
 
-from telegram.ext import CallbackContext, JobQueue, Job, ConversationHandler
+from telegram.ext import CallbackContext, JobQueue, Job
 
 from src.text import get_text
 import src.common_functions as cf
 import src.database as db
 import src.handler as hdl
+from static.conversarion_states import MAIN
 
 JOB_DATA = ('callback', 'interval', 'repeat', 'context', 'days', 'name', 'tzinfo')
 JOB_STATE = ('_remove', '_enabled')
@@ -17,9 +17,7 @@ JOB_STATE = ('_remove', '_enabled')
 
 def nullify_conversations(user_id, chat_id):
     key = (user_id, chat_id)
-    conversation_hdls: List[ConversationHandler] = [hdl.handlers[i] for i in hdl.CONVERSATIONS]
-    for conversation in conversation_hdls:
-        conversation.update_state(ConversationHandler.END, key)
+    hdl.handlers['main'].update_state(MAIN, key)
 
 
 def mailing_job(context: CallbackContext):

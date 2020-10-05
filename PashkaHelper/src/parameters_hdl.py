@@ -3,12 +3,10 @@ from telegram.ext import CallbackContext, ConversationHandler, MessageHandler, F
 
 from src.log import log_function
 from src.text import get_text
-from src.buttons import *
+from static.buttons import *
+from static.conversarion_states import *
 
 from src import keyboard, database, common_functions as cf, jobs
-
-# ConversationHandler's states:
-MAIN_LVL, NAME_LVL, TIME_LVL, TZINFO_LVL = range(4)
 
 
 @log_function
@@ -20,11 +18,11 @@ def parameters(update: Update, context: CallbackContext):
         text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
-    return MAIN_LVL
+    return PARAMETERS_MAIN
 
 
 @log_function
-def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=MAIN_LVL):
+def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=PARAMETERS_MAIN):
     user_id = update.effective_user.id
     text = get_text(f'{page_name}_parameters_text', language_code)
     user_info = database.get_user(user_id, language_code)
@@ -42,7 +40,7 @@ def parameters_callback(update: Update, context: CallbackContext):
         update.callback_query.edit_message_text(
             text=get_text('exit_parameters_text', language_code).text(),
         )
-        return ConversationHandler.END
+        return MAIN
     elif data in MAIN_SET:
         return __main_callback(update, context, data, language_code)
     elif data in COURSES_SET:
@@ -63,7 +61,7 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
     elif data == COURSES:
         return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
     elif data == NAME:
-        return __chg_parameters_page(update, 'enter_name', language_code=language_code, ret_lvl=NAME_LVL)
+        return __chg_parameters_page(update, 'enter_name', language_code=language_code, ret_lvl=PARAMETERS_NAME)
     elif data == ATTENDANCE:
         return __chg_parameters_page(update, 'attendance', language_code, keyboard.attendance_keyboard)
 
@@ -75,7 +73,7 @@ def __return_callback(update: Update, context: CallbackContext, language_code):
         text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
-    return MAIN_LVL
+    return PARAMETERS_MAIN
 
 
 @log_function
@@ -89,7 +87,7 @@ def __mailing_callback(update: Update, context: CallbackContext, language_code):
         text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
         reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
     )
-    return MAIN_LVL
+    return PARAMETERS_MAIN
 
 
 def __get_button_vars(data):
@@ -156,9 +154,9 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
         jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
         return __mailing_callback(update, context, language_code)
     elif data == TZINFO:
-        return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=TZINFO_LVL)
+        return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=PARAMETERS_TZINFO)
     elif data == MESSAGE_TIME:
-        return __chg_parameters_page(update, 'enter_time', language_code=language_code, ret_lvl=TIME_LVL)
+        return __chg_parameters_page(update, 'enter_time', language_code=language_code, ret_lvl=PARAMETERS_TIME)
 
 
 # todo optimize
@@ -178,7 +176,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
             text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
             reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
         )
-        return MAIN_LVL
+        return PARAMETERS_MAIN
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('format_error_parameters_text', language_code).text(),
@@ -193,7 +191,7 @@ def tzinfo_parameters(update: Update, context: CallbackContext):
         context=context,
         validation=database.valid_utcoffset,
         attr_name='utcoffset',
-        error_lvl=TZINFO_LVL,
+        error_lvl=PARAMETERS_TZINFO,
     )
 
 
@@ -204,7 +202,7 @@ def time_message_parameters(update: Update, context: CallbackContext):
         context=context,
         validation=database.valid_time,
         attr_name='mailing_time',
-        error_lvl=TIME_LVL,
+        error_lvl=PARAMETERS_TIME,
     )
 
 
@@ -224,7 +222,7 @@ exit_parameters = cf.simple_handler(
     name='exit_parameters',
     command='exit',
     type=cf.COMMAND,
-    ret_lvl=ConversationHandler.END,
+    ret_lvl=MAIN,
 )
 
 cancel_parameters = CommandHandler(command='cancel', callback=parameters)

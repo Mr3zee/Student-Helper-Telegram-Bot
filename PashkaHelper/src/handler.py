@@ -6,7 +6,9 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
     ConversationHandler
 from telegram.utils.helpers import mention_html
 
-from src import keyboard, buttons, database, common_functions as cf
+from src import keyboard, database, common_functions as cf
+from static import buttons
+from static.conversarion_states import *
 
 import src.parameters_hdl as ptrs
 import src.jobs as jobs
@@ -17,8 +19,6 @@ from src.timetable import get_weekday_timetable
 from src.subject import subjects
 
 handlers = {}
-
-ADMIN_NOTIFY, REPORT_MESSAGE = range(4, 6)
 
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report'}
 
@@ -39,6 +39,7 @@ def start(update: Update, context: CallbackContext):
         chat_id=chat_id,
         text=get_text('start_text', language_code=language_code).text(),
     )
+    return MAIN
 
 
 @log_function
@@ -158,18 +159,18 @@ def admin(update: Update, context: CallbackContext):
     args = context.args
     if not database.is_admin(user_id=update.effective_user.id):
         text = get_text('unauthorized_user_admin_text', language_code).text()
-        ret_lvl = ConversationHandler.END
+        ret_lvl = MAIN
     elif len(args) == 0:
         text = get_text('no_args_admin_text', language_code).text()
-        ret_lvl = ConversationHandler.END
+        ret_lvl = MAIN
     elif args[0] == '-n':
         if len(args) == 1:
             text = get_text('no_args_notify_admin_text', language_code).text()
-            ret_lvl = ConversationHandler.END
+            ret_lvl = MAIN
         elif args[1] == '--all':
             if len(args) > 2:
                 text = get_text('too_many_args_admin_text', language_code).text()
-                ret_lvl = ConversationHandler.END
+                ret_lvl = MAIN
             else:
                 text = get_text('all_users_notify_admin_text', language_code).text()
                 ret_lvl = ADMIN_NOTIFY
@@ -182,16 +183,16 @@ def admin(update: Update, context: CallbackContext):
                     ret_lvl = ADMIN_NOTIFY
                 else:
                     text = get_text('invalid_username_notify_admin_text', language_code).text()
-                    ret_lvl = ConversationHandler.END
+                    ret_lvl = MAIN
             elif len(args < 3):
                 text = get_text('empty_user_id_notify_admin_text', language_code)
-                ret_lvl = ConversationHandler.END
+                ret_lvl = MAIN
             else:
                 text = get_text('too_many_args_admin_text', language_code).text()
-                ret_lvl = ConversationHandler.END
+                ret_lvl = MAIN
         else:
             text = get_text('unavailable_flag_notify_admin_text', language_code).text()
-            ret_lvl = ConversationHandler.END
+            ret_lvl = MAIN
     elif args[0] == '-ls':
         if len(args) > 1:
             text = get_text('too_many_args_admin_text', language_code).text()
@@ -200,10 +201,10 @@ def admin(update: Update, context: CallbackContext):
             text = get_text('ls_admin_text', language_code).text(
                 {'users': '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users))}
             )
-        ret_lvl = ConversationHandler.END
+        ret_lvl = MAIN
     else:
         text = get_text('unavailable_flag_admin_text', language_code).text()
-        ret_lvl = ConversationHandler.END
+        ret_lvl = MAIN
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
@@ -225,7 +226,7 @@ def admin_notify(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=get_text('notification_sent_notify_admin_text', language_code).text()
     )
-    return ConversationHandler.END
+    return MAIN
 
 
 @log_function
@@ -264,86 +265,70 @@ def report_sent(update: Update, context: CallbackContext):
         chat_id=update.effective_chat.id,
         text=get_text('report_sent_text', language_code).text(),
     )
-    return ConversationHandler.END
+    return MAIN
 
 
-handlers['admin'] = ConversationHandler(
+main_hdl = [
+    CommandHandler(command='parameters', callback=ptrs.parameters),
+    cf.simple_handler('help', cf.COMMAND),
+
+    CommandHandler(command='timetable', callback=timetable),
+    CommandHandler(command='today', callback=today),
+
+    CommandHandler(command='admin', callback=admin),
+    CommandHandler(command='doc', callback=doc),
+    cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
+
+    CallbackQueryHandler(callback=callback),
+]
+
+for sub in subjects:
+    main_hdl.append(cf.subject_handler(sub))
+
+
+handlers['main'] = ConversationHandler(
     entry_points=[
-        CommandHandler(command='admin', callback=admin),
+        CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True),
     ],
     states={
-        ADMIN_NOTIFY: [
-            MessageHandler(filters=Filters.all, callback=admin_notify),
-        ],
-    },
-    fallbacks=[],
-    persistent=True,
-    name='admin',
-)
+        MAIN: main_hdl,
 
-handlers['report'] = ConversationHandler(
-    entry_points=[
-        cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
-    ],
-    states={
-        REPORT_MESSAGE: [
-            MessageHandler(filters=Filters.all, callback=report_sent)
-        ],
-    },
-    fallbacks=[],
-    persistent=True,
-    name='report',
-)
-
-handlers['parameters'] = ConversationHandler(
-    entry_points=[
-        CommandHandler(command='parameters', callback=ptrs.parameters)
-    ],
-    states={
-        ptrs.MAIN_LVL: [
+        PARAMETERS_MAIN: [
             CallbackQueryHandler(callback=ptrs.parameters_callback, pass_chat_data=True, pass_job_queue=True),
             ptrs.exit_parameters,
             ptrs.cancel_parameters,
             ptrs.parameters_error('main'),
         ],
-        ptrs.NAME_LVL: [
+        PARAMETERS_NAME: [
             ptrs.exit_parameters,
             ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.name_parameters),
         ],
-        ptrs.TIME_LVL: [
+        PARAMETERS_TIME: [
             ptrs.exit_parameters,
             ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.time_message_parameters, pass_chat_data=True,
                            pass_job_queue=True),
         ],
-        ptrs.TZINFO_LVL: [
+        PARAMETERS_TZINFO: [
             ptrs.exit_parameters,
             ptrs.cancel_parameters,
             MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True,
                            pass_job_queue=True),
             ptrs.parameters_error('tzinfo'),
         ],
+        REPORT_MESSAGE: [
+            MessageHandler(filters=Filters.all, callback=report_sent),
+        ],
+        ADMIN_NOTIFY: [
+            MessageHandler(filters=Filters.all, callback=admin_notify),
+        ],
     },
     fallbacks=[],
     persistent=True,
-    name='parameters',
+    name='main',
     allow_reentry=True,
 )
-
-handlers['start'] = CommandHandler(command='start', callback=start, pass_chat_data=True, pass_job_queue=True)
-
-handlers['help'] = cf.simple_handler('help', cf.COMMAND)
-handlers['timetable'] = CommandHandler(command='timetable', callback=timetable)
-handlers['doc'] = CommandHandler(command='doc', callback=doc)
-handlers['doc'] = CommandHandler(command='doc', callback=doc)
-
-handlers['today'] = CommandHandler(command='today', callback=today)
-
-handlers['callback'] = CallbackQueryHandler(callback=callback)
-
-for sub in subjects:
-    handlers[sub] = cf.subject_handler(sub)
 
 handlers['echo_command'] = cf.simple_handler('echo_command', cf.MESSAGE, filters=Filters.command)
 handlers['echo_message'] = cf.simple_handler('echo_message', cf.MESSAGE, filters=Filters.all)
