@@ -97,6 +97,9 @@
     "subject_bjd_main_button": "⬅ Инфа по БЖД",
     "subject_pe_main_button": "⬅ Инфа по физре",
 
+    "help_main_button": "⬅ Основное",
+    "help_additional_button": "Дополнительно ➡",
+
     "weekday_monday_button": "Понедельник",
     "weekday_tuesday_button": "Вторник",
     "weekday_wednesday_button": "Среда",

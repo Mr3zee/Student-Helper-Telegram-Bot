@@ -7,7 +7,6 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
 from telegram.utils.helpers import mention_html
 
 from src import keyboard, database, common_functions as cf
-from static import buttons
 from static.conversarion_states import *
 
 import src.parameters_hdl as ptrs
@@ -50,8 +49,30 @@ def callback(update: Update, context: CallbackContext):
         return timetable_callback(update, context, parsed_data, language_code)
     elif parsed_data[0] == 'subject':
         return subject.subject_callback(update, context, parsed_data, language_code)
+    elif parsed_data[0] == 'help':
+        return help_callback(update, context, parsed_data, language_code)
     else:
         return unknown_callback(update, context)
+
+
+def help(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('help_main_text', language_code).text(),
+        reply_markup=keyboard.help_keyboard('main', language_code),
+    )
+
+
+def help_callback(update: Update, context: CallbackContext, data: list, language_code):
+    if data[1] in {'main', 'additional'}:
+        text = get_text(f'help_{data[1]}_text', language_code).text()
+    else:
+        raise ValueError(f'Invalid help callback: {data[0]}')
+    update.callback_query.edit_message_text(
+        text=text,
+        reply_markup=keyboard.help_keyboard(data[1], language_code),
+    )
 
 
 @log_function
@@ -280,7 +301,7 @@ for sub in subject.subjects:
 
 main_hdl.extend([
     CommandHandler(command='parameters', callback=ptrs.parameters),
-    cf.simple_handler('help', cf.COMMAND),
+    CommandHandler(command='help', callback=help),
 
     CommandHandler(command='timetable', callback=timetable),
     CommandHandler(command='today', callback=today),
