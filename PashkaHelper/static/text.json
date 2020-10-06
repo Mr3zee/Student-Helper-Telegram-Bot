@@ -85,6 +85,7 @@
     "subject_eng_timetable_button": "Расписание по англу ➡",
     "subject_history_timetable_button": "Расписание по истории ➡",
     "subject_bjd_timetable_button": "Расписание по БЖД ➡",
+    "subject_pe_timetable_button": "Расписание по физре ➡",
     "subject_algo_main_button": "⬅ Инфа по алгосам",
     "subject_discra_main_button": "⬅ Инфа по дискре",
     "subject_diffur_main_button": "⬅ Инфа по дуффурам",
@@ -94,6 +95,7 @@
     "subject_eng_main_button": "⬅ Инфа по англу",
     "subject_history_main_button": "⬅ Инфа по истории",
     "subject_bjd_main_button": "⬅ Инфа по БЖД",
+    "subject_pe_main_button": "⬅ Инфа по физре",
 
     "weekday_monday_button": "Понедельник",
     "weekday_tuesday_button": "Вторник",

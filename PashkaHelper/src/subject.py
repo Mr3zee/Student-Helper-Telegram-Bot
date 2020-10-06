@@ -108,6 +108,9 @@ subjects = {
             'c1_2': set(), 'b2_1': set(), 'b2_2': set(), 'b2_3': set(),
             'b11_1': set(), 'b11_2': set(), 'b12_1': set(), 'b12_2': set(),
         }),
+    'pe': Subject(
+        main='pe',
+    ),
 }
 
 
