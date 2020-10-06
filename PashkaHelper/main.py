@@ -125,8 +125,9 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
+#  PE subject
+#  subject parity change
 #  SERVER
-#  many clones of one job +
 #  update jobs after working, not repeating
 #  fix buttons copypaste
 #  make 'all' a special name

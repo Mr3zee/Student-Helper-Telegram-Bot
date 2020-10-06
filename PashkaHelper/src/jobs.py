@@ -125,7 +125,6 @@ def save_jobs(jq: JobQueue):
 
             if not state[0]:
                 dct['jobs'].append((next_t, data, state))
-        pprint.pprint(dct)
         db.save_jobs(dct)
 
 
