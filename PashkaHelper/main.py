@@ -125,9 +125,9 @@ if __name__ == '__main__':
 #  make online info available for offline and vice versa
 #  add deadlines
 #  add everyday deadlines
-#  PE subject +
 #  PE self timetable
 #  subject parity change
+#  /help paginate +
 #  SERVER
 #  mlw_tools normal errors
 #  update jobs after working, not repeating

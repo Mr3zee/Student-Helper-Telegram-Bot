@@ -33,7 +33,7 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
     )
 
 
-def simple_handler(name, type, command=None, filters=None, get_reply_markup=None, ret_lvl=None):
+def simple_handler(name, type, command=None, filters=None, reply_markup=None, ret_lvl=None):
     @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
@@ -44,7 +44,7 @@ def simple_handler(name, type, command=None, filters=None, get_reply_markup=None
         context.bot.send_message(
             chat_id=chat_id,
             text=text,
-            reply_markup=(get_reply_markup(language_code) if get_reply_markup else None),
+            reply_markup=reply_markup,
         )
         return ret_lvl
 

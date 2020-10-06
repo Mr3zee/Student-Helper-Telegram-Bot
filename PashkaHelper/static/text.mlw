@@ -24,7 +24,30 @@
 [/start_text]
 
 
-[help_text]
+[help_main_text]
+[body]
+<b>Главная менюшка: Основное</b>
+
+<u>Расписание:</u>
+/timetable - всё расписание
+/today - расписание на сегодня
+
+<u>Информация по предметам:</u>
+/discra - Дискреточка
+/algo - Алгосики
+/matan - Матанчик
+/diffur - Диффуры
+/os - ОС
+/sp - СП
+/eng - Английский
+/history - История
+/bjd - БЖД
+/pe - Физкультура
+[/body]
+[/help_main_text]
+
+
+[help_additional_text]
 [vars]
 
 # Resources
@@ -44,15 +67,7 @@
 
 [/vars]
 [body]
-<b>Главная менюшка:</b>
-
-<u>Расписание:</u>
-/timetable - всё расписание
-/today - расписание на сегодня
-
-<u>Информация по предметам:</u>
-/discra | /algo | /matan | /diffur | /bjd
-/pe | /os | /sp | /eng | /history
+<b>Главная менюшка: Дополнительно</b>
 
 <u>Материалы по курсу:</u>
  <a href = '&google_doc_link'>Материалы</a> М3236-7
@@ -72,7 +87,7 @@
 /report - отправить сообщение разработчикам
 /doc - документация по командам
 [/body]
-[/help_text]
+[/help_additional_text]
 
 
 [timetable_text]

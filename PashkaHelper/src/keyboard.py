@@ -201,3 +201,13 @@ def subject_keyboard(sub_name, page_type, language_code):
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def help_keyboard(page_type, language_code):
+    button = (HELP_MAIN if page_type == 'additional' else HELP_ADDITIONAL)
+    keyboard = [
+        [
+            make_button(button, language_code)
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

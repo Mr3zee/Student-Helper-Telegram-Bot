@@ -103,8 +103,10 @@ def is_course_update(button):
     return button in HISTORY_SET or button in ENG_SET or button in OS_SET or button in SP_SET
 
 
-# SUBJECTS
-
-# change page
+# SUBJECTS change page
 SHOW_TIMETABLE = 'subject_{}_timetable_button'
 SHOW_SUBJECT = 'subject_{}_main_button'
+
+# HELP change page
+HELP_MAIN = 'help_main_button'
+HELP_ADDITIONAL = 'help_additional_button'
