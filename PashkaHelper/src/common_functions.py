@@ -2,7 +2,7 @@ from telegram.ext import CallbackContext, MessageHandler, CommandHandler
 from telegram import Update
 
 from src import keyboard, database
-from src.timetable import get_timetable_by_index, get_subject_timetable
+from src.timetable import get_timetable_by_index
 from src.time_management import get_weekday
 from src.log import log_function
 from src.text import get_text
@@ -55,32 +55,6 @@ def simple_handler(name, type, command=None, filters=None, get_reply_markup=None
     else:
         raise ValueError('Unsupported hdl type')
     return ret_handler
-
-
-def get_subject_info(sub_name, user_id, language_code):
-    subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
-    timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
-    return get_text(f'{sub_name}_subject_text', language_code).text({
-        'course': subtype,
-        'timetable': timetable,
-        'attendance': attendance,
-    })
-
-
-def subject_handler(sub_name):
-    @log_function
-    def inner(update: Update, context: CallbackContext):
-        language_code = update.effective_user.language_code
-        chat_id = update.effective_chat.id
-        user_id = update.effective_user.id
-
-        main_info = get_subject_info(sub_name, user_id, language_code)
-        context.bot.send_message(
-            chat_id=chat_id,
-            text=main_info,
-        )
-
-    return CommandHandler(command=sub_name, callback=inner)
 
 
 def manage_callback_query(update: Update):

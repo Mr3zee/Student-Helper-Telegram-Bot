@@ -51,15 +51,8 @@
 /today - расписание на сегодня
 
 <u>Информация по предметам:</u>
-/discra - Дискреточка
-/algo - Алгосики
-/matan - Матанчик
-/diffur - Диффуры
-/os - ОС
-/sp - СП
-/eng - Английский
-/history - История
-/bjd - БЖД
+/discra | /algo | /matan | /diffur
+/os | /sp | /eng | /history | /bjd
 
 <u>Материалы по курсу:</u>
  <a href = '&google_doc_link'>Материалы</a> М3236-7
@@ -141,6 +134,14 @@ value: Аргумент должен быть больше -1 и меньше 7
 [/today_sunday_text]
 
 
+[subject_timetable_text]
+[body]
+^timetable
+Вернуться на главную /help
+[/body]
+[/subject_timetable_text]
+
+
 [algo_subject_text]
 [vars]
 # Main
@@ -163,8 +164,7 @@ value: Аргумент должен быть больше -1 и меньше 7
 <b>Алгориты и структуры данных:</b>
 
 <u>Основное</u>
- <a href = '&hw_link'>ДЗ</a>
- Таблицы ДЗ: [case ^attendance]
+ <a href = '&hw_link'>Задания</a> | таблицы дз: [case ^attendance]
  offline: <a href = '&hw_table_offline_link'>очно</a>
  online: <a href = '&hw_table_online_link'>заочно</a>
  both: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
@@ -180,8 +180,6 @@ value: Аргумент должен быть больше -1 и меньше 7
 <u>Чатики</u>
  <a href = '&tg_link'>Чат</a> АиСД y2019 34-37
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/algo_subject_text]
@@ -213,11 +211,10 @@ value: Аргумент должен быть больше -1 и меньше 7
 
 <u>Основное</u>
  <a href = '&main_page_link'>Страница курса</a>
- <a href = '&hw_page_link'>ДЗ</a>
- Таблицы ДЗ: [case ^attendance]
+ <a href = '&hw_page_link'>Задания</a> | таблицы дз: [case ^attendance]
  offline: <a href = '&hw_table_offline_link'>очно</a>
  online: <a href = '&hw_table_online_link'>заочно</a>
- both: <a href = '&hw_table_offline_link'>очно</a> / <a href = '&hw_table_online_link'>заочно</a>
+ both: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
  [/case]
  Твои великолепные <a href = '&point_link'>баллы</a>
  Познавательные <a href = '&pcms_link'>лабы</a>
@@ -231,8 +228,6 @@ value: Аргумент должен быть больше -1 и меньше 7
  <a href = '&tg_main_link'>Чат</a> ДМ year2019
  <a href = '&tg_practice_link'>Чат</a> Практика ДМ M323(6|7), 2020, Осень
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/discra_subject_text]
@@ -418,8 +413,6 @@ b11_2: [m]
 [/case][/m]
 [/case]
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/eng_subject_text]
@@ -473,8 +466,6 @@ b11_2: [m]
 <u>Telegram-чаты</u>
  <a href = '&practice_tg'>Чат</a> М323* Диффуры, практика
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/diffur_subject_text]
@@ -514,8 +505,6 @@ lite: [m]
  <a href = '&lite_tg'>Канал</a> OS lite y2019[/m]
 [/case]
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/os_subject_text]
@@ -587,8 +576,6 @@ kotlin: [m]
  Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin[/m]
 [/case]
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/sp_subject_text]
@@ -603,7 +590,6 @@ kotlin: [m]
 
 К сожалению, задания по этой <a href = '&main_link'>ссылке</a> надо тоже делать
 
-^timetable
 Вернуться на главную /help
 [/body]
 [/bjd_subject_text]
@@ -662,8 +648,6 @@ science: [m]
 11010000 10011101 11010000 10110000 11010001 10000011 11010001 10000111 11010000 10111101 11010000 10111110 101101 11010001 10000010 11010000 10110101 11010001 10000101 11010000 10111101 11010000 10111000 11010001 10000111 11010000 10110101 11010001 10000001 11010000 10111010 11010000 10111000 11010000 10111001 100000 <a href = '&science_tg'>11010001 10000111 11010000 10110000 11010001 10000010</a>[/m]
 [/case]
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/history_subject_text]
@@ -697,8 +681,6 @@ science: [m]
   - Идентификатор: 473211
   - Ссылка: <a href = '&practice_zoom'>нажми на меня</a>
 
-
-^timetable
 Вернуться на главную /help
 [/body]
 [/matan_subject_text]

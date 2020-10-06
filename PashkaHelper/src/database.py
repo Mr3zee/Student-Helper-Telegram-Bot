@@ -5,7 +5,7 @@ from telegram.utils.helpers import decode_conversations_from_json, encode_conver
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 
-from src.subject import subjects
+import src.subject as subject
 from src.time_management import to_utc_converter
 from src.text import get_text
 from src.app import app
@@ -32,7 +32,7 @@ DOMAINS = {
     'mailing_status': {'allowed', 'forbidden'},
 }
 
-for key, value in subjects.items():
+for key, value in subject.subjects.items():
     domains = set(value.get_subtypes().keys())
     if domains is not None:
         DOMAINS[key] = domains
@@ -153,11 +153,11 @@ def get_user(user_id, language_code):
 def get_user_subject_names(user_id):
     user = __get_user_row(user_id)
     retval = set()
-    for subject in subjects:
-        retval = retval.union(subjects[subject].get_all_timetable_names((
-            getattr(user, subject)
-            if subject in ATTR_NAMES
-            else subject
+    for sub in subject.subjects:
+        retval = retval.union(subject.subjects[sub].get_all_timetable_names((
+            getattr(user, sub)
+            if sub in ATTR_NAMES
+            else sub
         )))
     return retval
 

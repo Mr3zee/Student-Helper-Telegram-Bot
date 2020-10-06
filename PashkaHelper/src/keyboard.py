@@ -191,3 +191,13 @@ def attendance_keyboard(language_code):
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def subject_keyboard(sub_name, page_type, language_code):
+    button = (SHOW_SUBJECT if page_type == 'timetable' else SHOW_TIMETABLE).format(sub_name)
+    keyboard = [
+        [
+            make_button(button, language_code)
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

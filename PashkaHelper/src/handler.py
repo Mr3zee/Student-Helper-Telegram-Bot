@@ -12,11 +12,11 @@ from static.conversarion_states import *
 
 import src.parameters_hdl as ptrs
 import src.jobs as jobs
+import src.subject as subject
 
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
-from src.subject import subjects
 
 handlers = {}
 
@@ -45,8 +45,11 @@ def start(update: Update, context: CallbackContext):
 @log_function
 def callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
-    if data in buttons.WEEKDAYS_SET:
-        return timetable_callback(update, context, data, language_code)
+    parsed_data = data.split('_')
+    if parsed_data[0] == 'weekday':
+        return timetable_callback(update, context, parsed_data, language_code)
+    elif parsed_data[0] == 'subject':
+        return subject.subject_callback(update, context, parsed_data, language_code)
     else:
         return unknown_callback(update, context)
 
@@ -61,12 +64,12 @@ def unknown_callback(update: Update, context: CallbackContext):
 
 
 @log_function
-def timetable_callback(update: Update, context: CallbackContext, data, language_code):
+def timetable_callback(update: Update, context: CallbackContext, data: list, language_code):
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
     try:
         update.callback_query.edit_message_text(
             text=get_weekday_timetable(
-                weekday=data[:-7],
+                weekday=data[1],
                 subject_names=subject_names,
                 attendance=database.get_user_attr('attendance', update.effective_user.id),
                 language_code=language_code,
@@ -272,8 +275,8 @@ cancel_main = cf.simple_handler(name='cancel_main', type=cf.COMMAND, command='ca
 
 main_hdl = []
 
-for sub in subjects:
-    main_hdl.append(cf.subject_handler(sub))
+for sub in subject.subjects:
+    main_hdl.append(subject.subject_handler(sub))
 
 main_hdl.extend([
     CommandHandler(command='parameters', callback=ptrs.parameters),
