@@ -51,8 +51,8 @@
 /today - расписание на сегодня
 
 <u>Информация по предметам:</u>
-/discra | /algo | /matan | /diffur
-/os | /sp | /eng | /history | /bjd
+/discra | /algo | /matan | /diffur | /bjd
+/pe | /os | /sp | /eng | /history
 
 <u>Материалы по курсу:</u>
  <a href = '&google_doc_link'>Материалы</a> М3236-7
@@ -594,6 +594,22 @@ kotlin: [m]
 [/body]
 [/bjd_subject_text]
 
+
+[pe_subject_text]
+[vars]
+&main_link: [raw]https://kronbars.itmo.ru/[/raw]
+&vk_link: [raw]https://vk.com/kronbars[/raw]
+&isu_link: [raw]https://isu.ifmo.ru[/raw]
+[/vars]
+[body]
+<b>Физкультура</b>
+
+<a href='&main_link'>Сайт</a> кронбарсов | <a href = '&vk_link'>группа</a> вк
+Запись в <a href='&isu_link'>ису</a>
+
+Вернуться на главную /help
+[/body]
+[/pe_subject_text]
 
 [history_subject_text]
 [vars]
