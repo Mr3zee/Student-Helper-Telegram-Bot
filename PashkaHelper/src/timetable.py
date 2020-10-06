@@ -1,4 +1,4 @@
-from src.subject import subjects
+import src.subject as subject
 from src.text import get_text
 from static.config import service_file_path, timetable_url
 from src.time_management import get_week_parity
@@ -76,9 +76,9 @@ def get_timetable_by_index(day: int, subject_names, attendance, language_code):
 def get_subject_timetable(sub_name, subtype, attendance, language_code):
     timetable = SERVER.get_subject_timetable(sub_name, subtype, attendance)
     if not timetable:
-        return ''
+        return get_text('no_subject_timetable_header_text', language_code=language_code).text()
 
-    template = get_text('subject_timetable_text', language_code=language_code).text()
+    template = get_text('subject_timetable_header_text', language_code=language_code).text()
 
     for weekday, [sub1, sub2] in timetable.items():
         weekday_name = get_text(f'{weekday}_timetable_text', language_code=language_code).text()
@@ -216,7 +216,7 @@ class Server:
         return retval
 
     def get_subject_timetable(self, sub_name, subtype, attendance):
-        subject_filter = Server.__subject_compare(subjects[sub_name].get_all_timetable_names(subtype))
+        subject_filter = Server.__subject_compare(subject.subjects[sub_name].get_all_timetable_names(subtype))
         values = self.__get_values_from_table()
         retval = {}
         for weekday in Server.__weekdays_map.keys():

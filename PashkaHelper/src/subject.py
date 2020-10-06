@@ -1,5 +1,14 @@
 from typing import Dict
 
+from telegram import Update
+from telegram.ext import CallbackContext, CommandHandler
+
+from src.log import log_function
+from src.text import get_text
+from src.timetable import get_subject_timetable
+import src.database as database
+import src.keyboard as keyboard
+
 
 class Subject:
 
@@ -100,3 +109,49 @@ subjects = {
             'b11_1': set(), 'b11_2': set(), 'b12_1': set(), 'b12_2': set(),
         }),
 }
+
+
+def get_subject_info(sub_name, user_id, page_type, language_code):
+    subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
+    if page_type == 'timetable':
+        timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
+        return get_text('subject_timetable_text', language_code).text({
+            'timetable': timetable,
+        })
+    elif page_type == 'main':
+        return get_text(f'{sub_name}_subject_text', language_code).text({
+            'course': subtype,
+            'attendance': attendance,
+        })
+    else:
+        raise ValueError(f'Invalid subject page type: {page_type}')
+
+
+def subject_handler(sub_name):
+    @log_function
+    def inner(update: Update, context: CallbackContext):
+        language_code = update.effective_user.language_code
+        user_id = update.effective_user.id
+
+        main_info = get_subject_info(sub_name, user_id, 'main', language_code)
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=main_info,
+            reply_markup=keyboard.subject_keyboard(sub_name, 'main', language_code),
+        )
+
+    return CommandHandler(command=sub_name, callback=inner)
+
+
+@log_function
+def subject_callback(update: Update, context: CallbackContext, data: list, language_code):
+    user_id = update.effective_user.id
+    sub_name, page_type = data[1:-1]
+    update.callback_query.edit_message_text(
+        text=get_subject_info(sub_name, user_id, page_type, language_code),
+        reply_markup=keyboard.subject_keyboard(
+            sub_name=sub_name,
+            page_type=page_type,
+            language_code=language_code,
+        )
+    )

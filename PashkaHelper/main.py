@@ -127,7 +127,9 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE subject
 #  subject parity change
+#  subject timetable on button +
 #  SERVER
+#  mlw_tools normal errors
 #  update jobs after working, not repeating
 #  fix buttons copypaste
 #  make 'all' a special name

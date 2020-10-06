@@ -1,10 +1,10 @@
 # weekdays buttons
-MONDAY = 'monday_button'
-TUESDAY = 'tuesday_button'
-WEDNESDAY = 'wednesday_button'
-THURSDAY = 'thursday_button'
-FRIDAY = 'friday_button'
-SATURDAY = 'saturday_button'
+MONDAY = 'weekday_monday_button'
+TUESDAY = 'weekday_tuesday_button'
+WEDNESDAY = 'weekday_wednesday_button'
+THURSDAY = 'weekday_thursday_button'
+FRIDAY = 'weekday_friday_button'
+SATURDAY = 'weekday_saturday_button'
 
 WEEKDAYS_SET = {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY}
 
@@ -101,3 +101,10 @@ HISTORY_SET = {HISTORY_CULTURE, HISTORY_EU_PROBLEMS, HISTORY_INTERNATIONAL, HIST
 
 def is_course_update(button):
     return button in HISTORY_SET or button in ENG_SET or button in OS_SET or button in SP_SET
+
+
+# SUBJECTS
+
+# change page
+SHOW_TIMETABLE = 'subject_{}_timetable_button'
+SHOW_SUBJECT = 'subject_{}_main_button'
