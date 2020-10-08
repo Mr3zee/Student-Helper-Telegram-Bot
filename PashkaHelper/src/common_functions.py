@@ -1,7 +1,8 @@
 from telegram.ext import CallbackContext, MessageHandler, CommandHandler
 from telegram import Update
 
-from src import keyboard, database
+import src.keyboard as keyboard
+import src.database as database
 from src.timetable import get_timetable_by_index
 from src.time_management import get_weekday
 from src.log import log_function
@@ -82,3 +83,5 @@ def send_message_to_all(context: CallbackContext, text, sender_id, language_code
             chat_id=chat_id,
             text=get_text('notification_admin_text', language_code).text({'text': text}),
         )
+
+

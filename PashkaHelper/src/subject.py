@@ -3,6 +3,7 @@ from typing import Dict
 from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
+from src import util
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_subject_timetable
@@ -114,20 +115,24 @@ subjects = {
 }
 
 
-def get_subject_info(sub_name, user_id, page_type, language_code):
+def get_subject_info(sub_name, user_id, page, language_code, request: dict = None):
+    if request is None:
+        request = {}
     subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
-    if page_type == 'timetable':
+    attendance = util.if_none(request.get('attendance'), attendance)
+    subtype = util.if_none(request.get('subtype'), subtype)
+    if page == 'timetable':
         timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
         return get_text('subject_timetable_text', language_code).text({
             'timetable': timetable,
-        })
-    elif page_type == 'main':
+        }), attendance
+    elif page == 'main':
         return get_text(f'{sub_name}_subject_text', language_code).text({
             'course': subtype,
             'attendance': attendance,
-        })
+        }), attendance
     else:
-        raise ValueError(f'Invalid subject page type: {page_type}')
+        raise ValueError(f'Invalid subject page type: {page}')
 
 
 def subject_handler(sub_name):
@@ -136,11 +141,21 @@ def subject_handler(sub_name):
         language_code = update.effective_user.language_code
         user_id = update.effective_user.id
 
-        main_info = get_subject_info(sub_name, user_id, 'main', language_code)
+        main_info, attendance = get_subject_info(
+            sub_name=sub_name,
+            user_id=user_id,
+            page='main',
+            language_code=language_code,
+        )
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=main_info,
-            reply_markup=keyboard.subject_keyboard(sub_name, 'main', language_code),
+            reply_markup=keyboard.subject_keyboard(
+                sub_name=sub_name,
+                attendance=attendance,
+                page='main',
+                language_code=language_code,
+            ),
         )
 
     return CommandHandler(command=sub_name, callback=inner)
@@ -149,12 +164,22 @@ def subject_handler(sub_name):
 @log_function
 def subject_callback(update: Update, context: CallbackContext, data: list, language_code):
     user_id = update.effective_user.id
-    sub_name, page_type = data[1:-1]
+    sub_name, attendance, page = data[1:-1]
+    text, _ = get_subject_info(
+        sub_name=sub_name,
+        user_id=user_id,
+        page=page,
+        language_code=language_code,
+        request={
+            'attendance': attendance,
+        }
+    )
     update.callback_query.edit_message_text(
-        text=get_subject_info(sub_name, user_id, page_type, language_code),
+        text=text,
         reply_markup=keyboard.subject_keyboard(
             sub_name=sub_name,
-            page_type=page_type,
+            attendance=attendance,
+            page=page,
             language_code=language_code,
         )
     )

@@ -4,7 +4,7 @@ from telegram import ParseMode, Bot
 from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
 from static import config
-from src import handler as hdl
+import src.handler as hdl
 from src.app import app, get_app_route, PORT
 import src.database as db
 import src.jobs as jobs
@@ -122,12 +122,11 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
-#  make online info available for offline and vice versa
+#  make online info available for offline and vice versa (1/2)
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
 #  subject parity change
-#  /help paginate +
 #  SERVER
 #  mlw_tools normal errors
 #  update jobs after working, not repeating
