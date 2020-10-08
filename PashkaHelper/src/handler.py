@@ -264,7 +264,7 @@ def admin_notify(update: Update, context: CallbackContext):
     context.chat_data.pop('notify_username_admin', None)
     notification_text = update.message.text
     if user_nik is not None:
-        cf.send_message(context, user_nik=user_nik, text=notification_text)
+        cf.send_message(context, user_nik=user_nik, text=notification_text, language_code=language_code)
     else:
         cf.send_message_to_all(context, notification_text, update.effective_user.id, language_code)
     context.bot.send_message(
