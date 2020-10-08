@@ -6,7 +6,9 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
     ConversationHandler
 from telegram.utils.helpers import mention_html
 
-from src import keyboard, database, common_functions as cf
+import src.keyboard as keyboard
+import src.database as database
+import src.common_functions as cf
 from static.conversarion_states import *
 
 import src.parameters_hdl as ptrs

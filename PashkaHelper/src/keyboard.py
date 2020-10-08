@@ -1,5 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
+from src import util
 from src.text import get_text
 
 from static.buttons import *
@@ -193,11 +194,29 @@ def attendance_keyboard(language_code):
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def subject_keyboard(sub_name, page_type, language_code):
-    button = (SHOW_SUBJECT if page_type == 'timetable' else SHOW_TIMETABLE).format(sub_name)
+def subject_keyboard(sub_name, page, attendance, language_code):
+    not_page = util.to_not_page(page)
+    not_attendance = util.to_not_attendance(attendance)
+    attendance_callback = SUBJECT_BUTTON % {
+        'page': page,
+        'attendance': not_attendance,
+        'sub_name': sub_name
+    }
+    page_callback = SUBJECT_BUTTON % {
+        'page': not_page,
+        'attendance': attendance,
+        'sub_name': sub_name
+    }
     keyboard = [
         [
-            make_button(button, language_code)
+            InlineKeyboardButton(
+                text=get_text(f'subject_{not_page}_page_button', language_code).text(),
+                callback_data=page_callback,
+            ),
+            InlineKeyboardButton(
+                text=get_text(f'subject_{not_attendance}_attendance_button', language_code).text(),
+                callback_data=attendance_callback,
+            ),
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)

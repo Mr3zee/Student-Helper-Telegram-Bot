@@ -104,8 +104,7 @@ def is_course_update(button):
 
 
 # SUBJECTS change page
-SHOW_TIMETABLE = 'subject_{}_timetable_button'
-SHOW_SUBJECT = 'subject_{}_main_button'
+SUBJECT_BUTTON = 'subject_%(sub_name)s_%(attendance)s_%(page)s_button'
 
 # HELP change page
 HELP_MAIN = 'help_main_button'
