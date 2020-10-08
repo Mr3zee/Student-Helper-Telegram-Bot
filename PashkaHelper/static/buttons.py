@@ -1,10 +1,10 @@
 # weekdays buttons
-MONDAY = 'weekday_monday_button'
-TUESDAY = 'weekday_tuesday_button'
-WEDNESDAY = 'weekday_wednesday_button'
-THURSDAY = 'weekday_thursday_button'
-FRIDAY = 'weekday_friday_button'
-SATURDAY = 'weekday_saturday_button'
+MONDAY = 'timetable_monday_button'
+TUESDAY = 'timetable_tuesday_button'
+WEDNESDAY = 'timetable_wednesday_button'
+THURSDAY = 'timetable_thursday_button'
+FRIDAY = 'timetable_friday_button'
+SATURDAY = 'timetable_saturday_button'
 
 WEEKDAYS_SET = {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY}
 

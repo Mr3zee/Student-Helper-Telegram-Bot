@@ -1,6 +1,5 @@
 import datetime
 import time
-import pprint
 
 import pytz
 

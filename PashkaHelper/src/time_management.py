@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime, time, date, timezone, timedelta
+from datetime import datetime, date, timedelta
 
 ZERO_WEEK = date(2020, 9, 3).isocalendar()[1]
 
