@@ -16,6 +16,8 @@ ATTR_NAMES = [
     'user_nik',
     'chat_id',
     'username',
+    'admin',
+    'muted',
     'attendance',
     'mailing_status',
     'notification_status',
@@ -56,6 +58,7 @@ class Users(db.Model):
     user_nik = db.Column(db.String(50), unique=True)
     chat_id = db.Column(db.Integer, unique=True)
     admin = db.Column(db.Boolean)
+    muted = db.Column(db.Boolean)
     username = db.Column(db.String(100))
     attendance = db.Column(db.String(20))
     mailing_status = db.Column(db.String(20))
@@ -67,13 +70,14 @@ class Users(db.Model):
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
 
-    def __init__(self, user_id, user_nik, chat_id, admin=False, username='unknown', attendance='both',
+    def __init__(self, user_id, user_nik, chat_id, admin=False, muted=False, username='unknown', attendance='both',
                  mailing_status='allowed', notification_status='enabled', mailing_time='7:30',
                  utcoffset=3, os='all', sp='all', history='all', eng='all'):
         self.user_id = user_id
         self.user_nik = user_nik
         self.chat_id = chat_id
         self.admin = admin
+        self.muted = muted
         self.username = username
         self.attendance = attendance
         self.mailing_status = mailing_status
@@ -94,40 +98,30 @@ def add_user(user_id, user_nik, chat_id):
 
 
 def update_user_info(user_id, user_nik, chat_id):
-    if Users.query.filter_by(user_id=user_id).count() != 0:
-        set_user_attrs(user_id, {'user_nik': user_nik, 'chat_id': chat_id})
+    if db.session.query(Users).filter_by(user_id=user_id).count() != 0:
+        set_user_attrs(user_id=user_id, attrs={'user_nik': user_nik, 'chat_id': chat_id})
 
 
-def check_user_nik(user_nik):
-    return Users.query.filter_by(user_nik=user_nik).count() != 0
-
-
-def is_admin(user_id=None, user_nik=None, chat_id=None):
-    if user_id is None and user_nik is None and chat_id is None:
-        raise ValueError('All fields cannot be None simultaneously')
-    if user_id is not None:
-        return __get_user_row(user_id=user_id).admin
-    elif user_nik is not None:
-        return __get_user_row(user_nik=user_nik).admin
-    return __get_user_row(chat_id=chat_id).admin
+def has_user(user_nik):
+    return db.session.query(Users).filter_by(user_nik=user_nik).count() != 0
 
 
 def get_all_admins_chat_ids():
-    return [user.chat_id for user in Users.query.filter_by(admin=True).all()]
+    return [user.chat_id for user in db.session.query(Users).filter_by(admin=True).all()]
 
 
 def get_all_users():
-    return [(user.user_id, user.user_nik) for user in Users.query.all()]
+    return [(user.user_id, user.user_nik) for user in db.session.query(Users).all()]
 
 
 def __get_user_row(user_id=None, user_nik=None, chat_id=None):
     if user_id is None and user_nik is None and chat_id is None:
         raise ValueError('All fields cannot be None simultaneously')
     if user_id is not None:
-        return Users.query.filter_by(user_id=user_id).first()
+        return db.session.query(Users).filter_by(user_id=user_id).first()
     elif user_nik is not None:
-        return Users.query.filter_by(user_nik=user_nik).first()
-    return Users.query.filter_by(chat_id=chat_id).first()
+        return db.session.query(Users).filter_by(user_nik=user_nik).first()
+    return db.session.query(Users).filter_by(chat_id=chat_id).first()
 
 
 def get_user(user_id, language_code):
@@ -175,11 +169,11 @@ def get_user_attr(attr_name: str, user_id: int = None, user_nik: str = None):
 
 
 def gat_all_attrs(name):
-    return [getattr(user, name) for user in Users.query.all()]
+    return [getattr(user, name) for user in db.session.query(Users).all()]
 
 
-def set_user_attrs(user_id, attrs):
-    user = __get_user_row(user_id=user_id)
+def set_user_attrs(attrs: dict, user_id: int = None, user_nik: str = None, chat_id: int = None):
+    user = __get_user_row(user_id=user_id, user_nik=user_nik, chat_id=chat_id)
     for attr_name, new_value in attrs.items():
         if attr_name not in ATTR_NAMES:
             raise ValueError(f'Wrong attr name: {attr_name}')
@@ -228,7 +222,7 @@ class Persistence(db.Model):
 
 
 def get_db_conversations_row(name):
-    return Persistence.query.filter_by(name=name).first()
+    return db.session.query(Persistence).filter_by(name=name).first()
 
 
 def get_conversations() -> dict:

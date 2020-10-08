@@ -127,6 +127,8 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  subject parity change
+#  /admin mute +
+#  report format
 #  SERVER
 #  mlw_tools normal errors
 #  update jobs after working, not repeating

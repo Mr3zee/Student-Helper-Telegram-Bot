@@ -47,7 +47,7 @@ def start(update: Update, context: CallbackContext):
 def callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     parsed_data = data.split('_')
-    if parsed_data[0] == 'weekday':
+    if parsed_data[0] == 'timetable':
         return timetable_callback(update, context, parsed_data, language_code)
     elif parsed_data[0] == 'subject':
         return subject.subject_callback(update, context, parsed_data, language_code)
@@ -57,6 +57,7 @@ def callback(update: Update, context: CallbackContext):
         return unknown_callback(update, context)
 
 
+@log_function
 def help(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     context.bot.send_message(
@@ -66,6 +67,7 @@ def help(update: Update, context: CallbackContext):
     )
 
 
+@log_function
 def help_callback(update: Update, context: CallbackContext, data: list, language_code):
     if data[1] in {'main', 'additional'}:
         text = get_text(f'help_{data[1]}_text', language_code).text()
@@ -110,6 +112,7 @@ def timetable_args_error(context: CallbackContext, chat_id, error_type, language
     )
 
 
+@log_function
 def timetable(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     user_id = update.effective_user.id
@@ -183,7 +186,7 @@ def error_callback(update: Update, context: CallbackContext):
 def admin(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     args = context.args
-    if not database.is_admin(user_id=update.effective_user.id):
+    if not database.get_user_attr('admin', user_id=update.effective_user.id):
         text = get_text('unauthorized_user_admin_text', language_code).text()
         ret_lvl = MAIN
     elif len(args) == 0:
@@ -203,14 +206,14 @@ def admin(update: Update, context: CallbackContext):
         elif args[1] == '--user':
             if len(args) == 3:
                 user_nik = args[2]
-                if database.check_user_nik(user_nik):
+                if database.has_user(user_nik):
                     context.chat_data['notify_username_admin'] = args[2]
                     text = get_text('user_notify_admin_text', language_code).text()
                     ret_lvl = ADMIN_NOTIFY
                 else:
-                    text = get_text('invalid_username_notify_admin_text', language_code).text()
+                    text = get_text('invalid_username_admin_text', language_code).text()
                     ret_lvl = MAIN
-            elif len(args < 3):
+            elif len(args) < 3:
                 text = get_text('empty_user_id_notify_admin_text', language_code)
                 ret_lvl = MAIN
             else:
@@ -227,6 +230,22 @@ def admin(update: Update, context: CallbackContext):
             text = get_text('ls_admin_text', language_code).text(
                 {'users': '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users))}
             )
+        ret_lvl = MAIN
+    elif args[0] == '-m' or args[0] == '-um':
+        if len(args) > 2:
+            text = get_text('too_many_args_admin_text', language_code).text()
+        elif len(args) < 2:
+            text = get_text('empty_user_id_admin_text', language_code).text()
+        else:
+            user_nik = args[1]
+            if not database.has_user(user_nik):
+                text = get_text('invalid_username_admin_text', language_code).text()
+            elif args[0] == '-m':
+                database.set_user_attrs(user_nik=user_nik, attrs={'muted': True})
+                text = get_text('mute_user_admin_text', language_code).text()
+            else:
+                database.set_user_attrs(user_nik=user_nik, attrs={'muted': False})
+                text = get_text('unmute_user_admin_text', language_code).text()
         ret_lvl = MAIN
     else:
         text = get_text('unavailable_flag_admin_text', language_code).text()
@@ -276,6 +295,22 @@ def doc(update: Update, context: CallbackContext):
 
 
 @log_function
+def report(update: Update, context: CallbackContext):
+    language_code = update.effective_user.language_code
+    if database.get_user_attr('muted', update.effective_user.id):
+        text = get_text('cannot_send_report_text', language_code).text()
+        ret_lvl = MAIN
+    else:
+        text = get_text('report_text', language_code).text()
+        ret_lvl = REPORT_MESSAGE
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text,
+    )
+    return ret_lvl
+
+
+@log_function
 def report_sent(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
     data = {
@@ -310,7 +345,7 @@ main_hdl.extend([
 
     CommandHandler(command='admin', callback=admin),
     CommandHandler(command='doc', callback=doc),
-    cf.simple_handler('report', cf.COMMAND, ret_lvl=REPORT_MESSAGE),
+    CommandHandler(command='report', callback=report),
 
     CallbackQueryHandler(callback=callback),
 

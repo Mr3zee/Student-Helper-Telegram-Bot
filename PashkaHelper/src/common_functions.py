@@ -83,5 +83,3 @@ def send_message_to_all(context: CallbackContext, text, sender_id, language_code
             chat_id=chat_id,
             text=get_text('notification_admin_text', language_code).text({'text': text}),
         )
-
-
