@@ -18,5 +18,5 @@ def to_not_page(page):
         raise ValueError(f'Invalid page type : {page}')
 
 
-def if_none(a, b):
-    return a if a is not None else b
+def if_none(not_none, default):
+    return not_none if not_none is not None else default

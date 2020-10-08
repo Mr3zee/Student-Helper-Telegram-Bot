@@ -3,6 +3,7 @@ from telegram import Update
 
 import src.keyboard as keyboard
 import src.database as database
+from src import util
 from src.timetable import get_timetable_by_index
 from src.time_management import get_weekday
 from src.log import log_function
@@ -66,11 +67,11 @@ def manage_callback_query(update: Update):
     return data, language_code
 
 
-def send_message(context: CallbackContext, user_nik, text):
-    chat_id = database.get_user_attr('chat_id', user_nik=user_nik)
+def send_message(context: CallbackContext, text, language_code, user_nik=None, chat_id=None):
+    chat_id = database.get_user_attr('chat_id', user_nik=user_nik) if chat_id is None else chat_id
     context.bot.send_message(
         chat_id=chat_id,
-        text=text,
+        text=get_text('notification_admin_text', language_code).text({'text': text}),
     )
 
 
@@ -79,7 +80,4 @@ def send_message_to_all(context: CallbackContext, text, sender_id, language_code
     for chat_id in chat_ids:
         if chat_id == sender_id:
             continue
-        context.bot.send_message(
-            chat_id=chat_id,
-            text=get_text('notification_admin_text', language_code).text({'text': text}),
-        )
+        send_message(context, text, chat_id=chat_id, language_code=language_code)
