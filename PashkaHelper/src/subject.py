@@ -3,7 +3,7 @@ from typing import Dict
 from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
-from src import util
+from util import util
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_subject_timetable

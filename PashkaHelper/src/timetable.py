@@ -1,23 +1,13 @@
 import src.subject as subject
 from src.text import get_text
 from static.config import service_file_path, timetable_url
-from src.time_management import get_week_parity
+from src import time_management as tm
 
 import logging
 import pygsheets
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
-
-weekdays = {
-    0: 'monday',
-    1: 'tuesday',
-    2: 'wednesday',
-    3: 'thursday',
-    4: 'friday',
-    5: 'saturday',
-    6: 'sunday',
-}
 
 OFFLINE, ONLINE, BOTH_ATTENDANCE = 'offline', 'online', 'both'
 EVEN, ODD, BOTH_PARITY = 'even', 'odd', 'both'
@@ -31,16 +21,20 @@ def __rm_blanks(subject_row):
             return subject_row[:a + 1]
 
 
-def get_weekday_timetable(weekday: str, subject_names, attendance, language_code) -> str:
+def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, language_code) -> str:
     if weekday == 'sunday':
         return get_text('today_sunday_text', language_code=language_code).text()
 
     template = get_text('weekday_text', language_code)
     weekday_text = get_text(f'{weekday}_timetable_text', language_code).text()
 
-    subjects1, subjects2, parity = SERVER.get_timetable(weekday=weekday, subject_names=subject_names,
-                                                        attendance=attendance)
-    parity_text = get_text(f'{parity}_week_timetable_text', language_code=language_code).text()
+    subjects1, subjects2 = SERVER.get_timetable(
+        weekday=weekday,
+        subject_names=subject_names,
+        attendance=attendance,
+        week_parity=week_parity
+    )
+    parity_text = get_text(f'{week_parity}_week_timetable_text', language_code=language_code).text()
 
     template.add_global_vars({
         'weekday': weekday_text,
@@ -69,8 +63,8 @@ def __make_timetable(subjects_dict, template):
     return '\n'.join(list(map(lambda a: __rm_blanks(template % a), subjects_dict)))
 
 
-def get_timetable_by_index(day: int, subject_names, attendance, language_code):
-    return get_weekday_timetable(weekdays[day], subject_names, attendance, language_code)
+def get_timetable_by_index(weekday: int, subject_names, attendance, week_parity, language_code):
+    return get_weekday_timetable(tm.weekdays[weekday], subject_names, attendance, week_parity, language_code)
 
 
 def get_subject_timetable(sub_name, subtype, attendance, language_code):
@@ -155,18 +149,17 @@ class Server:
     def __accept_parity(sub_parity, week_parity):
         return sub_parity == week_parity or sub_parity == BOTH_PARITY or week_parity == BOTH_PARITY
 
-    def get_timetable(self, weekday, subject_names, attendance):
+    def get_timetable(self, weekday, subject_names, attendance, week_parity):
         values = self.__get_values_from_table()
         start_row, end_row = Server.__find_weekday_table(values, weekday)
-        week_parity = get_week_parity()
         sub_filter = Server.__subject_compare(subject_names)
         if attendance == BOTH_ATTENDANCE:
             offline_dict = Server.__parse_and_make(values, start_row, end_row, OFFLINE, week_parity, sub_filter)
             online_dict = Server.__parse_and_make(values, start_row, end_row, ONLINE, week_parity, sub_filter)
-            return offline_dict, online_dict, week_parity
+            return offline_dict, online_dict
         else:
             return Server.__parse_and_make(values, start_row, end_row, attendance, week_parity,
-                                           sub_filter), None, week_parity
+                                           sub_filter), None
 
     @staticmethod
     def __find_weekday_table(table, weekday):

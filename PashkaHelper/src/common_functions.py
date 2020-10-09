@@ -3,9 +3,8 @@ from telegram import Update
 
 import src.keyboard as keyboard
 import src.database as database
-from src import util
-from src.timetable import get_timetable_by_index
-from src.time_management import get_weekday
+from src.timetable import get_timetable_by_index, get_weekday_timetable
+from src import time_management as tm
 from src.log import log_function
 from src.text import get_text
 
@@ -21,16 +20,24 @@ logger = logging.getLogger(__name__)
 def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
                          disable_notification=False):
     attendance, utcoffset = database.get_user_attrs(['attendance', 'utcoffset'], user_id=user_id).values()
-    text = get_timetable_by_index(
-        day=get_weekday(timedelta(hours=utcoffset)),
+    weekday = tm.get_weekday(utcoffset)
+    week_parity = tm.get_week_parity()
+    text = get_weekday_timetable(
+        weekday=weekday,
         subject_names=database.get_user_subject_names(user_id),
         attendance=attendance,
+        week_parity=week_parity,
         language_code=language_code,
     )
     context.bot.send_message(
         chat_id=chat_id,
         text=text,
-        reply_markup=keyboard.timetable_keyboard(language_code=language_code),
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code
+        ),
         disable_notification=disable_notification,
     )
 

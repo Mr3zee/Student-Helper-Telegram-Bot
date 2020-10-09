@@ -1,12 +1,6 @@
 # weekdays buttons
-MONDAY = 'timetable_monday_button'
-TUESDAY = 'timetable_tuesday_button'
-WEDNESDAY = 'timetable_wednesday_button'
-THURSDAY = 'timetable_thursday_button'
-FRIDAY = 'timetable_friday_button'
-SATURDAY = 'timetable_saturday_button'
-
-WEEKDAYS_SET = {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY}
+WEEKDAY_BUTTON = 'timetable_%(weekday)s_button'
+TIMETABLE_BUTTON = 'timetable_%(attendance)s_%(week_parity)s_%(weekday)s_button'
 
 # parameters buttons
 NAME = 'name_button'

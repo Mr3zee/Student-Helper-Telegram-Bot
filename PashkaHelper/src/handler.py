@@ -18,6 +18,7 @@ import src.subject as subject
 from src.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
+from src import time_management as tm
 
 handlers = {}
 
@@ -91,15 +92,22 @@ def unknown_callback(update: Update, context: CallbackContext):
 @log_function
 def timetable_callback(update: Update, context: CallbackContext, data: list, language_code):
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
+    attendance, week_parity, weekday = data[1:-1]
     try:
         update.callback_query.edit_message_text(
             text=get_weekday_timetable(
-                weekday=data[1],
+                weekday=weekday,
                 subject_names=subject_names,
-                attendance=database.get_user_attr('attendance', update.effective_user.id),
+                attendance=attendance,
+                week_parity=week_parity,
                 language_code=language_code,
             ),
-            reply_markup=keyboard.timetable_keyboard(language_code=language_code)
+            reply_markup=keyboard.timetable_keyboard(
+                weekday=weekday,
+                attendance=attendance,
+                week_parity=week_parity,
+                language_code=language_code,
+            )
         )
     except error.BadRequest:
         pass
@@ -119,28 +127,38 @@ def timetable(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     args = context.args
 
+    week_parity = tm.get_week_parity()
+    attendance = database.get_user_attr('attendance', user_id)
+
     if len(args) > 1:
         return timetable_args_error(context, chat_id, 'many', language_code)
     elif len(args) == 1:
         try:
-            day = int(args[0])
+            weekday = int(args[0])
         except ValueError:
             return timetable_args_error(context, chat_id, 'type', language_code)
-        if day > 6 or day < 0:
+        if weekday > 6 or weekday < 0:
             return timetable_args_error(context, chat_id, 'value', language_code)
         text = cf.get_timetable_by_index(
-            day=day,
+            weekday=weekday,
             subject_names=database.get_user_subject_names(user_id),
-            attendance=database.get_user_attr('attendance', user_id),
+            attendance=attendance,
+            week_parity=week_parity,
             language_code=language_code,
         )
     else:
+        weekday = tm.get_weekday(database.get_user_attr('utcoffset', user_id=user_id))
         text = get_text('timetable_text', language_code).text()
 
     context.bot.send_message(
         chat_id=chat_id,
         text=text,
-        reply_markup=(keyboard.timetable_keyboard(language_code)),
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        ),
     )
 
 
@@ -432,3 +450,4 @@ handlers['not_start'] = cf.simple_handler(name='not_start', type=cf.MESSAGE, fil
 # history - история
 # sp - современная прога
 # os - операционки
+# pe - физра
