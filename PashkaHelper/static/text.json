@@ -14,6 +14,7 @@
     "friday_timetable_text": "Пятница",
     "saturday_timetable_text": "Суббота",
 
+    "timetable_mailing_greeting_text": "Доброго времени суток!\nЯ принес твое сегодняшнее расписание, чтобы ты ничего не забыл)",
     "offline_timetable_text": "<em>Очно:</em>",
     "online_timetable_text": "<em>Заочно:</em>",
     "odd_week_timetable_text": "нечетная",
@@ -30,7 +31,6 @@
     "enter_name_parameters_text": "Введи свое новое имя в формате ФИО (оно нужно для отметки дз в таблицах):",
     "enter_tzinfo_parameters_text": "Введи свою временную зону. Например, если ты сейчас в Питере (UTC +3), то надо ввести +3",
     "enter_time_parameters_text": "Введи время, в которое ты хочешь получать ежедневное расписание в формате часы:минуты :",
-    "timetable_mailing_greeting_text": "Доброго времени суток!\nЯ принес твое сегодняшнее расписание, чтобы ты ничего не забыл)",
 
     "name_unknown_user_data_text": "не указано",
     "attendance_both_user_data_text": "Очно и заочно",
@@ -90,6 +90,10 @@
     "timetable_thursday_button": "Четверг",
     "timetable_friday_button": "Пятница",
     "timetable_saturday_button": "Суббота",
+    "timetable_odd_week_button": "Нечетная неделя",
+    "timetable_even_week_button": "Четная неделя",
+    "timetable_online_attendance_button": "Показать заочно",
+    "timetable_offline_attendance_button": "Показать очно",
     "name_button": "Имя",
     "mailing_parameters_button": "Рассылка",
     "courses_parameters_button": "Мои курсы",

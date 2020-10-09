@@ -122,12 +122,12 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
-#  make online info available for offline and vice versa (1/2)
+#  make online info available for offline and vice versa (2/2) +
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
-#  subject parity change
-#  notification format +
+#  timetable parity change +
+#  timetable attendance change +
 #  SERVER
 #  mlw_tools normal errors
 #  update jobs after working, not repeating

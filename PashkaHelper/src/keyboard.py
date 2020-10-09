@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
-from src import util
+from util import util
 from src.text import get_text
 
 from static.buttons import *
@@ -10,18 +10,44 @@ def make_button(button, language_code):
     return InlineKeyboardButton(text=get_text(button, language_code).text(), callback_data=button)
 
 
-def timetable_keyboard(language_code):
+def make_timetable_button(weekday, current_state, language_code):
+    return InlineKeyboardButton(
+        text=get_text(WEEKDAY_BUTTON % {'weekday': weekday}, language_code).text(),
+        callback_data=TIMETABLE_BUTTON % dict(current_state, weekday=weekday),
+    )
+
+
+def timetable_keyboard(weekday, attendance, week_parity, language_code):
+    not_attendance = util.to_not_attendance(attendance)
+    not_week_parity = util.to_not_week_parity(week_parity)
+    current_state = {
+        'attendance': attendance,
+        'week_parity': week_parity,
+        'weekday': weekday,
+    }
+    attendance_callback = TIMETABLE_BUTTON % dict(current_state, attendance=not_attendance)
+    week_parity_callback = TIMETABLE_BUTTON % dict(current_state, week_parity=not_week_parity)
     keyboard = [
         [
-            make_button(MONDAY, language_code),
-            make_button(TUESDAY, language_code),
-            make_button(WEDNESDAY, language_code),
+            make_timetable_button('monday', current_state, language_code),
+            make_timetable_button('tuesday', current_state, language_code),
+            make_timetable_button('wednesday', current_state, language_code),
         ],
         [
-            make_button(THURSDAY, language_code),
-            make_button(FRIDAY, language_code),
-            make_button(SATURDAY, language_code),
+            make_timetable_button('thursday', current_state, language_code),
+            make_timetable_button('friday', current_state, language_code),
+            make_timetable_button('saturday', current_state, language_code),
         ],
+        [
+            InlineKeyboardButton(
+                text=get_text(f'timetable_{not_week_parity}_week_button', language_code).text(),
+                callback_data=week_parity_callback,
+            ),
+            InlineKeyboardButton(
+                text=get_text(f'timetable_{not_attendance}_attendance_button', language_code).text(),
+                callback_data=attendance_callback,
+            ),
+        ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
@@ -197,16 +223,13 @@ def attendance_keyboard(language_code):
 def subject_keyboard(sub_name, page, attendance, language_code):
     not_page = util.to_not_page(page)
     not_attendance = util.to_not_attendance(attendance)
-    attendance_callback = SUBJECT_BUTTON % {
+    current_state = {
         'page': page,
-        'attendance': not_attendance,
-        'sub_name': sub_name
-    }
-    page_callback = SUBJECT_BUTTON % {
-        'page': not_page,
         'attendance': attendance,
         'sub_name': sub_name
     }
+    attendance_callback = SUBJECT_BUTTON % dict(current_state, attendance=not_attendance)
+    page_callback = SUBJECT_BUTTON % dict(current_state, page=not_page)
     keyboard = [
         [
             InlineKeyboardButton(
