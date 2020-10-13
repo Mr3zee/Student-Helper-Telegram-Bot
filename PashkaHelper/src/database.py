@@ -128,7 +128,7 @@ def get_user(user_id, language_code):
     retval = {}
     values = get_user_attrs(ATTR_NAMES, user_id)
     for attr_name, attr_value in values.items():
-        if (attr_name == 'chat_id') or (attr_name == 'user_nik'):
+        if attr_name in {'chat_id', 'user_nik', 'muted', 'admin'}:
             continue
         elif (attr_name == 'username' and attr_value) \
                 or (attr_name == 'mailing_time'):

@@ -118,16 +118,15 @@ if __name__ == '__main__':
 
 # TODO:
 #  CLIENT
-#  missing links
+#  missing links (9/18)
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
-#  make online info available for offline and vice versa (2/2) +
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
-#  timetable parity change +
-#  timetable attendance change +
+#  make everything pretty
+#  fix table
 #  SERVER
 #  mlw_tools normal errors
 #  update jobs after working, not repeating

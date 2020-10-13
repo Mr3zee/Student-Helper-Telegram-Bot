@@ -24,30 +24,29 @@
 [/start_text]
 
 
-[help_main_text]
+[help_additional_text]
 [body]
-<b>Главная менюшка: Основное</b>
+<b>Главная менюшка: Дополнительно</b>
 
 <u>Расписание:</u>
 /timetable - всё расписание
 /today - расписание на сегодня
 
 <u>Информация по предметам:</u>
-/discra - Дискреточка
-/algo - Алгосики
-/matan - Матанчик
-/diffur - Диффуры
-/os - ОС
-/sp - СП
-/eng - Английский
-/history - История
-/bjd - БЖД
-/pe - Физкультура
+/al  -   Алгосики
+/dm - Дискретка
+/ma - Матанчик
+/df -   Дифуры
+/os -  ОС
+/sp -  СП
+/en -  Английский
+/hs -  История
+/bs -  БЖД
 [/body]
-[/help_main_text]
+[/help_additional_text]
 
 
-[help_additional_text]
+[help_main_text]
 [vars]
 
 # Resources
@@ -58,16 +57,16 @@
 
 # Telegram
 &main_channel_link: [raw]https://t.me/y2019_news[/raw]
-&main_chat_link: [raw][/raw] # todo
+&main_chat_link: [raw]https://t.me/joinchat/EWiERUeOMlov69IA-CKgqg[/raw]
 &our_channel_link: [raw]https://t.me/CT36_37_thebest[/raw]
-&our_chat_link: [raw][/raw] # todo
+&our_chat_link: [raw]https://t.me/joinchat/EHpWqkaHO7IxJGml1Uqg6w[/raw]
 
 # Other
 &masha_and_cs_link: [raw]http://t.me/masha_and_cs[/raw]
 
 [/vars]
 [body]
-<b>Главная менюшка: Дополнительно</b>
+<b>Главная менюшка: Основное</b>
 
 <u>Материалы по курсу:</u>
  <a href = '&google_doc_link'>Материалы</a> М3236-7
@@ -87,7 +86,7 @@
 /report - отправить сообщение разработчикам
 /doc - документация по командам
 [/body]
-[/help_additional_text]
+[/help_main_text]
 
 
 [timetable_text]
@@ -163,13 +162,13 @@ value: Аргумент должен быть больше -1 и меньше 7
 &hw_link: [raw]http://neerc.ifmo.ru/teaching/algo/year2019/tasks_sem3_34-37.pdf[/raw]
 &hw_table_offline_link: [raw]https://docs.google.com/spreadsheets/d/1jS5lSPjPNHWBPoOfp-surYWslmDClsGGkDMWV-Rwfr4/edit[/raw]
 &hw_table_online_link: [raw]https://docs.google.com/spreadsheets/d/12YtBrSYMQZ5r6lXCkbnQvsjWiFeuEXyVLLaEJvyuTHA/edit#gid=0[/raw]
-&points_link: [raw][/raw] # todo
+&points_link: [raw]https://docs.google.com/spreadsheets/d/1XTorcnLrDwSc_Uq6WmjEvR6ncS8b-sG52rtAiKUcSRc/edit#gid=0[/raw]
 &labs_link: [raw]https://codeforces.com/group/QmrArgR1Jp/contests[/raw]
 
 # Social networking
 &yt_link: [raw]https://www.youtube.com/user/pavelmavrin[/raw]
 &tw_link: [raw]https://www.twitch.tv/pmavrin[/raw]
-&ds_link: [raw][/raw] # todo
+&ds_link: [raw]https://discord.gg/4y935JE[/raw]
 
 # Telegram
 &tg_link: [raw]https://t.me/joinchat/AlaSRB0zCWAx8cHBIcwxoA[/raw]
@@ -280,7 +279,7 @@ all: all
 # Cipo
 &c1_1_zoom: [raw]https://itmo.zoom.us/j/4050414098[/raw]
 &c1_1_tg: [raw][/raw] # todo
-&c1_2_tg: [raw][/raw] # todo
+&c1_2_tg: [raw]https://t.me/joinchat/D6WLnBo1jm4thNWYo4tIog[/raw]
 
 # Белянина С.
 &b2_3_zoom: [raw]https://itmo.zoom.us/j/7402973580[/raw]
@@ -294,12 +293,12 @@ all: all
 
 # Трофимова Т.А.
 &b12_1_zoom: [raw]https://itmo.zoom.us/j/2618374805[/raw]
-&b12_1_tg: [raw][/raw] # todo
-&b12_2_tg: [raw][/raw] # todo
+&b12_1_tg: [raw]https://t.me/joinchat/JTpHMlWHU8bZN18puGhmIw[/raw]
+&b12_2_tg: [raw]https://t.me/joinchat/FwHhvEuQ8OppaV536Mscog[/raw]
 
 # Малышева А.
 &b11_1_zoom: [raw]https://itmo.zoom.us/j/2310285249[/raw]
-&b11_1_tg: [raw][/raw] # todo
+&b11_1_tg: [raw]https://t.me/joinchat/C31kSEyfFbnlE580dbFFRw[/raw]
 &b11_2_tg: [raw][/raw] # todo
 
 [/vars]
@@ -637,7 +636,7 @@ kotlin: [m]
 &reforms_tg: [raw]https://t.me/joinchat/Bva9iVe9fMb47_Hug717ig[/raw]
 
 # Государственность
-&statehood_tg: [raw][/raw] # todo
+&statehood_tg: [raw]https://t.me/joinchat/EHpWqhb2F_W6VufwrL8Yag[/raw]
 
 # Культура
 &culture_tg: [raw]https://t.me/joinchat/KlfmBRiyP1CMoxUQQLqiXw[/raw]
