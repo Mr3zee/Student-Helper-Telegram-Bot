@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
 # TODO:
 #  CLIENT
-#  missing links (10/18)
+#  missing links (10/20)
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  make everything pretty
-#  make exit from parameters from everywhere
+#  make exit from parameters from everywhere +
 #  new commands format
 #  report feedback format (photo)
 #  quotes support

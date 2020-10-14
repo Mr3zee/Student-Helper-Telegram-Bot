@@ -529,11 +529,13 @@ lite: [m]
 &android_youtube: [raw]https://www.youtube.com/channel/UCUNTIifSxTAgTCuH1R9N9zA[/raw]
 &android_discord: [raw]https://discord.gg/qugj3sS[/raw]
 &android_points_link: [raw]https://docs.google.com/spreadsheets/d/1yuP4zvM5DgZJ4iVus1vS4eUHHaVErwWZGy9nad_gitw/edit#gid=0[/raw]
+&android_tg: [raw][/raw] # todo
 
 # IOS
 &ios_twitch1: [raw]https://www.twitch.tv/pr0gl[/raw]
-&ios_twitch2: [raw][/raw] #todo
+&ios_twitch2: [raw]https://www.twitch.tv/antonsergeev88[/raw]
 &ios_discord: [raw]https://discord.gg/6zBGqbf[/raw]
+&ios_tg: [raw][/raw] # todo
 
 # CPP
 &cpp_twitch: [raw]http://twitch.tv/sorokin_ivan[/raw]
@@ -541,7 +543,8 @@ lite: [m]
 &cpp_tg: [raw]https://t.me/y2019cpp[/raw]
 
 # Kotlin
-&kotlin_gitlab: [raw]https://gitlab.com/kotlin-client-server/kcs-2020/-/tree/kotlin-static-html[/raw]
+&kotlin_gitlab: [raw]https://gitlab.com/kotlin-client-server/kcs-2020/[/raw]
+&kotlin_twitch: [raw]https://www.twitch.tv/abannykh[/raw]
 &kotlin_yt: [raw]https://www.youtube.com/playlist?list=PLc6Vp30kr4T8vh1IdSLf5OxS3whICod9q[/raw]
 &kotlin_zoom: [raw]https://itmo.zoom.us/j/83520681100?pwd=emRydGV5MnZiRmNKUVp6Vk5SS1FRdz09[/raw]
 &kotlin_tg: [raw]https://t.me/joinchat/AA0lfErjI_WZ-c1I3oXKWQ[/raw]
@@ -562,12 +565,14 @@ android: [m]
  Лучший чем у Apple <a href = '&android_twitch'>Twitch</a>
  Лучший чем у Apple <a href = '&android_youtube'>YouTube</a>
  Лучший чем у Apple <a href = '&android_discord'>Discord</a>
- Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>[/m]
+ Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>
+ Лучший чем у Apple <a href = '&android_points_link'>чатик</a>[/m]
 
 ios: [m]
 <em>IOS разработка</em>
  Элегантные яблочные <a href = '&ios_twitch1'>Twitch</a> Глеба | <a href = '&ios_twitch2'>Twitch</a> Антона
- Элегантный яблочный <a href = '&ios_discord'>Discord</a>[/m]
+ Элегантный яблочный <a href = '&ios_discord'>Discord</a>
+ Элегантный яблочный <a href = '&ios_tg'>чатик</a>[/m]
 
 cpp: [m]
 <em>Язык программирования C++</em>
@@ -579,6 +584,7 @@ kotlin: [m]
 <em>Клиент-серверное приложение на Kotlin</em>
  Модный, молодежный, дерзкий <a href = '&kotlin_gitlab'>Gitlab</a>
  Молодежный, дерзкий, модный <a href = '&kotlin_yt'>Youtube</a>
+ Модный, дерзкий, молодежный <a href = '&kotlin_twitch'>Twitch</a>
  Дерзкий, модный, молодежный <a href = '&kotlin_zoom'>Zoom</a>
  Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin[/m]
 [/case]

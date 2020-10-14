@@ -4,7 +4,7 @@ from telegram import Update, error
 from telegram.ext import CallbackContext, CommandHandler
 
 from util import util
-from src.log import log_function
+from util.log import log_function
 from src.text import get_text
 from src.timetable import get_subject_timetable
 import src.database as database

@@ -76,10 +76,11 @@ def mailing_keyboard(mailing_status, notification_status, language_code):
         ],
         [
             make_button(MESSAGE_TIME, language_code),
+            make_button(TZINFO, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(PARAMETERS_RETURN, language_code),
-            make_button(TZINFO, language_code),
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -89,12 +90,13 @@ def courses_keyboard(language_code):
     keyboard = [
         [
             make_button(ENG_GROUP, language_code),
-            make_button(HISTORY_GROUP, language_code),
-        ],
-        [
-            make_button(PARAMETERS_RETURN, language_code),
             make_button(SP_TYPE, language_code),
             make_button(OS_TYPE, language_code),
+        ],
+        [
+            make_button(EXIT_PARAMETERS, language_code),
+            make_button(PARAMETERS_RETURN, language_code),
+            make_button(HISTORY_GROUP, language_code),
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -107,6 +109,7 @@ def os_keyboard(language_code):
             make_button(OS_LITE, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(COURSES_RETURN, language_code),
             make_button(OS_ALL, language_code),
         ],
@@ -129,6 +132,7 @@ def sp_keyboard(language_code):
             make_button(SP_ALL, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(COURSES_RETURN, language_code),
         ],
     ]
@@ -138,18 +142,19 @@ def sp_keyboard(language_code):
 def eng1_keyboard(language_code):
     keyboard = [
         [
-            make_button(ENG_C2_1, language_code),
-            make_button(ENG_C2_2, language_code),
-            make_button(ENG_C2_3, language_code),
+            make_button(ENG_B11_1, language_code),
+            make_button(ENG_B11_2, language_code),
+            make_button(ENG_B12_1, language_code),
+            make_button(ENG_B12_2, language_code),
         ],
         [
             make_button(ENG_B2_1, language_code),
             make_button(ENG_B2_2, language_code),
-            make_button(ENG_B2_3, language_code),
+            make_button(ENG_NEXT, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(COURSES_RETURN, language_code),
-            make_button(ENG_NEXT, language_code),
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -158,19 +163,20 @@ def eng1_keyboard(language_code):
 def eng2_keyboard(language_code):
     keyboard = [
         [
-            make_button(ENG_B11_1, language_code),
-            make_button(ENG_B11_2, language_code),
-            make_button(ENG_B12_1, language_code),
-            make_button(ENG_B12_2, language_code),
-        ],
-        [
+            make_button(ENG_C2_1, language_code),
+            make_button(ENG_C2_2, language_code),
+            make_button(ENG_C2_3, language_code),
             make_button(ENG_C1_1, language_code),
             make_button(ENG_C1_2, language_code),
-            make_button(ENG_ALL, language_code),
         ],
         [
-            make_button(COURSES_RETURN, language_code),
+            make_button(ENG_B2_3, language_code),
+            make_button(ENG_ALL, language_code),
             make_button(ENG_PREV, language_code),
+        ],
+        [
+            make_button(EXIT_PARAMETERS, language_code),
+            make_button(COURSES_RETURN, language_code),
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -200,6 +206,7 @@ def history_keyboard(language_code):
             make_button(HISTORY_ALL, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(COURSES_RETURN, language_code),
         ],
     ]
@@ -214,6 +221,7 @@ def attendance_keyboard(language_code):
             make_button(ATTENDANCE_BOTH, language_code),
         ],
         [
+            make_button(EXIT_PARAMETERS, language_code),
             make_button(PARAMETERS_RETURN, language_code),
         ],
     ]
