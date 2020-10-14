@@ -1,6 +1,6 @@
 from typing import Dict
 
-from telegram import Update
+from telegram import Update, error
 from telegram.ext import CallbackContext, CommandHandler
 
 from util import util
@@ -174,12 +174,15 @@ def subject_callback(update: Update, context: CallbackContext, data: list, langu
             'attendance': attendance,
         }
     )
-    update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=keyboard.subject_keyboard(
-            sub_name=sub_name,
-            attendance=attendance,
-            page=page,
-            language_code=language_code,
+    try:
+        update.callback_query.edit_message_text(
+            text=text,
+            reply_markup=keyboard.subject_keyboard(
+                sub_name=sub_name,
+                attendance=attendance,
+                page=page,
+                language_code=language_code,
+            )
         )
-    )
+    except error.BadRequest:
+        pass

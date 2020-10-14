@@ -33,15 +33,15 @@
 /today - расписание на сегодня
 
 <u>Информация по предметам:</u>
-/al  -   Алгосики
-/dm - Дискретка
-/ma - Матанчик
-/df -   Дифуры
-/os -  ОС
-/sp -  СП
-/en -  Английский
-/hs -  История
-/bs -  БЖД
+/al    Алгосики
+/dm Дискретка
+/ma Матанчик
+/df   Дифуры
+/os  ОС
+/sp  СП
+/en  Английский
+/hs  История
+/bs  БЖД
 [/body]
 [/help_additional_text]
 
@@ -52,7 +52,7 @@
 # Resources
 &google_doc_link: [raw]https://drive.google.com/drive/folders/10eoyhsa0APvKT--vIuQY5nLVSY1UO99r[/raw]
 &wiki_conspectus_link: [raw]http://neerc.ifmo.ru/wiki/index.php?title=%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0[/raw]
-&github_link: [raw]https://github.com/Jovvik/M3137year2019[/raw]
+&github_link: [raw]https://github.com/Jovvik/M3137year2019#3-семестр[/raw]
 &youtube_link: [raw]https://www.youtube.com/channel/UCc8_XiJXPMz699NvDmtGoTA[/raw]
 
 # Telegram
@@ -184,9 +184,9 @@ value: Аргумент должен быть больше -1 и меньше 7
  Самые увлекательные лабы <a href = '&labs_link'>здесь</a>
 
 <u>Где можно найти Пашу:</u>
- Ламповый <a href = '&yt_link'>Youtube</a> Паши
- Еще более ламповый <a href = '&tw_link'>Twitch</a> Паши
- Не менее ламповый <a href = '&ds_link'>Discord</a> Паши (в разработке)
+ Ламповый <a href = '&yt_link'>Youtube</a>
+ Еще более ламповый <a href = '&tw_link'>Twitch</a>
+ Не менее ламповый <a href = '&ds_link'>Discord</a>
 
 <u>Чатики</u>
  <a href = '&tg_link'>Чат</a> АиСД y2019 34-37
@@ -231,8 +231,8 @@ value: Аргумент должен быть больше -1 и меньше 7
  Познавательные <a href = '&pcms_link'>лабы</a>
 
 <u>Где можно послушать дискреточку:</u>
- Уютный <a href = '&youtube_link'>Youtube</a> Андрея Сергеевича
- Дружелюбный <a href = '&twitch_link'>Twitch</a> Андрея Сергеевича
+ Уютный <a href = '&youtube_link'>Youtube</a>
+ Дружелюбный <a href = '&twitch_link'>Twitch</a>
  Просто хороший <a href = '&discord_link'>Discord</a> для практик
 
 <u>Чатики</u>
@@ -434,14 +434,13 @@ b11_2: [m]
 # Лекции
 &all_topics_link: [raw]https://docs.google.com/spreadsheets/d/e/2PACX-1vShj9Xg2k8LOtCpGPjXscwzYAsbnMayzXrGqWqM_iHHfJk-xopRjTkKfTu3W9WlNVSAc8bjQcPFOH-A/pubhtml[/raw]
 &conspectus_link: [raw]https://drive.google.com/file/d/1TqHI2O5LrefkXu-EQhX3Y0NXAtxvJv8F/view[/raw]
-&twitch_link: [raw]https://www.twitch.tv/ex1zt_?sr=a[/raw]
+&twitch_link: [raw]https://www.twitch.tv/asladkii[/raw]
 
 # Практики
 &main_folder_link: [raw]https://drive.google.com/drive/folders/1_3Nrz5l1gqvfRJtUGEpjFkfpX5OQwn4M?usp=sharing[/raw]
 &tasks_link: [raw]https://docs.google.com/document/d/1yosLjIHj4IG3Bd2M6jnhRaCdiQkAYwOVqupkHDHAv7k/edit[/raw]
 &hw_table_link: [raw]https://docs.google.com/spreadsheets/d/17ERTig_OgLmvJv0rGmg8gMW6hauUjmMzcAZW_5vQiy8/edit#gid=0[/raw]
 &points_link: [raw]https://docs.google.com/spreadsheets/d/1B52D85mRRVqPN5yymM0RyaxXLvgiy1xNeFfW-5OVdIM/edit#gid=0[/raw]
-&recordings_link: [raw]https://docs.google.com/spreadsheets/d/e/2PACX-1vShj9Xg2k8LOtCpGPjXscwzYAsbnMayzXrGqWqM_iHHfJk-xopRjTkKfTu3W9WlNVSAc8bjQcPFOH-A/pubhtml[/raw]
 
 # Zoom
 &lecture_zoom: [raw]https://itmo.zoom.us/j/81975522370?pwd=MVBiWmVoeEx0amlYS3JodXpwVUFrUT09[/raw]
@@ -460,11 +459,7 @@ b11_2: [m]
  <a href = '&twitch_link'>Тут</a> стримят лекции, залетайте
 
 <u>Практики</u>
- Главная <a href = '&main_folder_link'>папка</a> по практикам
- <a href = '&tasks_link'>Гуглдок</a> с условиями домашних заданий
- <a href = '&hw_table_link'>Таблица</a> для отметки домашних заданий
- Твои заоблачные <a href = '&points_link'>баллы</a>
- <a href = '&recordings_link'>Записи</a> лекций
+ <a href = '&main_folder_link'>Диск</a> | <a href = '&tasks_link'>дз</a> | отметка <a href = '&hw_table_link'>дз</a> | <a href = '&points_link'>баллы</a>
 
 <u>Zoom:</u>
  Для лекций:
@@ -536,7 +531,8 @@ lite: [m]
 &android_points_link: [raw]https://docs.google.com/spreadsheets/d/1yuP4zvM5DgZJ4iVus1vS4eUHHaVErwWZGy9nad_gitw/edit#gid=0[/raw]
 
 # IOS
-&ios_twitch: [raw]https://www.twitch.tv/pr0gl[/raw]
+&ios_twitch1: [raw]https://www.twitch.tv/pr0gl[/raw]
+&ios_twitch2: [raw][/raw] #todo
 &ios_discord: [raw]https://discord.gg/6zBGqbf[/raw]
 
 # CPP
@@ -570,7 +566,7 @@ android: [m]
 
 ios: [m]
 <em>IOS разработка</em>
- Элегантный яблочный <a href = '&ios_twitch'>Twitch</a>
+ Элегантные яблочные <a href = '&ios_twitch1'>Twitch</a> Глеба | <a href = '&ios_twitch2'>Twitch</a> Антона
  Элегантный яблочный <a href = '&ios_discord'>Discord</a>[/m]
 
 cpp: [m]
@@ -700,7 +696,7 @@ science: [m]
  Домашние <a href = '&hw_link'>задания</a> (ищи внизу таблицы)
  Твои скромные <a href = '&points_link'>баллы</a> по матану
 
-<em>А чо там по зуму?</em>
+<em>Zoom</em>
  Для лекций:
   - Идентификатор: 807856
   - Ссылка: <a href = '&lecture_zoom'>нажми на меня</a>
