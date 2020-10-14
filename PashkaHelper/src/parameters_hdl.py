@@ -139,12 +139,13 @@ def name_parameters(update: Update, context: CallbackContext):
 
 def __update_mailing_timetable(update: Update, context: CallbackContext, data, language_code):
     user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
     if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
         if data == ALLOW_MESSAGE:
             jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
             new_status = 'allowed'
         else:
-            jobs.rm_mailing_job(context)
+            jobs.rm_mailing_job(context, user_id=user_id, chat_id=chat_id)
             new_status = 'forbidden'
         database.set_user_attrs(user_id=user_id, attrs={'mailing_status': new_status})
         return __mailing_callback(update, context, language_code)
