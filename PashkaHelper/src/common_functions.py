@@ -3,12 +3,11 @@ from telegram import Update
 
 import src.keyboard as keyboard
 import src.database as database
-from src.timetable import get_timetable_by_index, get_weekday_timetable
+from src.timetable import get_weekday_timetable
 from src import time_management as tm
-from src.log import log_function
+from util.log import log_function
 from src.text import get_text
 
-from datetime import timedelta
 import logging
 
 MESSAGE, COMMAND = range(2)

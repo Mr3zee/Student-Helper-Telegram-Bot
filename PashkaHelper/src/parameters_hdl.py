@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import CallbackContext, MessageHandler, Filters, CommandHandler
 
-from src.log import log_function
+from util.log import log_function
 from src.text import get_text
 from static.buttons import *
 from static.conversarion_states import *

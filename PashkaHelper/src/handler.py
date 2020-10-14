@@ -15,7 +15,7 @@ import src.parameters_hdl as ptrs
 import src.jobs as jobs
 import src.subject as subject
 
-from src.log import log_function
+from util.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src import time_management as tm
