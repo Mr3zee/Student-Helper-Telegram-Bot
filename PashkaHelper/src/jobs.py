@@ -5,7 +5,6 @@ import pytz
 
 from telegram.ext import CallbackContext, JobQueue, Job
 
-from src.text import get_text
 import src.common_functions as cf
 import src.database as db
 import src.handler as hdl
@@ -28,11 +27,6 @@ def mailing_job(context: CallbackContext):
     notification_status = job.context[3]
     disable_notification = notification_status == 'disabled'
     nullify_conversations(user_id, chat_id)
-    context.bot.send_message(
-        chat_id=chat_id,
-        text=get_text('timetable_mailing_greeting_text', language_code).text(),
-        disable_notification=disable_notification,
-    )
     cf.send_today_timetable(
         context=context,
         chat_id=chat_id,
@@ -44,8 +38,8 @@ def mailing_job(context: CallbackContext):
 
 def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
     notification_status = db.get_user_attr('notification_status', user_id=user_id)
-    job_name = 'job'
-    if job_name not in context.chat_data:
+    job_name = 'mailing_job'
+    if db.get_user_attr('mailing_status', user_id=user_id) == 'forbidden':
         new_job = context.job_queue.run_daily(
             callback=mailing_job,
             time=db.get_user_mailing_time_with_offset(user_id),
@@ -53,21 +47,28 @@ def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
             context=[chat_id, user_id, language_code, notification_status],
             name=job_name,
         )
-        context.chat_data[job_name] = new_job
         save_jobs_job(context)
         return new_job
 
 
-def rm_mailing_job(context: CallbackContext):
-    if 'job' in context.chat_data:
-        old_job = context.chat_data['job']
+def rm_mailing_job(context: CallbackContext, user_id, chat_id):
+    if db.get_user_attr('mailing_status', user_id=user_id) == 'allowed':
+        jq = context.job_queue._queue
+        with jq.mutex:
+            job_tuples = jq.queue
+            old_job = None
+            for next_t, job in job_tuples:
+                if job.name == 'mailing_job' and job.context[0] == chat_id and job.context[1] == user_id:
+                    old_job = job
+                    break
+            if old_job is None:
+                return
         old_job.schedule_removal()
-        del context.chat_data['job']
         save_jobs_job(context)
 
 
 def reset_mailing(context: CallbackContext, chat_id, user_id, language_code):
-    rm_mailing_job(context)
+    rm_mailing_job(context, user_id=user_id, chat_id=chat_id)
     set_mailing_job(context, chat_id, user_id, language_code)
 
 
@@ -102,7 +103,7 @@ def load_jobs(jq: JobQueue):
 
 
 def save_jobs(jq: JobQueue):
-    with jq._queue.mutex:  # in case job_queue makes a change
+    with jq._queue.mutex:
 
         if jq:
             job_tuples = jq._queue.queue
@@ -115,12 +116,9 @@ def save_jobs(jq: JobQueue):
             if job.name == 'util':
                 continue
 
-            # Threading primitives are not pickleable
             data = {var: getattr(job, var) for var in JOB_DATA}
             data['callback'] = data['callback'].__name__
             state = [getattr(job, var).is_set() for var in JOB_STATE]
-
-            # Pickle the job
 
             if not state[0]:
                 dct['jobs'].append((next_t, data, state))

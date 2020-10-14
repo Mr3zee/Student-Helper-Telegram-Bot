@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
 # TODO:
 #  CLIENT
-#  missing links (9/18)
+#  missing links (10/18)
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
@@ -126,10 +126,11 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  make everything pretty
-#  fix table
+#  fix table +
+#  make exit from parameters from everywhere
 #  SERVER
 #  mlw_tools normal errors
-#  update jobs after working, not repeating
+#  fix multiple jobs +
 #  fix buttons copypaste
 #  make 'all' a special name
 #  make comments

@@ -113,7 +113,7 @@ class Server:
     __week_parity_map = {
         'ч': 'even',
         'н': 'odd',
-        'нч': 'both',
+        'ч/нч': 'both',
     }
 
     def __init__(self):
