@@ -446,13 +446,13 @@ handlers['not_start'] = cf.simple_handler(name='not_start', type=cf.MESSAGE, fil
 # timetable - окно расписания
 # doc - документация
 # report - сообщение разработчикам
-# algo - алгосики
-# discra - дискретка
-# diffur - диффуры
-# matan - матан
-# bjd - я тебе покушать принес
-# eng - английский
-# history - история
+# al - алгосики
+# dm - дискретка
+# df - диффуры
+# ma - матан
+# bj - я тебе покушать принес
+# en - английский
+# hs - история
 # sp - современная прога
 # os - операционки
 # pe - физра

@@ -126,8 +126,7 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  make everything pretty
-#  new commands format
-#  report feedback format (photo) +
+#  new commands format +
 #  quotes support
 #  SERVER
 #  mlw_tools normal errors
