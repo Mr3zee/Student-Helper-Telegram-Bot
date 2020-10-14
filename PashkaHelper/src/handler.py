@@ -331,8 +331,8 @@ def report(update: Update, context: CallbackContext):
 @log_function
 def report_sent(update: Update, context: CallbackContext):
     language_code = update.effective_user.language_code
+    chat_id = update.effective_chat.id
     data = {
-        'report_text': update.message.text,
         'user': mention_html(update.effective_user.id, update.effective_user.first_name),
     }
     for admin_id in database.get_all_admins_chat_ids():
@@ -340,8 +340,13 @@ def report_sent(update: Update, context: CallbackContext):
             chat_id=admin_id,
             text=get_text('report_template_text', language_code).text(data),
         )
+        context.bot.forward_message(
+            chat_id=admin_id,
+            from_chat_id=chat_id,
+            message_id=update.message.message_id,
+        )
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=get_text('report_sent_text', language_code).text(),
     )
     return MAIN
