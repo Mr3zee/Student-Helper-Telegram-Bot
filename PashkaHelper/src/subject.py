@@ -13,7 +13,7 @@ import src.keyboard as keyboard
 
 class Subject:
 
-    def __init__(self, main: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
+    def __init__(self, main: str, command: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
                  subtypes_have_eq_tt_names: bool = True, teachers: set = None):
         if not subtypes:
             subtypes = dict()
@@ -27,6 +27,7 @@ class Subject:
         self.__subtypes_have_eq_tt_names = subtypes_have_eq_tt_names
         self.__subtypes = subtypes
         self.__teachers = teachers
+        self.__command = command
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -39,6 +40,9 @@ class Subject:
 
     def get_name(self):
         return self.__name
+
+    def get_command(self):
+        return self.__command
 
     def get_subtypes(self):
         return self.__subtypes
@@ -58,31 +62,38 @@ class Subject:
 subjects = {
     'algo': Subject(
         main='algo',
+        command='al',
         main_timetable_names={'АиСД (лк)', 'АиСД (пр)'},
     ),
     'discra': Subject(
         main='discra',
+        command='dm',
         main_timetable_names={'Дискретка (лк)', 'Дискретка (пр)'},
     ),
     'diffur': Subject(
         main='diffur',
+        command='df',
         main_timetable_names={'Диффуры (лк)', 'Диффуры (пр)'},
     ),
     'matan': Subject(
         main='matan',
+        command='ma',
         main_timetable_names={'МатАн (лк)', 'МатАн (пр)'},
     ),
     'bjd': Subject(
         main='bjd',
+        command='bj',
     ),
     'os': Subject(
         main='os',
+        command='os',
         subtypes={
             'adv': {'ОС-adv (лк)', 'ОС-adv (пр)'},
             'lite': {'OC (лк)'},
         }, subtypes_have_eq_tt_names=False),
     'sp': Subject(
         main='sp',
+        command='sp',
         subtypes={
             'kotlin': {'Kotlin (лк)', 'Kotlin (пр)'},
             'ios': {'Android / iOS'},
@@ -92,6 +103,7 @@ subjects = {
         }, subtypes_have_eq_tt_names=False),
     'history': Subject(
         main='history',
+        command='hs',
         main_timetable_names={'История'},
         subtypes={
             'international': set(),
@@ -103,6 +115,7 @@ subjects = {
         }),
     'eng': Subject(
         main='eng',
+        command='en',
         main_timetable_names={'Английский'},
         subtypes={
             'c2_1': set(), 'c2_2': set(), 'c2_3': set(), 'c1_1': set(),
@@ -111,6 +124,7 @@ subjects = {
         }),
     'pe': Subject(
         main='pe',
+        command='pe',
     ),
 }
 
@@ -158,7 +172,7 @@ def subject_handler(sub_name):
             ),
         )
 
-    return CommandHandler(command=sub_name, callback=inner)
+    return CommandHandler(command=subjects[sub_name].get_command(), callback=inner)
 
 
 @log_function
