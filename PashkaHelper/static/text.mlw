@@ -859,8 +859,6 @@ Traceback:
 [body]
 \#report
 Сообщение от пользователя ^user:
-
-^report_text
 [/body]
 [/report_template_text]
 
