@@ -10,39 +10,43 @@ from src.time_management import to_utc_converter
 from src.text import get_text
 from src.app import app
 
-from static import config
+from static import config, consts
 
-ATTR_NAMES = [
-    'user_nik',
-    'chat_id',
-    'username',
-    'admin',
-    'muted',
-    'attendance',
-    'mailing_status',
-    'notification_status',
-    'mailing_time',
-    'utcoffset',
-    'os',
-    'sp',
-    'history',
-    'eng',
+# list of all columns
+COLUMNS = [
+    consts.USER_NICK,
+    consts.CHAT_ID,
+    consts.USERNAME,
+    consts.ADMIN,
+    consts.MUTED,
+    consts.ATTENDANCE,
+    consts.MAILING_STATUS,
+    consts.NOTIFICATION_STATUS,
+    consts.MAILING_TIME,
+    consts.UTCOFFSET,
+    consts.OS,
+    consts.SP,
+    consts.HISTORY,
+    consts.ENG,
 ]
 
+# domains for attrs
 DOMAINS = {
-    'attendance': {'both', 'online', 'offline'},
-    'mailing_status': {'allowed', 'forbidden'},
+    consts.ATTENDANCE: {consts.ATTENDANCE_BOTH, consts.ATTENDANCE_ONLINE, consts.ATTENDANCE_OFFLINE},
+    consts.MAILING_STATUS: {consts.MAILING_ALLOWED, consts.MAILING_FORBIDDEN},
 }
 
-for key, value in subject.subjects.items():
+# configuring domains for subjects
+for key, value in subject.SUBJECTS.items():
     domains = set(value.get_subtypes().keys())
     if domains is not None:
         DOMAINS[key] = domains
-        DOMAINS[key].add('all')
+        DOMAINS[key].add(consts.ALL)
 
-if config.ENV == 'dev':
+# configuring database's uri
+if config.ENV == consts.DEV:
     app.config['SQLALCHEMY_DATABASE_URI'] = config.local_db_uri
-elif config.ENV == 'prod':
+elif config.ENV == consts.PROD:
     app.config['SQLALCHEMY_DATABASE_URI'] = config.production_db_url
 else:
     raise ValueError('app running mode does not specified')
@@ -53,9 +57,27 @@ db = SQLAlchemy(app)
 
 
 class Users(db.Model):
+    """
+    Database to store all users and their parameters
+     - user_id: user's telegram id
+     - user_nick: user's telegram nick/tag
+     - chat_id: current chat's id for user
+     - admin: if user is an admin
+     - muted: if user is not allowed to send reports
+     - username: user's name for marking tasks in tables
+     - attendance: user's attendance
+     - mailing_status: if user wants to receive mailing
+     - notification_status: if user wants to receive mailing silently
+     - mailing_time: time in a day when user wants to receive mailing
+     - utcoffset: user's timezone offset
+     - os: os subtype
+     - sp: sp subtype
+     - history: history subtype
+     - eng: english subtype
+    """
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
-    user_nik = db.Column(db.String(50), unique=True)
+    user_nick = db.Column(db.String(50), unique=True)
     chat_id = db.Column(db.Integer, unique=True)
     admin = db.Column(db.Boolean)
     muted = db.Column(db.Boolean)
@@ -70,11 +92,12 @@ class Users(db.Model):
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
 
-    def __init__(self, user_id, user_nik, chat_id, admin=False, muted=False, username='unknown', attendance='both',
-                 mailing_status='allowed', notification_status='enabled', mailing_time='7:30',
-                 utcoffset=3, os='all', sp='all', history='all', eng='all'):
+    def __init__(self, user_id, user_nick, chat_id, admin=False, muted=False, username=consts.UNKNOWN,
+                 attendance=consts.ATTENDANCE_BOTH, mailing_status=consts.MAILING_ALLOWED,
+                 notification_status=consts.NOTIFICATION_ENABLED, mailing_time='7:30', utcoffset=3,
+                 os=consts.ALL, sp=consts.ALL, history=consts.ALL, eng=consts.ALL):
         self.user_id = user_id
-        self.user_nik = user_nik
+        self.user_nick = user_nick
         self.chat_id = chat_id
         self.admin = admin
         self.muted = muted
@@ -90,92 +113,114 @@ class Users(db.Model):
         self.eng = eng
 
 
-def add_user(user_id, user_nik, chat_id):
+def add_user(user_id, user_nick, chat_id) -> bool:
+    """add new user to the database, returns True if user was added, else False"""
     if db.session.query(Users).filter(Users.user_id == user_id).count() == 0:
-        new_user = Users(user_id=user_id, user_nik=user_nik, chat_id=chat_id)
+        new_user = Users(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
         db.session.add(new_user)
         db.session.commit()
+        return True
+    return False
 
 
-def update_user_info(user_id, user_nik, chat_id):
+def update_user_info(user_id, user_nick, chat_id):
+    """updates user's info by id"""
     if db.session.query(Users).filter_by(user_id=user_id).count() != 0:
-        set_user_attrs(user_id=user_id, attrs={'user_nik': user_nik, 'chat_id': chat_id})
+        set_user_attrs(user_id=user_id, attrs={consts.USER_NICK: user_nick, consts.CHAT_ID: chat_id})
 
 
-def has_user(user_nik):
-    return db.session.query(Users).filter_by(user_nik=user_nik).count() != 0
+def has_user(user_nick):
+    """checks if there is specified user in the database"""
+    return db.session.query(Users).filter_by(user_nick=user_nick).count() != 0
 
 
 def get_all_admins_chat_ids():
+    """Returns all admins' chats"""
     return [user.chat_id for user in db.session.query(Users).filter_by(admin=True).all()]
 
 
 def get_all_users():
-    return [(user.user_id, user.user_nik) for user in db.session.query(Users).all()]
+    """get all users' ids and nicks"""
+    return [(user.user_id, user.user_nick) for user in db.session.query(Users).all()]
 
 
-def __get_user_row(user_id=None, user_nik=None, chat_id=None):
-    if user_id is None and user_nik is None and chat_id is None:
+def __get_user_row(user_id=None, user_nick=None, chat_id=None):
+    """get user's row in the database by one of the parameters"""
+    if user_id is None and user_nick is None and chat_id is None:
         raise ValueError('All fields cannot be None simultaneously')
     if user_id is not None:
         return db.session.query(Users).filter_by(user_id=user_id).first()
-    elif user_nik is not None:
-        return db.session.query(Users).filter_by(user_nik=user_nik).first()
+    elif user_nick is not None:
+        return db.session.query(Users).filter_by(user_nick=user_nick).first()
     return db.session.query(Users).filter_by(chat_id=chat_id).first()
 
 
-def get_user(user_id, language_code):
+def get_user_parameters(user_id, language_code):
+    """returns all user's parameters"""
     retval = {}
-    values = get_user_attrs(ATTR_NAMES, user_id)
+    values = get_user_attrs(COLUMNS, user_id)
     for attr_name, attr_value in values.items():
-        if attr_name in {'chat_id', 'user_nik', 'muted', 'admin'}:
+        # skip service parameters
+        if attr_name in {consts.CHAT_ID, consts.USER_NICK, consts.MUTED, consts.ADMIN}:
             continue
-        elif (attr_name == 'username' and attr_value) \
-                or (attr_name == 'mailing_time'):
+        # attrs without modifications
+        elif (attr_name == consts.USERNAME and attr_value) \
+                or (attr_name == consts.MAILING_TIME):
             retval[attr_name] = attr_value
             continue
-        elif attr_name == 'utcoffset':
+        # add sign to utcoffset
+        elif attr_name == consts.UTCOFFSET:
             retval[attr_name] = (str(attr_value) if attr_value < 0 else f'+{attr_value}')
             continue
-        text = get_text(f'{f"{attr_name}_{attr_value}"}_user_data_text', language_code).text()
-        if attr_name == 'eng' and attr_value != 'all':
-            text = get_text('eng_std_user_data_text', language_code).text({'eng': text})
+        # get readable values
+        text = get_text(f'{attr_name}_{attr_value}_user_data_text', language_code).text()
+        # attach group's number to general name
+        if attr_name == consts.ENG and attr_value != consts.ALL:
+            text = get_text('eng_std_user_data_text', language_code).text({consts.ENG: text})
         retval[attr_name] = text
     return retval
 
 
 def get_user_subject_names(user_id):
+    """
+    get all user's subject
+    returns set of subjects or subtypes if there are such
+    """
     user = __get_user_row(user_id)
     retval = set()
-    for sub in subject.subjects:
-        retval = retval.union(subject.subjects[sub].get_all_timetable_names((
+    for sub in subject.SUBJECTS:
+        retval = retval.union(subject.SUBJECTS[sub].get_all_timetable_names(
             getattr(user, sub)
-            if sub in ATTR_NAMES
+            if sub in COLUMNS
             else sub
-        )))
+        ))
     return retval
 
 
-def get_user_attrs(attrs_name: list, user_id: int = None, user_nik: str = None):
-    user = __get_user_row(user_id=user_id, user_nik=user_nik)
+def get_user_attrs(attrs_names: list, user_id: int = None, user_nick: str = None):
+    """get all user attrs specified in attrs_names"""
+    user = __get_user_row(user_id=user_id, user_nick=user_nick)
     retval = {}
-    for attr in attrs_name:
-        retval[attr] = (getattr(user, attr) if attr in ATTR_NAMES else None)
+    for attr in attrs_names:
+        retval[attr] = (getattr(user, attr) if attr in COLUMNS else None)
     return retval
 
 
-def get_user_attr(attr_name: str, user_id: int = None, user_nik: str = None):
-    return get_user_attrs([attr_name], user_id=user_id, user_nik=user_nik).get(attr_name)
+def get_user_attr(attr_name: str, user_id: int = None, user_nick: str = None):
+    """get user attr by attr_name"""
+    return get_user_attrs([attr_name], user_id=user_id, user_nick=user_nick).get(attr_name)
 
 
-def gat_all_attrs(name):
+def gat_attr_column(name):
+    """get attr value for all users"""
     return [getattr(user, name) for user in db.session.query(Users).all()]
 
 
-def set_user_attrs(attrs: dict, user_id: int = None, user_nik: str = None, chat_id: int = None):
-    user = __get_user_row(user_id=user_id, user_nik=user_nik, chat_id=chat_id)
+def set_user_attrs(attrs: dict, user_id: int = None, user_nick: str = None, chat_id: int = None):
+    """set user attrs passed to attrs dict"""
+    user = __get_user_row(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
     for attr_name, new_value in attrs.items():
-        if attr_name not in ATTR_NAMES:
+        if attr_name not in COLUMNS:
             raise ValueError(f'Wrong attr name: {attr_name}')
         if attr_name in DOMAINS:
             if new_value in DOMAINS[attr_name]:
@@ -189,7 +234,8 @@ def set_user_attrs(attrs: dict, user_id: int = None, user_nik: str = None, chat_
 
 
 def get_user_mailing_time_with_offset(user_id):
-    mailing_time, utcoffset = get_user_attrs(['mailing_time', 'utcoffset'], user_id=user_id).values()
+    """Get time to send mailing"""
+    mailing_time, utcoffset = get_user_attrs([consts.MAILING_TIME, consts.UTCOFFSET], user_id=user_id).values()
     return to_utc_converter(
         input_date=datetime.strptime(mailing_time, '%H:%M'),
         utcoffset=timedelta(hours=utcoffset),
@@ -197,6 +243,7 @@ def get_user_mailing_time_with_offset(user_id):
 
 
 def valid_time(new_time: str):
+    """validate mailing time"""
     try:
         datetime.strptime(new_time.strip(), '%H:%M')
         return True
@@ -205,6 +252,7 @@ def valid_time(new_time: str):
 
 
 def valid_utcoffset(new_tzinfo: str):
+    """validate utcoffset format"""
     try:
         return abs(int(new_tzinfo)) < 13
     except ValueError:
@@ -212,6 +260,8 @@ def valid_utcoffset(new_tzinfo: str):
 
 
 class Persistence(db.Model):
+    """Database for saving bot's states"""
+
     __tablename__ = 'persistence'
     name = db.Column(db.String(50), primary_key=True)
     data = db.Column(db.JSON)
@@ -221,31 +271,36 @@ class Persistence(db.Model):
         self.data = data
 
 
-def get_db_conversations_row(name):
+def get_persistence_row(name):
+    """get specified persistence database row"""
     return db.session.query(Persistence).filter_by(name=name).first()
 
 
 def get_conversations() -> dict:
-    conversations = get_db_conversations_row('conversations').data
+    """load conversations from database"""
+    conversations = get_persistence_row(name=consts.CONVERSATIONS).data
     if conversations is None:
         return {}
     return decode_conversations_from_json(json.dumps(conversations))
 
 
 def update_conversations(conversations: dict):
-    db_conversations = get_db_conversations_row('conversations')
+    """save conversations to database"""
+    db_conversations = get_persistence_row(name=consts.CONVERSATIONS)
     db_conversations.data = json.loads(encode_conversations_to_json(conversations))
     db.session.commit()
 
 
 def load_jobs() -> dict:
-    jobs = get_db_conversations_row('jobs').data
+    """load jobs from database"""
+    jobs = get_persistence_row(name=consts.JOBS).data
     if jobs is None:
         return {}
     return jobs
 
 
 def save_jobs(jobs: dict):
-    db_jobs = get_db_conversations_row('jobs')
+    """Save jobs to database"""
+    db_jobs = get_persistence_row(name=consts.JOBS)
     db_jobs.data = json.loads(json.dumps(jobs, default=str))
     db.session.commit()

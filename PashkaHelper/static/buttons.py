@@ -27,8 +27,8 @@ DISABLE_NOTIFICATION_MESSAGE = 'disabled_notification_mailing_button'
 TZINFO = 'tz_info_button'
 MESSAGE_TIME = 'message_time_button'
 
-EVERYDAY_MESSAGE_SET = {ALLOW_MESSAGE, FORBID_MESSAGE, ENABLE_NOTIFICATION_MESSAGE, DISABLE_NOTIFICATION_MESSAGE,
-                        MESSAGE_TIME, TZINFO}
+MAILING_SET = {ALLOW_MESSAGE, FORBID_MESSAGE, ENABLE_NOTIFICATION_MESSAGE, DISABLE_NOTIFICATION_MESSAGE,
+               MESSAGE_TIME, TZINFO}
 
 # courses buttons
 OS_TYPE = 'os_type_button'
@@ -98,7 +98,7 @@ def is_course_update(button):
 
 
 # SUBJECTS change page
-SUBJECT_BUTTON = 'subject_%(sub_name)s_%(attendance)s_%(page)s_button'
+SUBJECT = 'subject_%(subject)s_%(attendance)s_%(page)s_button'
 
 # HELP change page
 HELP_MAIN = 'help_main_button'

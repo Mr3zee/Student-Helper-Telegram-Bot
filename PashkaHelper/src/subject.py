@@ -10,23 +10,34 @@ from src.timetable import get_subject_timetable
 import src.database as database
 import src.keyboard as keyboard
 
+from static import consts
+
 
 class Subject:
+    """
+    Class made to easily manipulate subject data
+    Parameters
+     - name: subject name
+     - command: command for CommandHandler
+     - main_timetable_names: set of general names in timetable,
+       ones for all subtypes and general name (without subtype)
+     - subtypes: dict of name - set of timetable name for all subtypes
+     - subtypes_have_eq_tt_names: if all subtypes has equal timetable names
+    """
 
-    def __init__(self, main: str, command: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
-                 subtypes_have_eq_tt_names: bool = True, teachers: set = None):
+    def __init__(self, name: str, command: str, main_timetable_names: set = None, subtypes: Dict[str, set] = None,
+                 subtypes_have_eq_tt_names: bool = True):
         if not subtypes:
             subtypes = dict()
         if not main_timetable_names:
             main_timetable_names = set()
-        self.__name = main
+        self.__name = name
         self.__all_timetable_names = main_timetable_names
         if not subtypes_have_eq_tt_names:
             for subtype_tt in subtypes.values():
                 self.__all_timetable_names = self.__all_timetable_names.union(subtype_tt)
         self.__subtypes_have_eq_tt_names = subtypes_have_eq_tt_names
         self.__subtypes = subtypes
-        self.__teachers = teachers
         self.__command = command
 
     def __eq__(self, other):
@@ -47,52 +58,56 @@ class Subject:
     def get_subtypes(self):
         return self.__subtypes
 
-    def get_subtype_full_name(self, subtype):
+    def get_subject_full_name(self, subtype):
+        """Returns subject's full name in format name_subtype if subtype is valid else None"""
         return f'{self.__name}_{subtype}' if subtype in self.__subtypes else None
 
-    def get_subtypes_full_names(self):
-        return [self.get_subtype_full_name(subtype) for subtype in self.__subtypes]
+    def get_all_subject_full_names(self):
+        """Return list of all full subject names in format name_subtype"""
+        return [self.get_subject_full_name(subtype) for subtype in self.__subtypes]
 
     def get_all_timetable_names(self, subtype):
+        """Returns all timetable names for the subtype of the subject"""
         if not self.__subtypes_have_eq_tt_names and subtype in self.__subtypes:
             return self.__subtypes[subtype]
         return self.__all_timetable_names
 
 
-subjects = {
-    'algo': Subject(
-        main='algo',
+# dict of all subjects
+SUBJECTS = {
+    consts.ALGO: Subject(
+        name=consts.ALGO,
         command='al',
         main_timetable_names={'АиСД (лк)', 'АиСД (пр)'},
     ),
-    'discra': Subject(
-        main='discra',
+    consts.DISCRA: Subject(
+        name=consts.DISCRA,
         command='dm',
         main_timetable_names={'Дискретка (лк)', 'Дискретка (пр)'},
     ),
-    'diffur': Subject(
-        main='diffur',
+    consts.DUFFUR: Subject(
+        name=consts.DUFFUR,
         command='df',
         main_timetable_names={'Диффуры (лк)', 'Диффуры (пр)'},
     ),
-    'matan': Subject(
-        main='matan',
+    consts.MATAN: Subject(
+        name=consts.MATAN,
         command='ma',
         main_timetable_names={'МатАн (лк)', 'МатАн (пр)'},
     ),
-    'bjd': Subject(
-        main='bjd',
+    consts.BJD: Subject(
+        name=consts.BJD,
         command='bj',
     ),
-    'os': Subject(
-        main='os',
+    consts.OS: Subject(
+        name=consts.OS,
         command='os',
         subtypes={
             'adv': {'ОС-adv (лк)', 'ОС-adv (пр)'},
             'lite': {'OC (лк)'},
         }, subtypes_have_eq_tt_names=False),
-    'sp': Subject(
-        main='sp',
+    consts.SP: Subject(
+        name=consts.SP,
         command='sp',
         subtypes={
             'kotlin': {'Kotlin (лк)', 'Kotlin (пр)'},
@@ -101,8 +116,8 @@ subjects = {
             'web': {'СП - Web (лк)', 'СП - Web (пр)'},
             'cpp': {'C++ (лк)', 'C++ (пр)'},
         }, subtypes_have_eq_tt_names=False),
-    'history': Subject(
-        main='history',
+    consts.HISTORY: Subject(
+        name=consts.HISTORY,
         command='hs',
         main_timetable_names={'История'},
         subtypes={
@@ -113,8 +128,8 @@ subjects = {
             'reforms': set(),
             'statehood': set(),
         }),
-    'eng': Subject(
-        main='eng',
+    consts.ENG: Subject(
+        name=consts.ENG,
         command='en',
         main_timetable_names={'Английский'},
         subtypes={
@@ -122,77 +137,106 @@ subjects = {
             'c1_2': set(), 'b2_1': set(), 'b2_2': set(), 'b2_3': set(),
             'b11_1': set(), 'b11_2': set(), 'b12_1': set(), 'b12_2': set(),
         }),
-    'pe': Subject(
-        main='pe',
+    consts.PE: Subject(
+        name=consts.PE,
         command='pe',
     ),
 }
 
 
-def get_subject_info(sub_name, user_id, page, language_code, request: dict = None):
+def get_subject_info(subject, user_id, page, language_code, request: dict = None):
+    """
+    Returns subject info and attendance as tuple
+     - subject: name of the subject without subtype
+     - user_id: id to get user parameters from database
+     - page: main or timetable
+     - request: dict with 2 values - attendance and subtype.
+       By default user parameters are taken from database, but if the request has values, bot uses them
+    """
     if request is None:
         request = {}
-    subtype, attendance = database.get_user_attrs([sub_name, 'attendance'], user_id=user_id).values()
-    attendance = util.if_none(request.get('attendance'), attendance)
-    subtype = util.if_none(request.get('subtype'), subtype)
-    if page == 'timetable':
-        timetable = get_subject_timetable(sub_name, subtype, attendance, language_code)
+    # default parameters
+    subtype, attendance = database.get_user_attrs([subject, consts.ATTENDANCE], user_id=user_id).values()
+
+    # substitutes with request parameters if exists
+    attendance = util.if_none(request.get(consts.ATTENDANCE), attendance)
+    subtype = util.if_none(request.get(consts.SUBTYPE), subtype)
+
+    # select page to return
+    if page == consts.TIMETABLE_PAGE:
+        timetable = get_subject_timetable(subject, subtype, attendance, language_code)
         return get_text('subject_timetable_text', language_code).text({
-            'timetable': timetable,
+            consts.TIMETABLE: timetable,
         }), attendance
-    elif page == 'main':
-        return get_text(f'{sub_name}_subject_text', language_code).text({
-            'course': subtype,
-            'attendance': attendance,
+    elif page == consts.MAIN_PAGE:
+        return get_text(f'{subject}_subject_text', language_code).text({
+            consts.SUBTYPE: subtype,
+            consts.ATTENDANCE: attendance,
         }), attendance
     else:
         raise ValueError(f'Invalid subject page type: {page}')
 
 
-def subject_handler(sub_name):
+def subject_handler(subject: str) -> CommandHandler:
+    """Returns subject handler"""
     @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         user_id = update.effective_user.id
 
+        # get subject info, page is main by default
         main_info, attendance = get_subject_info(
-            sub_name=sub_name,
+            subject=subject,
             user_id=user_id,
-            page='main',
+            page=consts.MAIN_PAGE,
             language_code=language_code,
         )
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=main_info,
             reply_markup=keyboard.subject_keyboard(
-                sub_name=sub_name,
+                subject=subject,
                 attendance=attendance,
-                page='main',
+                page=consts.MAIN_PAGE,
                 language_code=language_code,
             ),
         )
 
-    return CommandHandler(command=subjects[sub_name].get_command(), callback=inner)
+    return CommandHandler(command=SUBJECTS[subject].get_command(), callback=inner)
 
 
 @log_function
 def subject_callback(update: Update, context: CallbackContext, data: list, language_code):
+    """
+    Callback function for subject keyboard
+     - data: list
+        - data[0] = 'subject'
+        - data[1] = subject (name)
+        - data[2] = attendance
+        - data[3] = page
+        - data[4] = 'button'
+    """
     user_id = update.effective_user.id
-    sub_name, attendance, page = data[1:-1]
+    subject, attendance, page = data[1:-1]
+
+    # get page text (attendance is redundant cause we received it as parameter in callback)
     text, _ = get_subject_info(
-        sub_name=sub_name,
+        subject=subject,
         user_id=user_id,
         page=page,
         language_code=language_code,
         request={
-            'attendance': attendance,
+            consts.ATTENDANCE: attendance,
         }
     )
+    # we need the try catch block here, because the python-telegram-bot lib throws a BadRequest error
+    # when the page's content had not changed in the edit_message_text func
+    # (also could be thrown when one button was double pressed very quickly)
     try:
         update.callback_query.edit_message_text(
             text=text,
             reply_markup=keyboard.subject_keyboard(
-                sub_name=sub_name,
+                subject=subject,
                 attendance=attendance,
                 page=page,
                 language_code=language_code,

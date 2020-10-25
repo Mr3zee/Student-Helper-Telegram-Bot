@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class PGPersistence(BasePersistence):
+    """Persistence class for dispatcher"""
 
     def __init__(self):
         super(PGPersistence, self).__init__(store_user_data=False, store_chat_data=False, store_bot_data=False)
@@ -22,11 +23,13 @@ class PGPersistence(BasePersistence):
         self.on_flush = False
 
     def get_conversations(self, name):
+        """get conversations from database as dict"""
         if not self.conversations:
             self.conversations = db.get_conversations()
         return self.conversations.get(name, {}).copy()
 
     def update_conversation(self, name, key, new_state):
+        """update conversation with new key, value and load to database"""
         if self.conversations.setdefault(name, {}).get(key) == new_state:
             return
         self.conversations[name][key] = new_state
@@ -34,6 +37,7 @@ class PGPersistence(BasePersistence):
             db.update_conversations(self.conversations)
 
     def flush(self):
+        """load conversations into database when received stop signal"""
         if self.conversations:
             db.update_conversations(self.conversations)
 
@@ -57,6 +61,12 @@ class PGPersistence(BasePersistence):
 
 
 def connect_bot():
+    """
+    Make new bot with default parse mode to HTML and disabled web page preview
+    Make Dispatcher with PGPersistence and set JobQueue
+
+    Return value: (dispatcher, bot, job_queue)
+    """
     logger.info('Connecting bot...')
     new_bot = Bot(
         token=config.BOT_TOKEN,
@@ -80,10 +90,10 @@ def connect_bot():
     return dp, new_bot, jq
 
 
-def add_handlers():
+def add_handlers(dp: Dispatcher):
     for name, handler in hdl.handlers.items():
         logger.info('Adding ' + name + ' handler')
-        dispatcher.add_handler(handler)
+        dp.add_handler(handler)
         logger.info('Handler added successfully')
 
 
@@ -97,17 +107,16 @@ dispatcher, bot, job_queue = connect_bot()
 dispatcher.add_error_handler(callback=hdl.error_callback)
 
 # add handlers to dispatcher
-add_handlers()
+add_handlers(dispatcher)
 
-# load saved jobs
+# load saved jobs from database
 jobs.load_jobs(job_queue)
 
-# update jobs
+# set job to update jobs
 job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=1), name='util')
 
-# making webhook process function
+# set up web page to receive updates from Telegram
 get_app_route(bot, dispatcher, db.update_user_info)
-
 
 logger.info('Staring bot...')
 
@@ -126,14 +135,19 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  make everything pretty
-#  new commands format +
 #  quotes support
 #  SERVER
+#  make enums
+#  many jobs still dont fixed
 #  mlw_tools normal errors
 #  fix buttons copypaste
-#  make 'all' a special name
-#  make comments
+#  make 'all' a special name and others +
+#  make comments +
 #  make normal logging
 #  optimize database
 #  make chat_data persistent
 
+# TODO heroku:
+#  add mute column
+#  rename user_nik -> user_nick
+#  clear jobs

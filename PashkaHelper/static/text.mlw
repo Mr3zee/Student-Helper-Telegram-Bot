@@ -247,7 +247,7 @@ value: Аргумент должен быть больше -1 и меньше 7
 [eng_subject_text]
 [vars]
 # Teacher
-&eng_teacher: [case ^course]
+&eng_teacher: [case ^subtype]
 c2_1: cuti
 c2_2: zaharova
 c2_3: cuti
@@ -307,7 +307,7 @@ all: all
 
 # John Cuti
 cuti: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 c2_1: 2-ИТИПКТ-C2/1
 c2_3: 2-ИТИПКТ-C2/3
 all: 2-ИТИПКТ-C2/1 | 2-ИТИПКТ-C2/3
@@ -315,7 +315,7 @@ all: 2-ИТИПКТ-C2/1 | 2-ИТИПКТ-C2/3
 Почта Джона Кути: &cuti_email
 <a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
 
-[case ^course]
+[case ^subtype]
 c2_3: [m]
 Заочно:
   - <a href = '&c2_3_discord'>Discord</a> of native speakers
@@ -328,13 +328,13 @@ c2_1: [m]
 
 # Cipo
 cipo: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 c1_1: 2-ИТИПКТ-C1/1
 c1_2: 2-ИТИПКТ-C1/2
 all: 2-ИТИПКТ-C1/1 | 2-ИТИПКТ-C1/2
 [/case] - Cipo</em>
 
-[case ^course]
+[case ^subtype]
 c1_1: [m]
 Заочно:
  - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
@@ -347,13 +347,13 @@ c1_2: [m]
 
 # Белянина С.
 belyanina: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 b2_1: 2-ИТИПКТ-B2/1
 b2_3: 2-ИТИПКТ-B2/3
 all: 2-ИТИПКТ-B2/1 | 2-ИТИПКТ-B2/3
 [/case] - Белянина С.</em>
 
-[case ^course]
+[case ^subtype]
 b2_3: [m]
 Заочно:
   - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
@@ -366,13 +366,13 @@ b2_1: [m]
 
 # Захарова А.
 zaharova: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 c2_2: 2-ИТИПКТ-C2/2
 b2_2: 2-ИТИПКТ-B2/2
 all: 2-ИТИПКТ-C2/2 | 2-ИТИПКТ-B2/2
 [/case] - Захарова А.</em>
 
-[case ^course]
+[case ^subtype]
 c2_2: [m]
 Заочно:
   - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
@@ -387,13 +387,13 @@ b2_2: [m]
 
 # Трофимова Т.А.
 trofimova: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 b12_1: 2-ИТИПКТ-B1.2/1
 b12_2: 2-ИТИПКТ-B1.2/2
 all: 2-ИТИПКТ-B1.2/1 | 2-ИТИПКТ-B1.2/2
 [/case] - Трофимова Т.А.</em>
 
-[case ^course]
+[case ^subtype]
 b12_1: [m]
 Заочно:
   - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
@@ -406,13 +406,13 @@ b12_2: [m]
 
 # Малышева А.
 malysheva: [m]
-<em>[case ^course]
+<em>[case ^subtype]
 b11_1: 2-ИТИПКТ-B1.1/1
 b11_2: 2-ИТИПКТ-B1.1/2
 all: 2-ИТИПКТ-B1.1/1 | 2-ИТИПКТ-B1.1/2
 [/case] - Малышева А.</em>
 
-[case ^course]
+[case ^subtype]
 b11_1: [m]
 Заочно:
   - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
@@ -496,7 +496,7 @@ b11_2: [m]
 [body]
 <b>Операционные системы</b>
 
-[case ^course]
+[case ^subtype]
 adv: [m]
 <u>Advanced</u>
  Домашние <a href = '&adv_hw_link'>задания</a> все по ним же
@@ -553,7 +553,7 @@ lite: [m]
 [body]
 <b>Современное программирование</b>
 
-[case ^course]
+[case ^subtype]
 web: [m]
 <em>Web-программирование</em>
  Стильный веб <a href = '&web_twitch'>Twitch</a>
@@ -650,7 +650,7 @@ kotlin: [m]
 [body]
 <b>История</b>
 
-[case ^course]
+[case ^subtype]
 international: [m]
 <em>Россия в истории современных международных отношений</em>
  <s>политический</s> исторический <a href = '&internation_tg'>чатик</a>
@@ -884,6 +884,8 @@ Traceback:
 
 [doc_text]
 [body]
+<b>Документация:</b>
+
 [case ^command]
 help: /help - команда вызова главного меню
 parameters: /parameters - команда вызова меню настроек. В настройках можно увидеть свои текущие параметры, а также их поменять
@@ -893,6 +895,11 @@ today: /today - узнать расписание на сегодня
 report: /report - отправить сообщение разработчикам
 doc: [m]/doc \[command\] - вызов документации. При наличии аргумента показывается документация данной команды. Не работает для предметов
 Пример: /doc help[/m]
-[/case]
-[/body]
+admin: [case ^admin]
+True: [m] [raw]/admin \[command][/raw]
+<b>-ls</b> - Список всех пользователей
+<b>-n \&lt --user \[user_nick\] | --all \&gt</b> - Отправить уведомление указанному пользователю или всем сразу
+<b>-m \[user_nick\]</b> - замьютить пользователя
+<b>-um \[user_nick\]</b> - размьютить пользователя [/m]
+False:[/case][/case][/body]
 [/doc_text]

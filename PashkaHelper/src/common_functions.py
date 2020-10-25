@@ -8,29 +8,40 @@ from src import time_management as tm
 from util.log import log_function
 from src.text import get_text
 
-import logging
+from static import consts
 
-MESSAGE, COMMAND = range(2)
+import logging
 
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
-                         disable_notification=False):
-    attendance, utcoffset = database.get_user_attrs(['attendance', 'utcoffset'], user_id=user_id).values()
-    weekday = tm.get_weekday(utcoffset)
+def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, language_code,
+                           disable_notification=False):
+    """
+    Sends timetable for specified day
+    """
+
+    # get user parameters
+    attendance, utcoffset = database.get_user_attrs([consts.ATTENDANCE, consts.UTCOFFSET], user_id=user_id).values()
+
+    if weekday == consts.TODAY:
+        # get current day
+        weekday = tm.get_today_weekday(utcoffset)
+
     week_parity = tm.get_week_parity()
-    text = get_weekday_timetable(
+
+    timetable = get_weekday_timetable(
         weekday=weekday,
         subject_names=database.get_user_subject_names(user_id),
         attendance=attendance,
         week_parity=week_parity,
         language_code=language_code,
     )
+
     context.bot.send_message(
         chat_id=chat_id,
-        text=text,
+        text=timetable,
         reply_markup=keyboard.timetable_keyboard(
             weekday=weekday,
             attendance=attendance,
@@ -41,7 +52,27 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
     )
 
 
-def simple_handler(name, type, command=None, filters=None, reply_markup=None, ret_lvl=None):
+def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code, disable_notifications=False):
+    """Sends timetable for current day"""
+    return send_weekday_timetable(
+        context=context,
+        user_id=user_id,
+        chat_id=chat_id,
+        weekday=consts.TODAY,
+        language_code=language_code,
+        disable_notification=disable_notifications,
+    )
+
+
+def simple_handler(name, type, command=None, filters=None, reply_markup=None, ret_state=None):
+    """
+    Make simple handler
+     - type: COMMAND - CommandHandler, MESSAGE - MessageHandler
+     - command: command for CommandHandler. If None when name uses instead
+     - ret_state: state to return
+    """
+
+    # Make callback function
     @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
@@ -54,11 +85,12 @@ def simple_handler(name, type, command=None, filters=None, reply_markup=None, re
             text=text,
             reply_markup=reply_markup,
         )
-        return ret_lvl
+        return ret_state
 
-    if type == COMMAND:
+    # make handler
+    if type == consts.COMMAND:
         ret_handler = CommandHandler(command=(command if command else name), callback=inner)
-    elif type == MESSAGE:
+    elif type == consts.MESSAGE:
         ret_handler = MessageHandler(filters=filters, callback=inner)
     else:
         raise ValueError('Unsupported hdl type')
@@ -66,6 +98,7 @@ def simple_handler(name, type, command=None, filters=None, reply_markup=None, re
 
 
 def manage_callback_query(update: Update):
+    """Answers callback query and returns callback data and language code"""
     language_code = update.effective_user.language_code
     query = update.callback_query
     data = query.data
@@ -73,16 +106,18 @@ def manage_callback_query(update: Update):
     return data, language_code
 
 
-def send_message(context: CallbackContext, text, language_code, user_nik=None, chat_id=None):
-    chat_id = database.get_user_attr('chat_id', user_nik=user_nik) if chat_id is None else chat_id
+def send_message(context: CallbackContext, text, language_code, user_nick=None, chat_id=None):
+    """Send simple message"""
+    chat_id = database.get_user_attr(consts.CHAT_ID, user_nick=user_nick) if chat_id is None else chat_id
     context.bot.send_message(
         chat_id=chat_id,
-        text=get_text('notification_admin_text', language_code).text({'text': text}),
+        text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
     )
 
 
 def send_message_to_all(context: CallbackContext, text, sender_id, language_code):
-    chat_ids = database.gat_all_attrs('chat_id')
+    """Send simple message to all users except sender"""
+    chat_ids = database.gat_attr_column(consts.CHAT_ID)
     for chat_id in chat_ids:
         if chat_id == sender_id:
             continue

@@ -3,29 +3,31 @@ from telegram.ext import CallbackContext, MessageHandler, Filters, CommandHandle
 
 from util.log import log_function
 from src.text import get_text
-from static.buttons import *
-from static.conversarion_states import *
+from static import consts, buttons
 
 from src import keyboard, database, common_functions as cf, jobs
 
 
 @log_function
 def parameters(update: Update, context: CallbackContext):
+    """start parameters conversation"""
     language_code = update.effective_user.language_code
     user_id = update.effective_user.id
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
+        text=get_text('main_parameters_text', language_code).text(database.get_user_parameters(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
-    return PARAMETERS_MAIN
+    return consts.PARAMETERS_MAIN_STATE
 
 
 @log_function
-def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None, ret_lvl=PARAMETERS_MAIN):
+def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None,
+                          ret_lvl=consts.PARAMETERS_MAIN_STATE):
+    """change parameters page for specified value"""
     user_id = update.effective_user.id
     text = get_text(f'{page_name}_parameters_text', language_code)
-    user_info = database.get_user(user_id, language_code)
+    user_info = database.get_user_parameters(user_id, language_code)
     text = text.text(user_info)
     update.callback_query.edit_message_text(
         text=text,
@@ -35,179 +37,234 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
 
 
 def parameters_callback(update: Update, context: CallbackContext):
+    """manage all callbacks in parameters"""
     data, language_code = cf.manage_callback_query(update)
-    if data == EXIT_PARAMETERS:
+    if data == buttons.EXIT_PARAMETERS:
         update.callback_query.edit_message_text(
             text=get_text('exit_parameters_text', language_code).text(),
         )
-        return MAIN
-    elif data in MAIN_SET:
+        return consts.MAIN_STATE
+    elif data in buttons.MAIN_SET:
         return __main_callback(update, context, data, language_code)
-    elif data in COURSES_SET:
+    elif data in buttons.COURSES_SET:
         return __chg_course(update, context, data, language_code)
-    elif is_course_update(data):
+    elif buttons.is_course_update(data):
         return __update_course(update, context, data, language_code)
-    elif data in ATTENDANCE_SET:
+    elif data in buttons.ATTENDANCE_SET:
         return __update_attendance(update, context, data, language_code)
-    elif data in EVERYDAY_MESSAGE_SET:
+    elif data in buttons.MAILING_SET:
         return __update_mailing_timetable(update, context, data, language_code)
+    else:
+        raise ValueError(f'invalid callback for parameters: {data}')
 
 
 def __main_callback(update: Update, context: CallbackContext, data, language_code):
-    if data == PARAMETERS_RETURN:
+    """show specified page to change parameters"""
+    if data == buttons.PARAMETERS_RETURN:
         return __return_callback(update, context, language_code)
-    elif data == EVERYDAY_MESSAGE:
+    elif data == buttons.EVERYDAY_MESSAGE:
         return __mailing_callback(update, context, language_code)
-    elif data == COURSES:
-        return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
-    elif data == NAME:
-        return __chg_parameters_page(update, 'enter_name', language_code=language_code, ret_lvl=PARAMETERS_NAME)
-    elif data == ATTENDANCE:
-        return __chg_parameters_page(update, 'attendance', language_code, keyboard.attendance_keyboard)
+    elif data == buttons.COURSES:
+        return __chg_parameters_page(update, consts.COURSES, language_code, keyboard.courses_keyboard)
+    elif data == buttons.NAME:
+        return __chg_parameters_page(update, consts.ENTER_NAME, language_code=language_code,
+                                     ret_lvl=consts.PARAMETERS_NAME_STATE)
+    elif data == buttons.ATTENDANCE:
+        return __chg_parameters_page(update, consts.ATTENDANCE, language_code, keyboard.attendance_keyboard)
+    else:
+        raise ValueError(f'invalid callback for main parameters page: {data}')
 
 
 @log_function
 def __return_callback(update: Update, context: CallbackContext, language_code):
+    """show main parameters page"""
     user_id = update.effective_user.id
     update.callback_query.edit_message_text(
-        text=get_text('main_parameters_text', language_code).text(database.get_user(user_id, language_code)),
+        text=get_text('main_parameters_text', language_code).text(database.get_user_parameters(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
-    return PARAMETERS_MAIN
+    return consts.PARAMETERS_MAIN_STATE
+
+
+def __get_mailing_page(update: Update, language_code):
+    """get mailing page attrs"""
+    user_id = update.effective_user.id
+    attrs = database.get_user_attrs(
+        [consts.MAILING_STATUS, consts.NOTIFICATION_STATUS],
+        user_id=user_id,
+    )
+    text = get_text('mailing_parameters_text', language_code).text(
+        database.get_user_parameters(user_id, language_code)
+    )
+    reply_markup = keyboard.mailing_keyboard(attrs[consts.MAILING_STATUS], attrs[consts.NOTIFICATION_STATUS],
+                                             language_code)
+    return text, reply_markup
 
 
 @log_function
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
-    user_id = update.effective_user.id
-    attrs = database.get_user_attrs(
-        ['mailing_status', 'notification_status'],
-        user_id=user_id,
-    )
+    """show mailing menu"""
+    text, reply_markup = __get_mailing_page(update, language_code)
     update.callback_query.edit_message_text(
-        text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
-        reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
+        text=text,
+        reply_markup=reply_markup,
     )
-    return PARAMETERS_MAIN
+    return consts.PARAMETERS_MAIN_STATE
 
 
-def __get_button_vars(data):
-    data = data[:-7]
-    for a in range(len(data)):
-        if data[a] == '_':
-            return data[:a], data[a + 1:]
+def __get_button_vars(data: str):
+    """get parameters from button callback"""
+    data = data.split('_')[:-1]
+    return data[0], data[1]
 
 
 def __update_course(update: Update, context: CallbackContext, data, language_code):
-    if data == ENG_NEXT:
-        return __chg_parameters_page(update, 'eng', language_code, keyboard.eng2_keyboard)
-    elif data == ENG_PREV:
-        return __chg_parameters_page(update, 'eng', language_code, keyboard.eng1_keyboard)
+    """update courses info or change eng page"""
+    if data == buttons.ENG_NEXT:
+        return __chg_parameters_page(update, consts.ENG, language_code, keyboard.eng2_keyboard)
+    elif data == buttons.ENG_PREV:
+        return __chg_parameters_page(update, consts.ENG, language_code, keyboard.eng1_keyboard)
 
     user_id = update.effective_user.id
-    sub_name, subtype = __get_button_vars(data)
-    database.set_user_attrs(user_id=user_id, attrs={sub_name: subtype})
-    return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
+    subject, subtype = __get_button_vars(data)
+    database.set_user_attrs(user_id=user_id, attrs={subject: subtype})
+
+    # show courses parameters page
+    return __chg_parameters_page(update, consts.COURSES, language_code, keyboard.courses_keyboard)
 
 
 def __chg_course(update: Update, context: CallbackContext, data, language_code):
-    if data == OS_TYPE:
-        return __chg_parameters_page(update, 'os', language_code, keyboard.os_keyboard)
-    elif data == SP_TYPE:
-        return __chg_parameters_page(update, 'sp', language_code, keyboard.sp_keyboard)
-    elif data == HISTORY_GROUP:
-        return __chg_parameters_page(update, 'history', language_code, keyboard.history_keyboard)
-    elif data == ENG_GROUP:
-        return __chg_parameters_page(update, 'eng', language_code, keyboard.eng1_keyboard)
-    elif data == COURSES_RETURN:
-        return __chg_parameters_page(update, 'courses', language_code, keyboard.courses_keyboard)
+    """select courses page"""
+    if data == buttons.OS_TYPE:
+        return __chg_parameters_page(update, consts.OS, language_code, keyboard.os_keyboard)
+    elif data == buttons.SP_TYPE:
+        return __chg_parameters_page(update, consts.SP, language_code, keyboard.sp_keyboard)
+    elif data == buttons.HISTORY_GROUP:
+        return __chg_parameters_page(update, consts.HISTORY, language_code, keyboard.history_keyboard)
+    elif data == buttons.ENG_GROUP:
+        return __chg_parameters_page(update, consts.ENG, language_code, keyboard.eng1_keyboard)
+    elif data == buttons.COURSES_RETURN:
+        return __chg_parameters_page(update, consts.COURSES, language_code, keyboard.courses_keyboard)
+    else:
+        raise ValueError(f'invalid callback for courses parameters page: {data}')
 
 
 def __update_attendance(update: Update, context: CallbackContext, data, language_code):
+    """update attendance"""
     user_id = update.effective_user.id
-    new_attendance, _blank = __get_button_vars(data)
-    database.set_user_attrs(user_id=user_id, attrs={'attendance': new_attendance})
+    new_attendance, _ = __get_button_vars(data)
+    database.set_user_attrs(user_id=user_id, attrs={consts.ATTENDANCE: new_attendance})
+    # show main parameters page
     return __return_callback(update, context, language_code)
 
 
 @log_function
-def name_parameters(update: Update, context: CallbackContext):
+def set_new_name_parameters(update: Update, context: CallbackContext):
+    """update name"""
     user_id = update.effective_user.id
     new_name = update.message.text
-    database.set_user_attrs(user_id=user_id, attrs={'username': new_name})
+    database.set_user_attrs(user_id=user_id, attrs={consts.USERNAME: new_name})
+    # send main parameters page
     return parameters(update, context)
 
 
 def __update_mailing_timetable(update: Update, context: CallbackContext, data, language_code):
+    """changing mailing parameters"""
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
-    if data == ALLOW_MESSAGE or data == FORBID_MESSAGE:
-        if data == ALLOW_MESSAGE:
+
+    if data == buttons.ALLOW_MESSAGE or data == buttons.FORBID_MESSAGE:
+        # process mailing status change: set/rm job and update database
+        if data == buttons.ALLOW_MESSAGE:
             jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
-            new_status = 'allowed'
+            new_status = consts.MAILING_ALLOWED
         else:
             jobs.rm_mailing_job(context, user_id=user_id, chat_id=chat_id)
-            new_status = 'forbidden'
-        database.set_user_attrs(user_id=user_id, attrs={'mailing_status': new_status})
+            new_status = consts.MAILING_FORBIDDEN
+        database.set_user_attrs(user_id=user_id, attrs={consts.MAILING_STATUS: new_status})
+
+        # update mailing page
         return __mailing_callback(update, context, language_code)
-    elif data == ENABLE_NOTIFICATION_MESSAGE or data == DISABLE_NOTIFICATION_MESSAGE:
-        new_status = 'enabled' if data == ENABLE_NOTIFICATION_MESSAGE else 'disabled'
-        database.set_user_attrs(user_id=user_id, attrs={'notification_status': new_status})
-        jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
+    elif data == buttons.ENABLE_NOTIFICATION_MESSAGE or data == buttons.DISABLE_NOTIFICATION_MESSAGE:
+        # process notification status change: reset job and update database
+        new_status = (
+            consts.NOTIFICATION_ENABLED
+            if data == buttons.ENABLE_NOTIFICATION_MESSAGE
+            else consts.NOTIFICATION_DISABLED
+        )
+        database.set_user_attrs(user_id=user_id, attrs={consts.NOTIFICATION_STATUS: new_status})
+        jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
+
+        # update mailing page
         return __mailing_callback(update, context, language_code)
-    elif data == TZINFO:
-        return __chg_parameters_page(update, 'enter_tzinfo', language_code=language_code, ret_lvl=PARAMETERS_TZINFO)
-    elif data == MESSAGE_TIME:
-        return __chg_parameters_page(update, 'enter_time', language_code=language_code, ret_lvl=PARAMETERS_TIME)
+    elif data == buttons.TZINFO:
+        # request user input
+        return __chg_parameters_page(update, consts.ENTER_TZINFO, language_code=language_code,
+                                     ret_lvl=consts.PARAMETERS_TZINFO_STATE)
+    elif data == buttons.MESSAGE_TIME:
+        # request user input
+        return __chg_parameters_page(update, consts.ENTER_TIME, language_code=language_code,
+                                     ret_lvl=consts.PARAMETERS_TIME_STATE)
 
 
-# todo optimize
-def __user_time_input_chg(update: Update, context: CallbackContext, validation, attr_name, error_lvl):
+def __user_time_input_chg(update: Update, context: CallbackContext, validation, attr_name, error_state):
+    """change mailing parameters with validation"""
+
     language_code = update.effective_user.language_code
     new_info = update.message.text
     user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+
+    # validate new_info. if False send error message and try again
     if validation(new_info):
+        # update database
         database.set_user_attrs(user_id=user_id, attrs={attr_name: new_info})
-        jobs.reset_mailing(context, update.effective_chat.id, user_id, language_code)
-        attrs = database.get_user_attrs(
-            ['mailing_status', 'notification_status'],
-            user_id=user_id,
-        )
+
+        # reset mailing job
+        jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
+
+        # get and send mailing page
+        text, reply_markup = __get_mailing_page(update, language_code)
         context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=get_text('mailing_parameters_text', language_code).text(database.get_user(user_id, language_code)),
-            reply_markup=keyboard.mailing_keyboard(attrs['mailing_status'], attrs['notification_status'], language_code),
+            chat_id=chat_id,
+            text=text,
+            reply_markup=reply_markup,
         )
-        return PARAMETERS_MAIN
+        return consts.PARAMETERS_MAIN_STATE
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
+        chat_id=chat_id,
         text=get_text('format_error_parameters_text', language_code).text(),
     )
-    return error_lvl
+    return error_state
 
 
 @log_function
 def tzinfo_parameters(update: Update, context: CallbackContext):
+    """set new tzinfo"""
     return __user_time_input_chg(
         update=update,
         context=context,
         validation=database.valid_utcoffset,
-        attr_name='utcoffset',
-        error_lvl=PARAMETERS_TZINFO,
+        attr_name=consts.UTCOFFSET,
+        error_state=consts.PARAMETERS_TZINFO_STATE,
     )
 
 
 @log_function
 def time_message_parameters(update: Update, context: CallbackContext):
+    """set new mailing time"""
     return __user_time_input_chg(
         update=update,
         context=context,
         validation=database.valid_time,
-        attr_name='mailing_time',
-        error_lvl=PARAMETERS_TIME,
+        attr_name=consts.MAILING_TIME,
+        error_state=consts.PARAMETERS_TIME_STATE,
     )
 
 
 def parameters_error(name):
+    """template for error handlers in the parameters"""
+
     @log_function
     def error(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
@@ -219,11 +276,13 @@ def parameters_error(name):
     return MessageHandler(callback=error, filters=Filters.all)
 
 
+# exit parameters
 exit_parameters = cf.simple_handler(
     name='exit_parameters',
     command='exit',
-    type=cf.COMMAND,
-    ret_lvl=MAIN,
+    type=consts.COMMAND,
+    ret_state=consts.MAIN_STATE,
 )
 
+# cancel operation and return to menu
 cancel_parameters = CommandHandler(command='cancel', callback=parameters)

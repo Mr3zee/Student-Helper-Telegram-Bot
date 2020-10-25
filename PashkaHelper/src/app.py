@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_sslify import SSLify
 
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import Dispatcher
 
 from static import config
@@ -13,14 +13,20 @@ app = Flask(__name__)
 sslify = SSLify(app)
 
 
-def get_app_route(bot, dispatcher: Dispatcher, user_updater):
+def get_app_route(bot: Bot, dispatcher: Dispatcher, user_updater):
+    """
+    Make web page to receive updates from Telegram
+    bot: Bot class to make Update instance
+    dispatcher: to process update
+    user_updater: update main user info in case user nik or chat_id has changed
+    """
     @app.route(f'/{config.BOT_TOKEN}', methods=['GET', 'POST'])
     def get_updates():
         if request.method == 'POST':
             update = Update.de_json(request.json, bot)
             user_updater(
                 user_id=update.effective_user.id,
-                user_nik=update.effective_user.username,
+                user_nick=update.effective_user.username,
                 chat_id=update.effective_chat.id,
             )
             dispatcher.process_update(update)
@@ -31,4 +37,5 @@ def get_app_route(bot, dispatcher: Dispatcher, user_updater):
 
 @app.route('/', methods=['GET'])
 def hello_world():
+    """default page for debug and monitoring"""
     return {'ok': 'yes but actually no'}
