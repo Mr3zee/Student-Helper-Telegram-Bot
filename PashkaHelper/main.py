@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from telegram import ParseMode, Bot
 from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
@@ -136,7 +134,7 @@ if __name__ == '__main__':
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
-#  make normal logging
+#  make normal logging +
 #  optimize database
 #  make chat_data persistent
 

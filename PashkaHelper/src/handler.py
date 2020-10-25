@@ -15,15 +15,18 @@ import src.parameters_hdl as ptrs
 import src.jobs as jobs
 import src.subject as subject
 
-from util.log import log_function
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src import time_management as tm, timetable as tt
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 handlers = {}
 
 
-@log_function
 def start(update: Update, context: CallbackContext):
     """
     adds user into the database, if he was not there
@@ -46,7 +49,6 @@ def start(update: Update, context: CallbackContext):
     return consts.MAIN_STATE
 
 
-@log_function
 def callback(update: Update, context: CallbackContext):
     """
     Handles and parses main callbacks
@@ -64,7 +66,6 @@ def callback(update: Update, context: CallbackContext):
         return unknown_callback(update, context)
 
 
-@log_function
 def help(update: Update, context: CallbackContext):
     """help command callback"""
     for job in context.job_queue.get_jobs_by_name(consts.MAILING_JOB):
@@ -77,7 +78,6 @@ def help(update: Update, context: CallbackContext):
     )
 
 
-@log_function
 def help_callback(update: Update, context: CallbackContext, data: list, language_code):
     """change help page"""
     if data[1] in {consts.MAIN_PAGE, consts.ADDITIONAL_PAGE}:
@@ -91,7 +91,6 @@ def help_callback(update: Update, context: CallbackContext, data: list, language
     )
 
 
-@log_function
 def unknown_callback(update: Update, context: CallbackContext):
     """handles unknown callbacks"""
     language_code = update.effective_user.language_code
@@ -101,7 +100,6 @@ def unknown_callback(update: Update, context: CallbackContext):
     )
 
 
-@log_function
 def timetable_callback(update: Update, context: CallbackContext, data: list, language_code):
     """handles timetable callbacks"""
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
@@ -133,7 +131,6 @@ def timetable_args_error(context: CallbackContext, chat_id, error_type, language
     )
 
 
-@log_function
 def timetable(update: Update, context: CallbackContext):
     """
     sends timetable main page if no argument specified
@@ -184,7 +181,6 @@ def timetable(update: Update, context: CallbackContext):
     )
 
 
-@log_function
 def today(update: Update, context: CallbackContext):
     """sends today timetable"""
     cf.send_today_timetable(
@@ -201,39 +197,37 @@ def error_callback(update: Update, context: CallbackContext):
     notifies user that error occurred, sends feedback to all admins
     """
     language_code = update.effective_user.language_code
-
     # notify user
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=get_text('error_handler_user_text', language_code).text()
     )
 
+    # make logs
+    logger.error(f'{str(context.error)}\n\n{"".join(traceback.format_tb(sys.exc_info()[2]))}')
+
     # collect data about error
-    data = {'trace': "".join(traceback.format_tb(sys.exc_info()[2])), 'error': str(context.error)}
+    data = {'error': str(context.error)}
     if update.effective_user:
         data['user'] = mention_html(update.effective_user.id, update.effective_user.first_name)
     else:
         data['user'] = 'unavailable'
 
+    if update.callback_query:
+        data['info'] = f'type = query\ncontent = "{update.callback_query.data}"'
+    else:
+        data['info'] = f'type = message\ncontent = "{update.message.text}"'
+
     text = get_text('error_handler_dev_text', language_code)
 
     # send collected data to all admins
     for dev_id in database.get_all_admins_chat_ids():
-        try:
-            context.bot.send_message(
-                chat_id=dev_id,
-                text=text.text(data),
-            )
-        except error.BadRequest:
-            data['trace'] = 'Traceback is unavailable'
-            context.bot.send_message(
-                chat_id=dev_id,
-                text=text.text(data),
-            )
-    raise
+        context.bot.send_message(
+            chat_id=dev_id,
+            text=text.text(data),
+        )
 
 
-@log_function
 def admin(update: Update, context: CallbackContext):
     """
     admin's control panel
@@ -306,7 +300,6 @@ def admin(update: Update, context: CallbackContext):
     return ret_lvl
 
 
-@log_function
 def admin_notify(update: Update, context: CallbackContext):
     """sends provided text to specified users"""
     language_code = update.effective_user.language_code
@@ -324,7 +317,6 @@ def admin_notify(update: Update, context: CallbackContext):
     return consts.MAIN_STATE
 
 
-@log_function
 def doc(update: Update, context: CallbackContext):
     """
     show documentation
@@ -352,7 +344,6 @@ def doc(update: Update, context: CallbackContext):
     )
 
 
-@log_function
 def report(update: Update, context: CallbackContext):
     """will wait for message to report if unmuted"""
     language_code = update.effective_user.language_code
@@ -369,7 +360,6 @@ def report(update: Update, context: CallbackContext):
     return ret_lvl
 
 
-@log_function
 def report_sent(update: Update, context: CallbackContext):
     """take message to report and send it to all admins"""
     language_code = update.effective_user.language_code

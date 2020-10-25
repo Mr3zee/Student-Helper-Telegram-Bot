@@ -840,12 +840,10 @@ science: [m]
 [error_handler_dev_text]
 [body]
 Такс, такс, такс, что тут у нас?
-Произошла \#ошибка у пользователя ^user.
+\#ошибка у пользователя ^user.
+^info
 
 Текст ошибки: <code>^error</code>
-
-Traceback:
-<code>^trace</code>
 [/body]
 [/error_handler_dev_text]
 

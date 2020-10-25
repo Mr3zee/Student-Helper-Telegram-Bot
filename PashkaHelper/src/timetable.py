@@ -1,12 +1,6 @@
 from src.text import get_text
 from static import consts
-from util import util
 from src.server import Server
-
-import logging
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
 subject_template = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 subject_template_parity = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
