@@ -179,7 +179,7 @@ value: Аргумент должен быть больше -1 и меньше 7
  <a href = '&hw_link'>Задания</a> | таблицы дз: [case ^attendance]
  offline: <a href = '&hw_table_offline_link'>очно</a>
  online: <a href = '&hw_table_online_link'>заочно</a>
- both: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
+ all: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
  [/case]
  Твои прекрасные <a href = '&points_link'>баллы</a> по алгосикам
  Самые увлекательные лабы <a href = '&labs_link'>здесь</a>
@@ -226,7 +226,7 @@ value: Аргумент должен быть больше -1 и меньше 7
  <a href = '&hw_page_link'>Задания</a> | таблицы дз: [case ^attendance]
  offline: <a href = '&hw_table_offline_link'>очно</a>
  online: <a href = '&hw_table_online_link'>заочно</a>
- both: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
+ all: <a href = '&hw_table_offline_link'>очно</a> | <a href = '&hw_table_online_link'>заочно</a>
  [/case]
  Твои великолепные <a href = '&point_link'>баллы</a>
  Познавательные <a href = '&pcms_link'>лабы</a>
@@ -304,24 +304,24 @@ all: all
 <b>Английский язык</b>
 
 <a href = '&vk_link'>Группа</a> ВК по английскому
+
 [case &eng_teacher]
 
 # John Cuti
 cuti: [m]
-<em>[case ^subtype]
-c2_1: 2-ИТИПКТ-C2/1
-c2_3: 2-ИТИПКТ-C2/3
+<em>[case ^attendance]
+online: 2-ИТИПКТ-C2/3
+offline: 2-ИТИПКТ-C2/1
 all: 2-ИТИПКТ-C2/1 | 2-ИТИПКТ-C2/3
 [/case] - Джон Кути</em>
 Почта Джона Кути: &cuti_email
 <a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
-
-[case ^subtype]
-c2_3: [m]
+[case ^attendance]
+online: [m]
 Заочно:
   - <a href = '&c2_3_discord'>Discord</a> of native speakers
   - <a href = '&c2_3_tg'>Chat</a> of native speakers[/m]
-c2_1: [m]
+offline: [m]
 Очно:
   - Кабинет: 412
   - <a href = '&c2_1_tg'>Чатик</a> истинных англичан[/m]
@@ -329,18 +329,17 @@ c2_1: [m]
 
 # Cipo
 cipo: [m]
-<em>[case ^subtype]
-c1_1: 2-ИТИПКТ-C1/1
-c1_2: 2-ИТИПКТ-C1/2
+<em>[case ^attendance]
+online: 2-ИТИПКТ-C1/1
+offline: 2-ИТИПКТ-C1/2
 all: 2-ИТИПКТ-C1/1 | 2-ИТИПКТ-C1/2
 [/case] - Cipo</em>
-
-[case ^subtype]
-c1_1: [m]
+[case ^attendance]
+online: [m]
 Заочно:
  - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
  - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа[/m]
-c1_2: [m]
+offline: [m]
 Очно:
  - Кабинет: 409
  - <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую[/m]
@@ -348,18 +347,17 @@ c1_2: [m]
 
 # Белянина С.
 belyanina: [m]
-<em>[case ^subtype]
-b2_1: 2-ИТИПКТ-B2/1
-b2_3: 2-ИТИПКТ-B2/3
+<em>[case ^attendance]
+online: 2-ИТИПКТ-B2/3
+offline: 2-ИТИПКТ-B2/1
 all: 2-ИТИПКТ-B2/1 | 2-ИТИПКТ-B2/3
 [/case] - Белянина С.</em>
-
-[case ^subtype]
-b2_3: [m]
+[case ^attendance]
+online: [m]
 Заочно:
   - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
   - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства[/m]
-b2_1: [m]
+offline: [m]
 Очно:
   - Кабинет: 315
   - <a href = '&b2_1_tg'>Чат</a> иностранных агентов[/m]
@@ -367,20 +365,19 @@ b2_1: [m]
 
 # Захарова А.
 zaharova: [m]
-<em>[case ^subtype]
-c2_2: 2-ИТИПКТ-C2/2
-b2_2: 2-ИТИПКТ-B2/2
+<em>[case ^attendance]
+online: 2-ИТИПКТ-C2/2
+offline: 2-ИТИПКТ-B2/2
 all: 2-ИТИПКТ-C2/2 | 2-ИТИПКТ-B2/2
 [/case] - Захарова А.</em>
-
-[case ^subtype]
-c2_2: [m]
+[case ^attendance]
+online: [m]
 Заочно:
   - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
   - Идентификатор конференции: 824 3167 0213
   - Код доступа: 121611 (или какой-то из 121611-121622)
   - <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов[/m]
-b2_2: [m]
+offline: [m]
 Очно:
   - Кабинет: 319
   - <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров[/m]
@@ -388,18 +385,17 @@ b2_2: [m]
 
 # Трофимова Т.А.
 trofimova: [m]
-<em>[case ^subtype]
-b12_1: 2-ИТИПКТ-B1.2/1
-b12_2: 2-ИТИПКТ-B1.2/2
+<em>[case ^attendance]
+online: 2-ИТИПКТ-B1.2/1
+offline: 2-ИТИПКТ-B1.2/2
 all: 2-ИТИПКТ-B1.2/1 | 2-ИТИПКТ-B1.2/2
 [/case] - Трофимова Т.А.</em>
-
-[case ^subtype]
-b12_1: [m]
+[case ^attendance]
+online: [m]
 Заочно:
   - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
   - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"[/m]
-b12_2: [m]
+offline: [m]
 Очно:
   - Кабинет: 313
   - <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"[/m]
@@ -407,18 +403,17 @@ b12_2: [m]
 
 # Малышева А.
 malysheva: [m]
-<em>[case ^subtype]
-b11_1: 2-ИТИПКТ-B1.1/1
-b11_2: 2-ИТИПКТ-B1.1/2
+<em>[case ^attendance]
+online: 2-ИТИПКТ-B1.1/1
+offline: 2-ИТИПКТ-B1.1/2
 all: 2-ИТИПКТ-B1.1/1 | 2-ИТИПКТ-B1.1/2
 [/case] - Малышева А.</em>
-
-[case ^subtype]
-b11_1: [m]
+[case ^attendance]
+online: [m]
 Заочно:
   - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
   - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit[/m]
-b11_2: [m]
+offline: [m]
 Очно:
   - Кабинет: 410
   - <a href = '&b11_2_tg'>Чат</a> противников Brexit[/m]
@@ -557,23 +552,20 @@ lite: [m]
 [case ^subtype]
 web: [m]
 <em>Web-программирование</em>
- Стильный веб <a href = '&web_twitch'>Twitch</a>
- Стильные веб <a href = '&web_points_link'>баллы</a>
- Стильный веб <a href = '&web_tg'>чатик</a> ИТМО 2020, Web[/m]
+ Заработанные <a href = '&web_points_link'>баллы</a>
+ Просто <a href = '&web_twitch'>Twitch</a>
+ <a href = '&web_tg'>Чатик</a> ИТМО 2020, Web[/m]
 
 android: [m]
 <em>Android разработка</em>
- Лучший чем у Apple <a href = '&android_twitch'>Twitch</a>
- Лучший чем у Apple <a href = '&android_youtube'>YouTube</a>
- Лучший чем у Apple <a href = '&android_discord'>Discord</a>
- Лучшие чем у Apple <a href = '&android_points_link'>баллы</a>
- Лучший чем у Apple <a href = '&android_points_link'>чатик</a>[/m]
+ Узнать свои <a href = '&android_points_link'>баллы</a>
+ <a href = '&android_twitch'>Twitch</a> | <a href = '&android_youtube'>YouTube</a> | <a href = '&android_discord'>Discord</a>
+ Наш <a href = '&android_points_link'>чатик</a>[/m]
 
 ios: [m]
 <em>IOS разработка</em>
- Элегантные яблочные <a href = '&ios_twitch1'>Twitch</a> Глеба | <a href = '&ios_twitch2'>Twitch</a> Антона
- Элегантный яблочный <a href = '&ios_discord'>Discord</a>
- Элегантный яблочный <a href = '&ios_tg'>чатик</a>[/m]
+ <a href = '&ios_twitch1'>Twitch</a> Глеба | <a href = '&ios_twitch2'>Twitch</a> Антона
+ <a href = '&ios_discord'>Discord</a> | <a href = '&ios_tg'>чатик</a>[/m]
 
 cpp: [m]
 <em>Язык программирования C++</em>
@@ -582,12 +574,10 @@ cpp: [m]
  Да все понятно в этом <a href = '&cpp_tg'>чате</a>[/m]
 
 kotlin: [m]
-<em>Клиент-серверное приложение на Kotlin</em>
- Модный, молодежный, дерзкий <a href = '&kotlin_gitlab'>Gitlab</a>
- Молодежный, дерзкий, модный <a href = '&kotlin_yt'>Youtube</a>
- Модный, дерзкий, молодежный <a href = '&kotlin_twitch'>Twitch</a>
- Дерзкий, модный, молодежный <a href = '&kotlin_zoom'>Zoom</a>
- Молодежный, модный, дерзкий <a href = '&kotlin_tg'>чат</a> Client-server and Kotlin[/m]
+<em><s>Kotlin</s> HTML + CSS + JS</em>
+ Богоспасаемый <a href = '&kotlin_gitlab'>Gitlab</a>
+ <a href = '&kotlin_yt'>Youtube</a> | <a href = '&kotlin_twitch'>Twitch</a> | <a href = '&kotlin_zoom'>Zoom</a>
+ <a href = '&kotlin_tg'>Чат</a> Client-server and Kotlin[/m]
 [/case]
 
 Вернуться на главную /help
@@ -653,12 +643,12 @@ kotlin: [m]
 
 [case ^subtype]
 international: [m]
-<em>Россия в истории современных международных отношений</em>
- <s>политический</s> исторический <a href = '&internation_tg'>чатик</a>
+<em>Международные отношения</em>
+ <s>Политический</s> исторический <a href = '&internation_tg'>чатик</a>
  <a href = '&internation_recordings'>Гуглдок</a> с записями[/m]
 
 reforms: [m]
-<em>Реформы и реформаторы в истории России</em>
+<em>Реформы и реформаторы</em>
  Progressive <a href = '&reforms_tg'>chat</a>[/m]
 
 statehood: [m]
@@ -674,8 +664,9 @@ eu_problems: [m]
  Westeuropäischer <a href = '&problems_tg'>chat</a>[/m]
 
 science: [m]
-<em>Наука и техника в истории цивилизации</em>
-11010000 10011101 11010000 10110000 11010001 10000011 11010001 10000111 11010000 10111101 11010000 10111110 101101 11010001 10000010 11010000 10110101 11010001 10000101 11010000 10111101 11010000 10111000 11010001 10000111 11010000 10110101 11010001 10000001 11010000 10111010 11010000 10111000 11010000 10111001 100000 <a href = '&science_tg'>11010001 10000111 11010000 10110000 11010001 10000010</a>[/m]
+<em>Наука и техника</em>
+11010000100111011101000010110000110100011000001111010001100001111101000010111101110100001011111010110111010001100000101101000010110101110100011000010111010000101111011101000010111000110100011000011111010000101101011101000110000001110100001011101011010000101110001101000010111001100000
+<a href = '&science_tg'>110100011000011111010000101100001101000110000010</a>[/m]
 [/case]
 
 Вернуться на главную /help
@@ -721,20 +712,20 @@ science: [m]
 <b>Личный Кабинет</b>
 
 <u>Основное:</u>
-Имя пользователя: <em>^username</em>
-Способ посещения: <em>^attendance</em>
+Имя пользователя: <b>^username</b>
+Способ посещения: <b>^attendance</b>
 
 <u>Рассылка:</u> (не работает, мне лень убирать кнопки)
-Статус рассылки: <em>^mailing_status</em>
-Уведомления: <em>^notification_status</em>
-Время рассылки: <em>^mailing_time</em>
-Временная зона: <em>UTC ^utcoffset</em>
+Статус рассылки: <b>^mailing_status</b>
+Уведомления: <b>^notification_status</b>
+Время рассылки: <b>^mailing_time</b>
+Временная зона: <b>UTC ^utcoffset</b>
 
 <u>Курсы:</u>
-Группа английского: <em>^eng</em>
-Курс по истории: <em>^history</em>
-Курс СП: <em>^sp</em>
-Курс ОС: <em>^os</em>
+Английский: <b>^eng</b>
+История: <b>^history</b>
+СП: <b>^sp</b>
+ОС: <b>^os</b>
 
 Изменить настройки аккаунта:
 [/body]
@@ -748,10 +739,10 @@ science: [m]
 Здесь можно изменить выбор предметов, информация о которых будет отбражаться на их странице, а также у тебя в расписании
 
 <u>Текущие настройки:</u>
-Группа английского: <em>^eng</em>
-Курс по истории: <em>^history</em>
-Курс СП: <em>^sp</em>
-Курс ОС: <em>^os</em>
+Английский: <b>^eng</b>
+История: <b>^history</b>
+СП: <b>^sp</b>
+ОС: <b>^os</b>
 
 Изменить выбор:
 [/body]
@@ -765,10 +756,10 @@ science: [m]
 Я могу отправлять тебе твое раписание на день, чтобы ты ничего не забыл, только скажи)
 
 <u>Текущие настройки:</u>
-Статус рассылки: <em>^mailing_status</em>
-Уведомления: <em>^notification_status</em>
-Время рассылки: <em>^mailing_time</em>
-Временная зона: <em>UTC ^utcoffset</em>
+Статус рассылки: <b>^mailing_status</b>
+Уведомления: <b>^notification_status</b>
+Время рассылки: <b>^mailing_time</b>
+Временная зона: <b>UTC ^utcoffset</b>
 
 Поменять настройки:
 [/body]
@@ -777,9 +768,11 @@ science: [m]
 
 [attendance_parameters_text]
 [body]
+<b>Параметры посещения:</b>
+
 Здесь ты можешь выбрать свой способ посещения занятий (либо просто тот, информацию о котором ты хочешь видеть)
 
-Текущий способ посещения: <em>^attendance</em>
+Текущий способ посещения: <b>^attendance</b>
 
 Изменить выбор:
 [/body]
@@ -790,7 +783,7 @@ science: [m]
 [body]
 Здесь можно выбрать курс операционных систем, информацию о котором ты хочешь видеть (кстати, можно смотреть информацию про оба курса)
 
-Текущий курс: <em>^os</em>
+Текущий курс: <b>^os</b>
 
 Изменить выбор:
 [/body]
@@ -801,7 +794,7 @@ science: [m]
 [body]
 Здесь можно выбрать курс современного программирования, информация о котором будет появляться
 
-Текущий курс: <em>^sp</em>
+Текущий курс: <b>^sp</b>
 
 Изменить выбор:
 [/body]
@@ -812,7 +805,7 @@ science: [m]
 [body]
 Здесь можно выбрать свой курс истории (или все, если настолько любознательный)
 
-Текущий курс: <em>^history</em>
+Текущий курс: <b>^history</b>
 
 Изменить выбор:
 [/body]
@@ -823,7 +816,7 @@ science: [m]
 [body]
 Хочешь другую свою группу английского? (а может все сразу?)
 
-Текущая группа: <em>^eng</em>
+Текущая группа: <b>^eng</b>
 
 Изменить выбор:
 [/body]

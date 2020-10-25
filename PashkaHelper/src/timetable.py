@@ -30,6 +30,8 @@ def get_subject_timetable(subject, subtype, attendance, language_code):
         weekday_name = get_text(f'{weekday}_timetable_text', language_code=language_code).text()
         # get timetable
         subject_timetable = __put_together(sub1, sub2, attendance, subject_template_parity, language_code)
+        if not subject_timetable:
+            continue
         day_template = get_text('subject_day_template_text', language_code=language_code).text({
             consts.TIMETABLE: subject_timetable,
             consts.WEEKDAY: weekday_name,
@@ -88,8 +90,12 @@ def __put_together(first_subject_list, second_subject_list, attendance, template
     """make header(s) and glue it to timetable(s)"""
     first = second = ''
 
+    # if attendance is both then first is online
+    if attendance == consts.ATTENDANCE_BOTH:
+        attendance = consts.ATTENDANCE_ONLINE
+
     if first_subject_list:
-        first = get_text(f'{util.to_not_attendance(attendance)}_timetable_text', language_code).text() + '\n'
+        first = get_text(f'{attendance}_timetable_text', language_code).text() + '\n'
         first += __make_timetable(first_subject_list, template)
 
     # only True when attendance is both and in that case first is online and second is offline
@@ -103,7 +109,7 @@ def __put_together(first_subject_list, second_subject_list, attendance, template
         timetable += first
 
     if second != '':
-        timetable += '\n\n' + second
+        timetable += ('\n\n' if first else '') + second
 
     return timetable
 

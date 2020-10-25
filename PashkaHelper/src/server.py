@@ -91,11 +91,13 @@ class Server:
         # dict {weekday: timetable}
         retval = {}
         for weekday in Server.__tt__weekdays_map.keys():
-            retval[weekday] = Server.__make_weekday_table(
+            weekday_table = Server.__make_weekday_table(
                 values=values, weekday=weekday,
                 attendance=attendance, week_parity=consts.WEEK_BOTH,
                 subject_filter=subject_filter,
             )
+            if weekday_table != ([], []):
+                retval[weekday] = weekday_table
         return retval
 
     @staticmethod
@@ -128,7 +130,7 @@ class Server:
                 attendance=attendance, week_parity=week_parity,
                 subject_filter=subject_filter,
             )
-            return ret_dict, None
+            return ret_dict, []
 
     def __get_values_from_table(self):
         """gets timetable from google sheets"""
