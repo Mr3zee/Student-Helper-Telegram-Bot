@@ -133,7 +133,6 @@ if __name__ == '__main__':
 #  jobs
 #  SERVER
 #  add language_code to the Users db
-#  manage all BadRequests +
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
