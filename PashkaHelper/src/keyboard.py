@@ -46,8 +46,6 @@ def timetable_keyboard(weekday, attendance, week_parity, language_code):
             make_timetable_button(consts.MONDAY, current_state, language_code),
             make_timetable_button(consts.TUESDAY, current_state, language_code),
             make_timetable_button(consts.WEDNESDAY, current_state, language_code),
-        ],
-        [
             make_timetable_button(consts.THURSDAY, current_state, language_code),
             make_timetable_button(consts.FRIDAY, current_state, language_code),
             make_timetable_button(consts.SATURDAY, current_state, language_code),
