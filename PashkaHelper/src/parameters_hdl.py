@@ -115,7 +115,7 @@ def __mailing_callback(update: Update, context: CallbackContext, language_code):
 def __get_button_vars(data: str):
     """get parameters from button callback"""
     data = data.split('_')[:-1]
-    return data[0], data[1]
+    return data[0], '_'.join(data[1:])
 
 
 def __update_course(update: Update, context: CallbackContext, data, language_code):

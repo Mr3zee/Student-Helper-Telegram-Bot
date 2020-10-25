@@ -171,7 +171,7 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
     elif page == consts.MAIN_PAGE:
         return get_text(f'{subject}_subject_text', language_code).text({
             consts.SUBTYPE: subtype,
-            consts.ATTENDANCE: attendance,
+            consts.ATTENDANCE: (attendance if attendance != consts.ATTENDANCE_BOTH else consts.ALL),
         }), attendance
     else:
         raise ValueError(f'Invalid subject page type: {page}')
