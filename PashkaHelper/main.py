@@ -129,12 +129,11 @@ if __name__ == '__main__':
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
-#  make everything pretty +
 #  quotes support
 #  jobs
 #  SERVER
 #  add language_code to the Users db
-#  manage all BadRequests
+#  manage all BadRequests +
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste

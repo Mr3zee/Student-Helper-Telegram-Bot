@@ -84,7 +84,8 @@ def help_callback(update: Update, context: CallbackContext, data: list, language
         text = get_text(f'help_{data[1]}_text', language_code).text()
     else:
         raise ValueError(f'Invalid help callback: {data[0]}')
-    update.callback_query.edit_message_text(
+    cf.edit_message(
+        update=update,
         text=text,
         reply_markup=keyboard.help_keyboard(data[1], language_code),
     )
@@ -105,24 +106,23 @@ def timetable_callback(update: Update, context: CallbackContext, data: list, lan
     """handles timetable callbacks"""
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
     attendance, week_parity, weekday = data[1:-1]
-    try:
-        update.callback_query.edit_message_text(
-            text=get_weekday_timetable(
-                weekday=weekday,
-                subject_names=subject_names,
-                attendance=attendance,
-                week_parity=week_parity,
-                language_code=language_code,
-            ),
-            reply_markup=keyboard.timetable_keyboard(
-                weekday=weekday,
-                attendance=attendance,
-                week_parity=week_parity,
-                language_code=language_code,
-            )
+
+    cf.edit_message(
+        update=update,
+        text=get_weekday_timetable(
+            weekday=weekday,
+            subject_names=subject_names,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        ),
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
         )
-    except error.BadRequest:
-        pass
+    )
 
 
 def timetable_args_error(context: CallbackContext, chat_id, error_type, language_code):

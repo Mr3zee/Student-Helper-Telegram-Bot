@@ -29,7 +29,8 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
     text = get_text(f'{page_name}_parameters_text', language_code)
     user_info = database.get_user_parameters(user_id, language_code)
     text = text.text(user_info)
-    update.callback_query.edit_message_text(
+    cf.edit_message(
+        update=update,
         text=text,
         reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
     )
@@ -40,7 +41,8 @@ def parameters_callback(update: Update, context: CallbackContext):
     """manage all callbacks in parameters"""
     data, language_code = cf.manage_callback_query(update)
     if data == buttons.EXIT_PARAMETERS:
-        update.callback_query.edit_message_text(
+        cf.edit_message(
+            update=update,
             text=get_text('exit_parameters_text', language_code).text(),
         )
         return consts.MAIN_STATE
@@ -79,7 +81,8 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
 def __return_callback(update: Update, context: CallbackContext, language_code):
     """show main parameters page"""
     user_id = update.effective_user.id
-    update.callback_query.edit_message_text(
+    cf.edit_message(
+        update=update,
         text=get_text('main_parameters_text', language_code).text(database.get_user_parameters(user_id, language_code)),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
@@ -105,7 +108,8 @@ def __get_mailing_page(update: Update, language_code):
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
     """show mailing menu"""
     text, reply_markup = __get_mailing_page(update, language_code)
-    update.callback_query.edit_message_text(
+    cf.edit_message(
+        update=update,
         text=text,
         reply_markup=reply_markup,
     )

@@ -1,5 +1,5 @@
 from telegram.ext import CallbackContext, MessageHandler, CommandHandler
-from telegram import Update
+from telegram import Update, error
 
 import src.keyboard as keyboard
 import src.database as database
@@ -122,3 +122,14 @@ def send_message_to_all(context: CallbackContext, text, sender_id, language_code
         if chat_id == sender_id:
             continue
         send_message(context, text, chat_id=chat_id, language_code=language_code)
+
+
+def edit_message(update: Update, text, reply_markup=None):
+    """python-telegram-bot lib has strange error when text didn't so edit message, so here we are"""
+    try:
+        update.callback_query.edit_message_text(
+            text=text,
+            reply_markup=reply_markup,
+        )
+    except error.BadRequest:
+        pass
