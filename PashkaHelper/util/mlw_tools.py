@@ -1,3 +1,5 @@
+# this file is a mess, later i will fix it and make comments, maybe
+
 from typing import Dict, TextIO
 
 
@@ -51,7 +53,7 @@ class MLWText:
 
     def text(self, global_vars: Dict[str, str] = None) -> str:
         if global_vars:
-            self.add_global_vars(global_vars)
+            self.add_global_vars({key: str(value) for key, value in global_vars.items()})
 
         return self.__get_text(self.__parsed_seq)
 
@@ -195,7 +197,7 @@ class MLWParser(BaseParser):
         self._validate_tag('/body')
         self.__text_seq = body
 
-    def _parse_single_line_text(self, with_linebreaks: bool = True) -> list:
+    def _parse_single_line_text(self) -> list:
         retval = []
         text = []
         self._skip_redundant_symbols()
@@ -223,8 +225,6 @@ class MLWParser(BaseParser):
                 text = []
                 continue
             elif self._is_ch('\n'):
-                if with_linebreaks:
-                    text.append(self._take_char())
                 if text:
                     retval.append(''.join(text))
                 return retval
@@ -257,7 +257,7 @@ class MLWParser(BaseParser):
             retval.extend(self._parse_single_line_text())
             while self._is_ch('\n'):
                 retval.extend([self._take_char()])
-            self._skip_redundant_symbols()
+                self._skip_comments()
             if self._is_closing_tag():
                 break
         return retval
@@ -266,7 +266,7 @@ class MLWParser(BaseParser):
         text = []
         while not self._is_ch('['):
             if self._is_ch('\\'):
-                text.append(self._take_char())
+                self._take_char()
             text.append(self._take_char())
         self._validate_tag('/raw')
         return ''.join(text)
@@ -294,7 +294,7 @@ class MLWParser(BaseParser):
             if not self._is_ch(':'):
                 raise SyntaxError('Expected \':\' symbol after var name')
             self._next_char()
-            value = self._parse_single_line_text(with_linebreaks=False)
+            value = self._parse_single_line_text()
             cases[var] = value
             self._skip_redundant_symbols()
         return cases
@@ -328,9 +328,12 @@ class MLWParser(BaseParser):
 
     def _skip_redundant_symbols(self):
         self._skip_whitespaces()
+        self._skip_comments()
+        self._skip_whitespaces()
+
+    def _skip_comments(self):
         while self._is_ch('#'):
             self._next_line()
-        self._skip_whitespaces()
 
     def _is_closing_tag(self):
         retval = False
