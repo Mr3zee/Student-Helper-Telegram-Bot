@@ -1,14 +1,12 @@
 from telegram import Update
 from telegram.ext import CallbackContext, MessageHandler, Filters, CommandHandler
 
-from util.log import log_function
 from src.text import get_text
 from static import consts, buttons
 
 from src import keyboard, database, common_functions as cf, jobs
 
 
-@log_function
 def parameters(update: Update, context: CallbackContext):
     """start parameters conversation"""
     language_code = update.effective_user.language_code
@@ -21,7 +19,6 @@ def parameters(update: Update, context: CallbackContext):
     return consts.PARAMETERS_MAIN_STATE
 
 
-@log_function
 def __chg_parameters_page(update: Update, page_name, language_code, parameters_keyboard=None,
                           ret_lvl=consts.PARAMETERS_MAIN_STATE):
     """change parameters page for specified value"""
@@ -77,7 +74,6 @@ def __main_callback(update: Update, context: CallbackContext, data, language_cod
         raise ValueError(f'invalid callback for main parameters page: {data}')
 
 
-@log_function
 def __return_callback(update: Update, context: CallbackContext, language_code):
     """show main parameters page"""
     user_id = update.effective_user.id
@@ -104,7 +100,6 @@ def __get_mailing_page(update: Update, language_code):
     return text, reply_markup
 
 
-@log_function
 def __mailing_callback(update: Update, context: CallbackContext, language_code):
     """show mailing menu"""
     text, reply_markup = __get_mailing_page(update, language_code)
@@ -162,7 +157,6 @@ def __update_attendance(update: Update, context: CallbackContext, data, language
     return __return_callback(update, context, language_code)
 
 
-@log_function
 def set_new_name_parameters(update: Update, context: CallbackContext):
     """update name"""
     user_id = update.effective_user.id
@@ -242,7 +236,6 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
     return error_state
 
 
-@log_function
 def tzinfo_parameters(update: Update, context: CallbackContext):
     """set new tzinfo"""
     return __user_time_input_chg(
@@ -254,7 +247,6 @@ def tzinfo_parameters(update: Update, context: CallbackContext):
     )
 
 
-@log_function
 def time_message_parameters(update: Update, context: CallbackContext):
     """set new mailing time"""
     return __user_time_input_chg(
@@ -269,7 +261,6 @@ def time_message_parameters(update: Update, context: CallbackContext):
 def parameters_error(name):
     """template for error handlers in the parameters"""
 
-    @log_function
     def error(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         context.bot.send_message(

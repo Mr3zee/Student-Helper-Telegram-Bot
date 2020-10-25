@@ -5,15 +5,9 @@ import src.keyboard as keyboard
 import src.database as database
 from src.timetable import get_weekday_timetable
 from src import time_management as tm
-from util.log import log_function
 from src.text import get_text
 
 from static import consts
-
-import logging
-
-logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
-logger = logging.getLogger(__name__)
 
 
 def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, language_code,
@@ -73,7 +67,6 @@ def simple_handler(name, type, command=None, filters=None, reply_markup=None, re
     """
 
     # Make callback function
-    @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         chat_id = update.effective_chat.id

@@ -4,7 +4,6 @@ from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
 from util import util
-from util.log import log_function
 from src.text import get_text
 from src.timetable import get_subject_timetable
 import src.database as database
@@ -180,7 +179,6 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
 
 def subject_handler(subject: str) -> CommandHandler:
     """Returns subject handler"""
-    @log_function
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         user_id = update.effective_user.id
@@ -206,7 +204,6 @@ def subject_handler(subject: str) -> CommandHandler:
     return CommandHandler(command=SUBJECTS[subject].get_command(), callback=inner)
 
 
-@log_function
 def subject_callback(update: Update, context: CallbackContext, data: list, language_code):
     """
     Callback function for subject keyboard
