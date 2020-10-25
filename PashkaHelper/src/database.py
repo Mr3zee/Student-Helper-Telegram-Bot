@@ -2,11 +2,10 @@ import json
 
 from telegram.utils.helpers import decode_conversations_from_json, encode_conversations_to_json
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 import src.subject as subject
-from src.time_management import to_utc_converter
 from src.text import get_text
 from src.app import app
 
@@ -139,6 +138,14 @@ def get_all_admins_chat_ids():
     return [user.chat_id for user in db.session.query(Users).filter_by(admin=True).all()]
 
 
+def get_jobs_info() -> dict:
+    """load jobs from database"""
+    return {
+        user.user_id: [user.mailing_time, user.utcoffset, user.notification_status, user.chat_id]
+        for user in db.session.query(Users).filter_by(mailing_status='allowed').all()
+    }
+
+
 def get_all_users():
     """get all users' ids and nicks"""
     return [(user.user_id, user.user_nick) for user in db.session.query(Users).all()]
@@ -233,15 +240,6 @@ def set_user_attrs(attrs: dict, user_id: int = None, user_nick: str = None, chat
     db.session.commit()
 
 
-def get_user_mailing_time_with_offset(user_id):
-    """Get time to send mailing"""
-    mailing_time, utcoffset = get_user_attrs([consts.MAILING_TIME, consts.UTCOFFSET], user_id=user_id).values()
-    return to_utc_converter(
-        input_date=datetime.strptime(mailing_time, '%H:%M'),
-        utcoffset=timedelta(hours=utcoffset),
-    ).time()
-
-
 def valid_time(new_time: str):
     """validate mailing time"""
     try:
@@ -288,19 +286,4 @@ def update_conversations(conversations: dict):
     """save conversations to database"""
     db_conversations = get_persistence_row(name=consts.CONVERSATIONS)
     db_conversations.data = json.loads(encode_conversations_to_json(conversations))
-    db.session.commit()
-
-
-def load_jobs() -> dict:
-    """load jobs from database"""
-    jobs = get_persistence_row(name=consts.JOBS).data
-    if jobs is None:
-        return {}
-    return jobs
-
-
-def save_jobs(jobs: dict):
-    """Save jobs to database"""
-    db_jobs = get_persistence_row(name=consts.JOBS)
-    db_jobs.data = json.loads(json.dumps(jobs, default=str))
     db.session.commit()

@@ -67,6 +67,8 @@ def callback(update: Update, context: CallbackContext):
 @log_function
 def help(update: Update, context: CallbackContext):
     """help command callback"""
+    for job in context.job_queue.get_jobs_by_name(consts.MAILING_JOB):
+        print(job.name, job.enabled, job.removed, job.next_t)
     language_code = update.effective_user.language_code
     context.bot.send_message(
         chat_id=update.effective_chat.id,

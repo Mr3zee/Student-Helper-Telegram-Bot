@@ -112,9 +112,6 @@ add_handlers(dispatcher)
 # load saved jobs from database
 jobs.load_jobs(job_queue)
 
-# set job to update jobs
-job_queue.run_repeating(callback=jobs.save_jobs_job, interval=timedelta(minutes=1), name='util')
-
 # set up web page to receive updates from Telegram
 get_app_route(bot, dispatcher, db.update_user_info)
 
@@ -122,8 +119,6 @@ logger.info('Staring bot...')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)
-
-    jobs.save_jobs(job_queue)
 
 # TODO:
 #  CLIENT
@@ -136,13 +131,12 @@ if __name__ == '__main__':
 #  PE self timetable
 #  make everything pretty
 #  quotes support
+#  jobs
 #  SERVER
+#  add language_code to the Users db
 #  make enums
-#  many jobs still dont fixed
 #  mlw_tools normal errors
 #  fix buttons copypaste
-#  make 'all' a special name and others +
-#  make comments +
 #  make normal logging
 #  optimize database
 #  make chat_data persistent
@@ -151,3 +145,4 @@ if __name__ == '__main__':
 #  add mute column
 #  rename user_nik -> user_nick
 #  clear jobs
+#  delete 'jobs' data field in Persistence
