@@ -1,13 +1,11 @@
 import datetime
-import time
-
-import pytz
 
 from telegram.ext import CallbackContext, JobQueue, Job
 
 import src.common_functions as cf
 import src.database as db
 import src.handler as hdl
+import src.time_management as tm
 from static import consts
 
 
@@ -48,120 +46,83 @@ def mailing_job(context: CallbackContext):
 
 def find_job(context: CallbackContext, name, chat_id, user_id):
     """find user's job by name"""
-    jq = context.job_queue._queue
-    with jq.mutex:
-        job_tuples = jq.queue
-        old_job = None
-        for next_t, job in job_tuples:
-            if job.name == name and job.context[0] == chat_id and job.context[1] == user_id:
-                old_job = job
-                break
-        return old_job
+    jq: JobQueue = context.job_queue
+    job_tuples = jq.get_jobs_by_name(consts.MAILING_JOB)
+    old_job = None
+    for job in job_tuples:
+        print(job.name, job.enabled, job.removed, job.next_t)
+        if job.name == name and job.context[0] == chat_id and job.context[1] == user_id:
+            old_job = job
+            break
+    return old_job
+
+
+def add_mailing_job(jq: JobQueue, user_id, mailing_time, utcoffset, notification_status, chat_id, language_code):
+    """adds new mailing job to JobQueue"""
+    return
+    # todo fix
+    # get job time
+    job_time = tm.to_utc_converter(
+        input_date=datetime.datetime.strptime(mailing_time, '%H:%M'),
+        utcoffset=datetime.timedelta(hours=utcoffset),
+    ).time()
+    # add job
+    new_job = jq.run_daily(
+        callback=mailing_job,
+        time=job_time,
+        days=(0, 1, 2, 3, 4, 5),
+        context=[chat_id, user_id, language_code, notification_status],
+        name=consts.MAILING_JOB,
+    )
+    return new_job
 
 
 def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
     """set mailing job, remove previous if exists"""
-
+    return
+    # todo fix
     # check if there is such job
     old_job = find_job(context, user_id=user_id, chat_id=chat_id, name=consts.MAILING_JOB)
     # remove it if there is one
     if old_job is not None:
         rm_mailing_job(context, user_id, chat_id, old_job)
 
-    notification_status = db.get_user_attr('notification_status', user_id=user_id)
-    new_job = context.job_queue.run_daily(
-        callback=mailing_job,
-        time=db.get_user_mailing_time_with_offset(user_id),
-        days=(0, 1, 2, 3, 4, 5),
-        context=[chat_id, user_id, language_code, notification_status],
-        name=consts.MAILING_JOB,
+    mailing_time, utcoffset, notification_status = db.get_user_attrs(
+        attrs_names=[consts.MAILING_TIME, consts.UTCOFFSET, consts.NOTIFICATION_STATUS],
+        user_id=user_id,
+    ).values()
+
+    return add_mailing_job(
+        jq=context.job_queue,
+        user_id=user_id, chat_id=chat_id,
+        mailing_time=mailing_time, utcoffset=utcoffset,
+        notification_status=notification_status,
+        language_code=language_code,
     )
-    save_jobs_job(context)
-    return new_job
 
 
-def rm_mailing_job(context: CallbackContext, user_id, chat_id, old_job=None):
+def rm_mailing_job(context: CallbackContext, user_id, chat_id, old_job: Job = None):
     """remove mailing job if where was one"""
+    return
+    # todo fix
     if old_job is None:
         old_job = find_job(context, user_id=user_id, chat_id=chat_id, name=consts.MAILING_JOB)
     if old_job is not None:
         old_job.schedule_removal()
-        save_jobs_job(context)
 
 
 def load_jobs(jq: JobQueue):
     """load jobs from the database"""
-    dct = db.load_jobs()
+    return
+    # todo fix
+    dct = db.get_jobs_info()
 
-    # check if there are jobs in the database
-    if dct.get(consts.JOBS) is None:
-        return
-
-    # iterate over all jobs
-    for next_t, data, state in dct.get(consts.JOBS):
-        # restore job's callback function by __name__
-        data[consts.CALLBACK_JOB] = globals()[data[consts.CALLBACK_JOB]]
-
-        # restore interval for jobs
-        time_td = datetime.datetime.strptime(data[consts.INTERVAL_JOB], '%d day, %H:%M:%S')
-        data[consts.INTERVAL_JOB] = datetime.timedelta(
-            days=time_td.day,
-            hours=time_td.hour,
-            minutes=time_td.minute,
-            seconds=time_td.second,
+    for user_id, params in dct.items():
+        add_mailing_job(
+            jq=jq,
+            user_id=user_id, chat_id=params[3],
+            mailing_time=params[0],
+            utcoffset=params[1],
+            notification_status=params[2],
+            language_code='ru',
         )
-
-        # convert days list -> tuple
-        data[consts.DAYS_JOB] = tuple(data[consts.DAYS_JOB])
-
-        # convert tzinfo str -> timezone
-        data[consts.TZINFO_JOB] = pytz.timezone(data[consts.TZINFO_JOB])
-
-        # recreate JOb
-        job = Job(**data)
-
-        # Restore the state job had
-        for var, val in zip(consts.JOB_STATE, state):
-            attribute = getattr(job, var)
-            getattr(attribute, 'set' if val else 'clear')()
-
-        # set job_queue for job
-        job.job_queue = jq
-
-        # convert from absolute to relative time
-        next_t -= time.time()
-
-        # put job into job queue
-        jq._put(job, next_t)
-
-
-def save_jobs(jq: JobQueue):
-    """save all jobs to the database"""
-    with jq._queue.mutex:
-        job_tuples = jq._queue.queue
-
-        dct = {consts.JOBS: []}
-        for next_t, job in job_tuples:
-
-            # check if its job that saves jobs
-            if job.name == 'util':
-                continue
-
-            # get all job's attrs
-            data = {var: getattr(job, var) for var in consts.JOB_DATA}
-
-            # convert callback function into str to store
-            data[consts.CALLBACK_JOB] = data[consts.CALLBACK_JOB].__name__
-
-            # get job's states
-            state = [getattr(job, var).is_set() for var in consts.JOB_STATE]
-
-            # _removed attr
-            if not state[0]:
-                dct[consts.JOBS].append((next_t, data, state))
-        db.save_jobs(dct)
-
-
-def save_jobs_job(context):
-    """function for jobs auto update job"""
-    save_jobs(context.job_queue)
