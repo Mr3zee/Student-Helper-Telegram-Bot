@@ -1,6 +1,6 @@
 from typing import Dict
 
-from telegram import Update, error
+from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
 from util import util
@@ -9,6 +9,7 @@ from src.text import get_text
 from src.timetable import get_subject_timetable
 import src.database as database
 import src.keyboard as keyboard
+import src.common_functions as cf
 
 from static import consts
 
@@ -232,15 +233,13 @@ def subject_callback(update: Update, context: CallbackContext, data: list, langu
     # we need the try catch block here, because the python-telegram-bot lib throws a BadRequest error
     # when the page's content had not changed in the edit_message_text func
     # (also could be thrown when one button was double pressed very quickly)
-    try:
-        update.callback_query.edit_message_text(
-            text=text,
-            reply_markup=keyboard.subject_keyboard(
-                subject=subject,
-                attendance=attendance,
-                page=page,
-                language_code=language_code,
-            )
+    cf.edit_message(
+        update=update,
+        text=text,
+        reply_markup=keyboard.subject_keyboard(
+            subject=subject,
+            attendance=attendance,
+            page=page,
+            language_code=language_code,
         )
-    except error.BadRequest:
-        pass
+    )
