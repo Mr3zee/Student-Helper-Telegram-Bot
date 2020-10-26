@@ -17,7 +17,7 @@ def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, 
     """
 
     # get user parameters
-    attendance, utcoffset = database.get_user_attrs({consts.ATTENDANCE, consts.UTCOFFSET}, user_id=user_id).values()
+    attendance, utcoffset = database.get_user_attrs([consts.ATTENDANCE, consts.UTCOFFSET], user_id=user_id).values()
 
     if weekday == consts.TODAY:
         # get current day

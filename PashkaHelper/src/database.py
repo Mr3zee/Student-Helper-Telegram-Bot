@@ -198,7 +198,7 @@ def __get_user_info_row(user_id=None, user_nick=None, chat_id=None):
 def get_user_parameters(user_id, language_code):
     """returns all user's parameters"""
     retval = {}
-    values = get_user_attrs(PARAMETERS, user_id)
+    values = get_user_attrs(list(PARAMETERS), user_id)
     for attr_name, attr_value in values.items():
         # attrs without modifications
         if (attr_name == consts.USERNAME and attr_value) or (attr_name == consts.MAILING_TIME):
@@ -233,7 +233,7 @@ def get_user_subject_names(user_id):
     return retval
 
 
-def get_user_attrs(attrs_names: set, user_id: int = None, user_nick: str = None) -> dict:
+def get_user_attrs(attrs_names: list, user_id: int = None, user_nick: str = None) -> dict:
     """get all user attrs specified in attrs_names"""
     user = __get_user_info_row(user_id=user_id, user_nick=user_nick)
     user_parameters = __get_user_parameters_row(user_id=user.user_id)
@@ -248,7 +248,7 @@ def get_user_attrs(attrs_names: set, user_id: int = None, user_nick: str = None)
 
 def get_user_attr(attr_name: str, user_id: int = None, user_nick: str = None):
     """get user attr by attr_name"""
-    return get_user_attrs({attr_name}, user_id=user_id, user_nick=user_nick).get(attr_name)
+    return get_user_attrs([attr_name], user_id=user_id, user_nick=user_nick).get(attr_name)
 
 
 def gat_attr_column(column) -> list:

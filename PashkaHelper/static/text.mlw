@@ -482,6 +482,7 @@ offline: [m]
 &adv_zoom: [raw]https://itmo.zoom.us/j/86444295524?pwd=MVBndXJ5Q0xMZzVKaDVkTW5OT1pxZz09[/raw]
 &adv_youtube: [raw]https://www.youtube.com/c/nsychev/videos[/raw]
 &adv_tg: [raw]https://t.me/itmo2020os[/raw]
+&points_link: [raw]https://docs.google.com/spreadsheets/d/1S9ooWi-wcsm8zQi_TER6lt5Q08p8TQLqydhJVYLyS00/edit#gid=0[/raw]
 
 # Lite
 &lite_twitch: [raw]https://www.twitch.tv/mayatin[/raw]
@@ -495,7 +496,7 @@ offline: [m]
 [case ^subtype]
 adv: [m]
 <u>Advanced</u>
- Домашние <a href = '&adv_hw_link'>задания</a> все по ним же
+ Домашние <a href = '&adv_hw_link'>задания</a> | <a href = '&points_link'>баллы</a>
  Занимательный <a href = '&adv_zoom'>Zoom</a> по системкам
  Классный <a href = '&adv_youtube'>YouTube</a> по системкам
  <a href = '&adv_tg'>Чат</a> ИТМО 2020, ОС[/m]
