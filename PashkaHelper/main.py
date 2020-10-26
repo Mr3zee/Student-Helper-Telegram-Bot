@@ -129,7 +129,6 @@ if __name__ == '__main__':
 #  PE self timetable
 #  quotes support
 #  jobs
-#  mute/unmute all +
 #  SERVER
 #  add language_code to the Users db
 #  make enums
@@ -139,7 +138,4 @@ if __name__ == '__main__':
 #  nosql -> sql
 
 # TODO heroku:
-#  add mute column
-#  rename user_nik -> user_nick
-#  delete 'jobs' data field in Persistence
-#  reformat db: users -> users + user_parameters
+#  all done by now
