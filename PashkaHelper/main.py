@@ -129,17 +129,17 @@ if __name__ == '__main__':
 #  PE self timetable
 #  quotes support
 #  jobs
+#  mute/unmute all
 #  SERVER
 #  add language_code to the Users db
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
-#  make normal logging +
-#  optimize database
+#  optimize database +
 #  make chat_data persistent
 
 # TODO heroku:
 #  add mute column
 #  rename user_nik -> user_nick
-#  clear jobs
 #  delete 'jobs' data field in Persistence
+#  reformat db: users -> users + user_parameters

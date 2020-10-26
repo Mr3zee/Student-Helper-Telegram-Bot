@@ -89,7 +89,7 @@ def __get_mailing_page(update: Update, language_code):
     """get mailing page attrs"""
     user_id = update.effective_user.id
     attrs = database.get_user_attrs(
-        [consts.MAILING_STATUS, consts.NOTIFICATION_STATUS],
+        {consts.MAILING_STATUS, consts.NOTIFICATION_STATUS},
         user_id=user_id,
     )
     text = get_text('mailing_parameters_text', language_code).text(
