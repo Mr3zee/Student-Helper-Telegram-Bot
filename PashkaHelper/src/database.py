@@ -1,5 +1,6 @@
 import json
 
+from sqlalchemy import or_
 from telegram.utils.helpers import decode_conversations_from_json, encode_conversations_to_json
 
 from datetime import datetime
@@ -12,12 +13,8 @@ from src.app import app
 from static import config, consts
 
 # list of all columns
-COLUMNS = [
-    consts.USER_NICK,
-    consts.CHAT_ID,
+PARAMETERS = {
     consts.USERNAME,
-    consts.ADMIN,
-    consts.MUTED,
     consts.ATTENDANCE,
     consts.MAILING_STATUS,
     consts.NOTIFICATION_STATUS,
@@ -27,7 +24,14 @@ COLUMNS = [
     consts.SP,
     consts.HISTORY,
     consts.ENG,
-]
+}
+
+USER_INFO = {
+    consts.CHAT_ID,
+    consts.USER_NICK,
+    consts.ADMIN,
+    consts.MUTED,
+}
 
 # domains for attrs
 DOMAINS = {
@@ -57,12 +61,32 @@ db = SQLAlchemy(app)
 
 class Users(db.Model):
     """
-    Database to store all users and their parameters
+    Database to store users' main info
      - user_id: user's telegram id
      - user_nick: user's telegram nick/tag
      - chat_id: current chat's id for user
      - admin: if user is an admin
      - muted: if user is not allowed to send reports
+    """
+    __tablename__ = 'users'
+    user_id = db.Column(db.Integer, primary_key=True)
+    user_nick = db.Column(db.String(50), unique=True)
+    chat_id = db.Column(db.Integer, unique=True)
+    admin = db.Column(db.Boolean)
+    muted = db.Column(db.Boolean)
+
+    def __init__(self, user_id, user_nick, chat_id, admin=False, muted=False):
+        self.user_id = user_id
+        self.user_nick = user_nick
+        self.chat_id = chat_id
+        self.admin = admin
+        self.muted = muted
+
+
+class UserParameters(db.Model):
+    """
+    Database to store users' parameters
+     - user_id: user's telegram id
      - username: user's name for marking tasks in tables
      - attendance: user's attendance
      - mailing_status: if user wants to receive mailing
@@ -74,12 +98,8 @@ class Users(db.Model):
      - history: history subtype
      - eng: english subtype
     """
-    __tablename__ = 'users'
+    __tablename__ = 'user_parameters'
     user_id = db.Column(db.Integer, primary_key=True)
-    user_nick = db.Column(db.String(50), unique=True)
-    chat_id = db.Column(db.Integer, unique=True)
-    admin = db.Column(db.Boolean)
-    muted = db.Column(db.Boolean)
     username = db.Column(db.String(100))
     attendance = db.Column(db.String(20))
     mailing_status = db.Column(db.String(20))
@@ -91,15 +111,11 @@ class Users(db.Model):
     history = db.Column(db.String(20))
     eng = db.Column(db.String(20))
 
-    def __init__(self, user_id, user_nick, chat_id, admin=False, muted=False, username=consts.UNKNOWN,
+    def __init__(self, user_id, username=consts.UNKNOWN,
                  attendance=consts.ATTENDANCE_BOTH, mailing_status=consts.MAILING_ALLOWED,
                  notification_status=consts.NOTIFICATION_ENABLED, mailing_time='7:30', utcoffset=3,
                  os=consts.ALL, sp=consts.ALL, history=consts.ALL, eng=consts.ALL):
         self.user_id = user_id
-        self.user_nick = user_nick
-        self.chat_id = chat_id
-        self.admin = admin
-        self.muted = muted
         self.username = username
         self.attendance = attendance
         self.mailing_status = mailing_status
@@ -114,9 +130,11 @@ class Users(db.Model):
 
 def add_user(user_id, user_nick, chat_id) -> bool:
     """add new user to the database, returns True if user was added, else False"""
-    if db.session.query(Users).filter(Users.user_id == user_id).count() == 0:
+    if db.session.query(Users).filter(user_id == user_id).count() == 0:
         new_user = Users(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
+        new_parameters = UserParameters(user_id=user_id)
         db.session.add(new_user)
+        db.session.add(new_parameters)
         db.session.commit()
         return True
     return False
@@ -142,7 +160,7 @@ def get_jobs_info() -> dict:
     """load jobs from database"""
     return {
         user.user_id: [user.mailing_time, user.utcoffset, user.notification_status, user.chat_id]
-        for user in db.session.query(Users).filter_by(mailing_status='allowed').all()
+        for user in db.session.query(UserParameters).filter_by(mailing_status='allowed').all()
     }
 
 
@@ -151,28 +169,39 @@ def get_all_users():
     return [(user.user_id, user.user_nick) for user in db.session.query(Users).all()]
 
 
-def __get_user_row(user_id=None, user_nick=None, chat_id=None):
-    """get user's row in the database by one of the parameters"""
+def check_unique_fields(user_id=None, user_nick=None, chat_id=None):
     if user_id is None and user_nick is None and chat_id is None:
         raise ValueError('All fields cannot be None simultaneously')
-    if user_id is not None:
-        return db.session.query(Users).filter_by(user_id=user_id).first()
-    elif user_nick is not None:
-        return db.session.query(Users).filter_by(user_nick=user_nick).first()
-    return db.session.query(Users).filter_by(chat_id=chat_id).first()
+
+
+def __valid_attr(attr):
+    return attr in PARAMETERS or attr in USER_INFO
+
+
+def __get_user_parameters_row(user_id=None, user_nick=None, chat_id=None):
+    """get user's row in the database by one of the parameters"""
+    check_unique_fields(user_id, user_nick, chat_id)
+    if user_id is None:
+        user_id = db.session.query(Users).filter(
+            Users.chat_id == chat_id or Users.user_nick == user_nick
+        ).first().user_id
+    return db.session.query(UserParameters).filter_by(user_id=user_id).first()
+
+
+def __get_user_info_row(user_id=None, user_nick=None, chat_id=None):
+    check_unique_fields(user_id, user_nick, chat_id)
+    return db.session.query(Users).filter(
+        or_(Users.user_id == user_id, Users.user_nick == user_nick, Users.chat_id == chat_id)
+    ).first()
 
 
 def get_user_parameters(user_id, language_code):
     """returns all user's parameters"""
     retval = {}
-    values = get_user_attrs(COLUMNS, user_id)
+    values = get_user_attrs(PARAMETERS, user_id)
     for attr_name, attr_value in values.items():
-        # skip service parameters
-        if attr_name in {consts.CHAT_ID, consts.USER_NICK, consts.MUTED, consts.ADMIN}:
-            continue
         # attrs without modifications
-        elif (attr_name == consts.USERNAME and attr_value) \
-                or (attr_name == consts.MAILING_TIME):
+        if (attr_name == consts.USERNAME and attr_value) or (attr_name == consts.MAILING_TIME):
             retval[attr_name] = attr_value
             continue
         # add sign to utcoffset
@@ -193,49 +222,61 @@ def get_user_subject_names(user_id):
     get all user's subject
     returns set of subjects or subtypes if there are such
     """
-    user = __get_user_row(user_id)
+    user = __get_user_parameters_row(user_id)
     retval = set()
     for sub in subject.SUBJECTS:
         retval = retval.union(subject.SUBJECTS[sub].get_all_timetable_names(
             getattr(user, sub)
-            if sub in COLUMNS
+            if sub in PARAMETERS
             else sub
         ))
     return retval
 
 
-def get_user_attrs(attrs_names: list, user_id: int = None, user_nick: str = None):
+def get_user_attrs(attrs_names: set, user_id: int = None, user_nick: str = None) -> dict:
     """get all user attrs specified in attrs_names"""
-    user = __get_user_row(user_id=user_id, user_nick=user_nick)
+    user = __get_user_info_row(user_id=user_id, user_nick=user_nick)
+    user_parameters = __get_user_parameters_row(user_id=user.user_id)
     retval = {}
     for attr in attrs_names:
-        retval[attr] = (getattr(user, attr) if attr in COLUMNS else None)
+        if not __valid_attr(attr):
+            retval[attr] = None
+            continue
+        retval[attr] = getattr((user_parameters if attr in PARAMETERS else user), attr)
     return retval
 
 
 def get_user_attr(attr_name: str, user_id: int = None, user_nick: str = None):
     """get user attr by attr_name"""
-    return get_user_attrs([attr_name], user_id=user_id, user_nick=user_nick).get(attr_name)
+    return get_user_attrs({attr_name}, user_id=user_id, user_nick=user_nick).get(attr_name)
 
 
-def gat_attr_column(name):
-    """get attr value for all users"""
-    return [getattr(user, name) for user in db.session.query(Users).all()]
+def gat_attr_column(column) -> list:
+    """get attr value for all users in parameters db"""
+    if not __valid_attr(column):
+        return []
+    return [getattr(user, column) for user in db.session.query(
+        UserParameters if column in PARAMETERS else Users
+    ).all()]
 
 
 def set_user_attrs(attrs: dict, user_id: int = None, user_nick: str = None, chat_id: int = None):
     """set user attrs passed to attrs dict"""
-    user = __get_user_row(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
+    user = __get_user_info_row(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
+    user_parameters = __get_user_parameters_row(user_id=user.user_id)
     for attr_name, new_value in attrs.items():
-        if attr_name not in COLUMNS:
+        if not __valid_attr(attr_name):
             raise ValueError(f'Wrong attr name: {attr_name}')
+        if attr_name in USER_INFO:
+            setattr(user, attr_name, new_value)
+            continue
         if attr_name in DOMAINS:
             if new_value in DOMAINS[attr_name]:
-                setattr(user, attr_name, new_value)
+                setattr(user_parameters, attr_name, new_value)
             else:
                 raise ValueError(f'forbidden value for {attr_name} attr: {new_value}')
         else:
-            setattr(user, attr_name, new_value)
+            setattr(user_parameters, attr_name, new_value)
 
     db.session.commit()
 

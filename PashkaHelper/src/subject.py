@@ -156,7 +156,7 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
     if request is None:
         request = {}
     # default parameters
-    subtype, attendance = database.get_user_attrs([subject, consts.ATTENDANCE], user_id=user_id).values()
+    subtype, attendance = database.get_user_attrs({subject, consts.ATTENDANCE}, user_id=user_id).values()
 
     # substitutes with request parameters if exists
     attendance = util.if_none(request.get(consts.ATTENDANCE), attendance)
