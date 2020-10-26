@@ -271,13 +271,25 @@ def set_user_attrs(attrs: dict, user_id: int = None, user_nick: str = None, chat
             setattr(user, attr_name, new_value)
             continue
         if attr_name in DOMAINS:
-            if new_value in DOMAINS[attr_name]:
-                setattr(user_parameters, attr_name, new_value)
-            else:
+            if new_value not in DOMAINS[attr_name]:
                 raise ValueError(f'forbidden value for {attr_name} attr: {new_value}')
-        else:
-            setattr(user_parameters, attr_name, new_value)
+        setattr(user_parameters, attr_name, new_value)
 
+    db.session.commit()
+
+
+def set_attr_to_all(attr: str, new_value):
+    if attr in PARAMETERS:
+        users = db.session.query(UserParameters).all()
+    elif attr in USER_INFO:
+        users = db.session.query(Users).all()
+    else:
+        raise ValueError(f'Invalid attr: {attr}')
+    if attr in DOMAINS:
+        if new_value not in DOMAINS[attr]:
+            raise ValueError(f'Invalid domain value for attr {attr}: {new_value}')
+    for user in users:
+        setattr(user, attr, new_value)
     db.session.commit()
 
 

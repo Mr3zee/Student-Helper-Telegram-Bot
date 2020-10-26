@@ -116,7 +116,7 @@ get_app_route(bot, dispatcher, db.update_user_info)
 logger.info('Staring bot...')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+    app.run(host='127.0.0.1', port=PORT)
 
 # TODO:
 #  CLIENT
@@ -129,14 +129,14 @@ if __name__ == '__main__':
 #  PE self timetable
 #  quotes support
 #  jobs
-#  mute/unmute all
+#  mute/unmute all +
 #  SERVER
 #  add language_code to the Users db
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
-#  optimize database +
 #  make chat_data persistent
+#  nosql -> sql
 
 # TODO heroku:
 #  add mute column

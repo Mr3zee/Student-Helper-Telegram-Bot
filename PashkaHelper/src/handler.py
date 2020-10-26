@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from telegram import Update, error
+from telegram import Update
 from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filters, CallbackQueryHandler, \
     ConversationHandler
 from telegram.utils.helpers import mention_html
@@ -18,9 +18,9 @@ import src.subject as subject
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src import time_management as tm, timetable as tt
+from src.admin import admin, admin_notify
 
 import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -224,95 +224,6 @@ def error_callback(update: Update, context: CallbackContext):
             chat_id=dev_id,
             text=text.text(data),
         )
-
-
-def admin(update: Update, context: CallbackContext):
-    """
-    admin's control panel
-    current functions:
-    '/admin -ls' - list of all users
-    '/admin -n < --user [user_nick] | --all >' - send a notification to the specified user or to all users
-    '/admin -m [user_nick]' - mute reports from user
-    '/admin -um [user_nick]' - unmute reports from user
-    """
-    language_code = update.effective_user.language_code
-    args = context.args
-    ret_lvl = consts.MAIN_STATE
-    if not database.get_user_attr('admin', user_id=update.effective_user.id):
-        text = get_text('unauthorized_user_admin_text', language_code).text()
-    elif len(args) == 0:
-        text = get_text('no_args_admin_text', language_code).text()
-    elif args[0] == '-n':
-        if len(args) == 1:
-            text = get_text('no_args_notify_admin_text', language_code).text()
-        elif args[1] == '--all':
-            if len(args) > 2:
-                text = get_text('too_many_args_admin_text', language_code).text()
-            else:
-                text = get_text('all_users_notify_admin_text', language_code).text()
-                ret_lvl = consts.ADMIN_NOTIFY_STATE
-        elif args[1] == '--user':
-            if len(args) == 3:
-                user_nick = args[2]
-                if database.has_user(user_nick):
-                    context.chat_data['notify_username_admin'] = args[2]
-                    text = get_text('user_notify_admin_text', language_code).text()
-                    ret_lvl = consts.ADMIN_NOTIFY_STATE
-                else:
-                    text = get_text('invalid_username_admin_text', language_code).text()
-            elif len(args) < 3:
-                text = get_text('empty_user_id_notify_admin_text', language_code)
-            else:
-                text = get_text('too_many_args_admin_text', language_code).text()
-        else:
-            text = get_text('unavailable_flag_notify_admin_text', language_code).text()
-    elif args[0] == '-ls':
-        if len(args) > 1:
-            text = get_text('too_many_args_admin_text', language_code).text()
-        else:
-            users = database.get_all_users()
-            text = get_text('ls_admin_text', language_code).text(
-                {'users': '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users))}
-            )
-    elif args[0] == '-m' or args[0] == '-um':
-        if len(args) > 2:
-            text = get_text('too_many_args_admin_text', language_code).text()
-        elif len(args) < 2:
-            text = get_text('empty_user_id_admin_text', language_code).text()
-        else:
-            user_nick = args[1]
-            if not database.has_user(user_nick):
-                text = get_text('invalid_username_admin_text', language_code).text()
-            elif args[0] == '-m':
-                database.set_user_attrs(user_nick=user_nick, attrs={consts.MUTED: True})
-                text = get_text('mute_user_admin_text', language_code).text()
-            else:
-                database.set_user_attrs(user_nick=user_nick, attrs={consts.MUTED: False})
-                text = get_text('unmute_user_admin_text', language_code).text()
-    else:
-        text = get_text('unavailable_flag_admin_text', language_code).text()
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text,
-    )
-    return ret_lvl
-
-
-def admin_notify(update: Update, context: CallbackContext):
-    """sends provided text to specified users"""
-    language_code = update.effective_user.language_code
-    user_nick = context.chat_data.get('notify_username_admin')
-    context.chat_data.pop('notify_username_admin', None)
-    notification_text = update.message.text
-    if user_nick is not None:
-        cf.send_message(context, user_nick=user_nick, text=notification_text, language_code=language_code)
-    else:
-        cf.send_message_to_all(context, notification_text, update.effective_user.id, language_code)
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=get_text('notification_sent_notify_admin_text', language_code).text()
-    )
-    return consts.MAIN_STATE
 
 
 def doc(update: Update, context: CallbackContext):

@@ -87,8 +87,10 @@
     "unavailable_flag_notify_admin_text": "Неизвестный флаг для -n",
     "unavailable_flag_admin_text": "Неизвестный флаг",
     "notification_sent_notify_admin_text": "Уведомление успешно отправлено",
-    "mute_user_admin_text": "Пользователь замьючен",
-    "unmute_user_admin_text": "Пользователь размьючен",
+    "mute_user_admin_text": "Пользователь <b>muted</b>",
+    "mute_all_users_admin_text": "Все пользователи <b>muted</b>",
+    "unmute_user_admin_text": "Пользователь <b>unmuted</b>",
+    "unmute_all_users_admin_text": "Все пользователи <b>unmuted</b>",
 
     "report_text": "Выведи следующим сообщением отзыв. Он будет отправлен разработчикам\n\nМожешь нажать /cancel, чтобы отменить ввод",
     "report_sent_text": "Спасибо за отзыв!\n\nМы сделаем все возможное, чтобы исправить это безобразие",
