@@ -77,6 +77,10 @@ NOTIFICATION_STATUS = 'notification_status'
 NOTIFICATION_ENABLED = 'enabled'
 NOTIFICATION_DISABLED = 'disabled'
 
+# mute consts
+MUTE = 'mute'
+UNMUTE = 'unmute'
+
 # Jobs consts
 MAILING_JOB = 'mailing_job'
 CALLBACK_JOB = 'callback'

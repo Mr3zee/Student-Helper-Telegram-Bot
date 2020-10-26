@@ -891,7 +891,6 @@ admin: [case ^admin]
 True: [m] [raw]/admin \[command][/raw]
 <b>-ls</b> - Список всех пользователей
 <b>-n \&lt --user \[user_nick\] | --all \&gt</b> - Отправить уведомление указанному пользователю или всем сразу
-<b>-m \[user_nick\]</b> - замьютить пользователя
-<b>-um \[user_nick\]</b> - размьютить пользователя [/m]
+<b>\&lt -m |-um \&gt \&lt \[user_nick\] | --all \&gt</b> - mute/unmute reports from user [/m]
 False:[/case][/case][/body]
 [/doc_text]
