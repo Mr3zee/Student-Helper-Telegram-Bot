@@ -9,10 +9,13 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(name)s, %(asctime)s - %(levelname)s : %(message)s')
 
+EMPTY_WEEKDAY_TIMETABLE = {'online': [], 'offline': []}
+
 
 class Server:
     """
     Server class is responsible for talking with different API's and parsing their data
+
     APIs:
     Google Sheet API - for parsing tables with data such as timetables deadlines and more
     """
@@ -67,7 +70,7 @@ class Server:
             cls.__instance = Server()
         return cls.__instance
 
-    def get_weekday_timetable(self, weekday, valid_subject_names, attendance, week_parity) -> tuple:
+    def get_weekday_timetable(self, weekday, valid_subject_names, attendance, week_parity) -> dict:
         """returns weekday as dict {attendance: list of subjects}"""
 
         # get all values
@@ -88,7 +91,7 @@ class Server:
         values = self.__get_values_from_table()
         # get the filter for the subject
         subject_filter = Server.__subject_compare(subject_set=sub.SUBJECTS[subject].get_all_timetable_names(subtype))
-        # dict {weekday: timetable}
+        # dict {weekday: {online: tt, offline: tt}} - values maybe None
         retval = {}
         for weekday in Server.__tt__weekdays_map.keys():
             weekday_table = Server.__make_weekday_table(
@@ -96,41 +99,32 @@ class Server:
                 attendance=attendance, week_parity=consts.WEEK_BOTH,
                 subject_filter=subject_filter,
             )
-            if weekday_table != ([], []):
+            if weekday_table != EMPTY_WEEKDAY_TIMETABLE:
                 retval[weekday] = weekday_table
         return retval
 
     @staticmethod
-    def __make_weekday_table(values, weekday, attendance, subject_filter, week_parity=consts.WEEK_BOTH) -> tuple:
-        """
-        returns tuple of timetables
-        ((online, None) or (offline, None)) xor (online, offline)
-        """
+    def __make_weekday_table(values, weekday, attendance, subject_filter, week_parity=consts.WEEK_BOTH) -> dict:
+        """returns dict {'online': tt1, 'offline': tt1}"""
 
         # get weekday frame
         start_row, end_row = Server.__find_weekday_frame(values, weekday)
-        if attendance == consts.ATTENDANCE_BOTH:
-            online_dict = Server.__parse_and_make(
-                values=values,
-                start_row=start_row, end_row=end_row,
-                attendance=consts.ATTENDANCE_ONLINE, week_parity=week_parity,
-                subject_filter=subject_filter,
-            )
-            offline_dict = Server.__parse_and_make(
-                values=values,
-                start_row=start_row, end_row=end_row,
-                attendance=consts.ATTENDANCE_OFFLINE, week_parity=week_parity,
-                subject_filter=subject_filter,
-            )
-            return online_dict, offline_dict
-        else:
-            ret_dict = Server.__parse_and_make(
-                values=values,
-                start_row=start_row, end_row=end_row,
-                attendance=attendance, week_parity=week_parity,
-                subject_filter=subject_filter,
-            )
-            return ret_dict, []
+
+        # make dicts according to attendance
+        online_dict = (Server.__parse_and_make(
+            values=values,
+            start_row=start_row, end_row=end_row,
+            attendance=consts.ATTENDANCE_ONLINE, week_parity=week_parity,
+            subject_filter=subject_filter,
+        ) if attendance != consts.ATTENDANCE_OFFLINE else [])
+        offline_dict = (Server.__parse_and_make(
+            values=values,
+            start_row=start_row, end_row=end_row,
+            attendance=consts.ATTENDANCE_OFFLINE, week_parity=week_parity,
+            subject_filter=subject_filter,
+        ) if attendance != consts.ATTENDANCE_ONLINE else [])
+
+        return {'online': online_dict, 'offline': offline_dict}
 
     def __get_values_from_table(self):
         """gets timetable from google sheets"""
