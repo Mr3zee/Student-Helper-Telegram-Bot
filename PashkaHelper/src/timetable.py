@@ -17,7 +17,7 @@ def get_subject_timetable(subject, subtype, attendance, language_code):
         return get_text('no_subject_timetable_header_text', language_code=language_code).text()
 
     template = get_text('subject_timetable_header_text', language_code=language_code).text()
-
+    weekday_list = []
     # timetable is dict of weekday: ([online, None] or [offline, None]) xor [online, offline]
     for weekday, (sub1, sub2) in timetable.items():
         # get header
@@ -30,9 +30,9 @@ def get_subject_timetable(subject, subtype, attendance, language_code):
             consts.TIMETABLE: subject_timetable,
             consts.WEEKDAY: weekday_name,
         })
-        template += day_template
+        weekday_list.append(day_template)
 
-    return template
+    return template + '\n'.join(weekday_list)
 
 
 def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, language_code) -> str:

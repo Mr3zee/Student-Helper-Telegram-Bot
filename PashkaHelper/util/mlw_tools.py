@@ -1,6 +1,7 @@
 # this file is a mess, later i will fix it and make comments, maybe
 
 from typing import Dict, TextIO
+from static import consts
 
 
 class MLWText:
@@ -14,13 +15,21 @@ class MLWText:
 
     def __get_text(self, seq: list) -> str:
         new_seq = []
+        prev = None
         for part in seq:
+            if part == '\n' and prev == '\0':
+                prev = None
+                continue
             if len(part) and (part[0] == '&' or part[0] == '^'):
-                new_seq.append(self.__substitute_vars(part))
+                element = self.__substitute_vars(part)
             elif part.startswith('_case'):
-                new_seq.append(self.__substitute_case(part))
+                element = self.__substitute_case(part)
             else:
-                new_seq.append(part)
+                element = part
+            if not element:
+                prev = '\0'
+            else:
+                new_seq.append(element)
         return ''.join(new_seq)
 
     def __substitute_vars(self, var_name: str) -> str:
@@ -40,7 +49,7 @@ class MLWText:
         case_var, states = self.__cases[case_name]
         if case_var[0] == '&' or case_var[0] == '^':
             case_var = self.__substitute_vars(case_var)
-        if case_var == 'all' and 'all' not in states.keys():
+        if case_var == consts.ALL and consts.ALL not in states.keys():
             all_values = list(states.values())
             substitution = [f'{self.__get_text(value)}\n\n' for value in all_values[:-1]]
             substitution.append(self.__get_text(all_values[-1]))
