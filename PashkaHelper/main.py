@@ -129,6 +129,7 @@ if __name__ == '__main__':
 #  PE self timetable
 #  quotes support
 #  jobs
+#  other groups
 #  SERVER
 #  add language_code to the Users db
 #  make enums

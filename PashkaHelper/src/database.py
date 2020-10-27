@@ -130,7 +130,7 @@ class UserParameters(db.Model):
 
 def add_user(user_id, user_nick, chat_id) -> bool:
     """add new user to the database, returns True if user was added, else False"""
-    if db.session.query(Users).filter(user_id == user_id).count() == 0:
+    if db.session.query(Users).filter(Users.user_id == user_id).count() == 0:
         new_user = Users(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
         new_parameters = UserParameters(user_id=user_id)
         db.session.add(new_user)
