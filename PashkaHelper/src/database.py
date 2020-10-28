@@ -46,13 +46,8 @@ for key, value in subject.SUBJECTS.items():
         DOMAINS[key] = domains
         DOMAINS[key].add(consts.ALL)
 
-# configuring database's uri
-if config.ENV == consts.DEV:
-    app.config['SQLALCHEMY_DATABASE_URI'] = config.local_db_uri
-elif config.ENV == consts.PROD:
-    app.config['SQLALCHEMY_DATABASE_URI'] = config.production_db_url
-else:
-    raise ValueError('app running mode does not specified')
+# configuring database's url
+app.config['SQLALCHEMY_DATABASE_URI'] = config.DATABASE_URL
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

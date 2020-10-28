@@ -1,7 +1,7 @@
 import pygsheets
 
 from static import consts
-from static.config import timetable_url, service_file_path
+from static.config import TIMETABLE_URL, service_file_path
 import src.subject as sub
 
 import logging
@@ -59,7 +59,7 @@ class Server:
         logger.info('Starting Server...')
         if not Server.__instance:
             self.__gc = pygsheets.authorize(service_file=service_file_path)
-            self.__sh_timetable = self.__gc.open_by_url(timetable_url)
+            self.__sh_timetable = self.__gc.open_by_url(TIMETABLE_URL)
             self.__wks = self.__sh_timetable.sheet1
 
         logger.info('Server started successfully')

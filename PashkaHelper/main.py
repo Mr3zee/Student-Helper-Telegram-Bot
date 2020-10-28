@@ -137,7 +137,6 @@ if __name__ == '__main__':
 #  fix buttons copypaste
 #  make chat_data persistent
 #  nosql -> sql
-#  links.json +
 
 # TODO heroku:
 #  all done by now
