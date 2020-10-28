@@ -297,6 +297,20 @@ def help_keyboard(page_type, language_code):
     keyboard = [
         [
             make_button(button, language_code)
-        ]
+        ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def cancel_operation(data: str):
+    def inner(language_code):
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    text=get_text(buttons.CANCEL, language_code).text(),
+                    callback_data=buttons.CANCEL_CALLBACK % {'data': data},
+                )
+            ],
+        ]
+        return InlineKeyboardMarkup(inline_keyboard=keyboard)
+    return inner

@@ -49,7 +49,7 @@ def start(update: Update, context: CallbackContext):
     return consts.MAIN_STATE
 
 
-def callback(update: Update, context: CallbackContext):
+def main_callback(update: Update, context: CallbackContext):
     """
     Handles and parses main callbacks
     callback should be in format name_arg1_arg2_..._argn_button
@@ -64,6 +64,24 @@ def callback(update: Update, context: CallbackContext):
         return help_callback(update, context, parsed_data, language_code)
     else:
         return unknown_callback(update, context)
+
+
+def cancel_callback(update: Update, context: CallbackContext):
+    """manage cancel button"""
+    data, language_code = cf.manage_callback_query(update)
+    parsed_data = data.split('_')
+    if parsed_data[0] == consts.CANCEL:
+        update.callback_query.edit_message_text(
+            text=get_text('cancel_main_text', update.effective_user.language_code).text(),
+        )
+        return consts.MAIN_STATE
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=get_text('wrong_callback_text', language_code).text(),
+    )
+
+
+cancel_callback_hdl = CallbackQueryHandler(callback=cancel_callback, pass_user_data=True)
 
 
 def help(update: Update, context: CallbackContext):
@@ -259,12 +277,15 @@ def report(update: Update, context: CallbackContext):
     if database.get_user_attr(consts.MUTED, update.effective_user.id):
         text = get_text('cannot_send_report_text', language_code).text()
         ret_lvl = consts.MAIN_STATE
+        reply_markup = None
     else:
         text = get_text('report_text', language_code).text()
         ret_lvl = consts.REPORT_MESSAGE_STATE
+        reply_markup = keyboard.cancel_operation(consts.REPORT_STATE)(language_code)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text,
+        reply_markup=reply_markup,
     )
     return ret_lvl
 
@@ -293,9 +314,6 @@ def report_sent(update: Update, context: CallbackContext):
     return consts.MAIN_STATE
 
 
-# handler for /cancel commands in main space
-cancel_main = cf.simple_handler(name='cancel_main', type=consts.COMMAND, command='cancel', ret_state=consts.MAIN_STATE)
-
 # list of all handlers for MAIN_STATE
 main_hdl = []
 
@@ -315,7 +333,7 @@ main_hdl.extend([
     CommandHandler(command='doc', callback=doc),
     CommandHandler(command='report', callback=report),
 
-    CallbackQueryHandler(callback=callback),
+    CallbackQueryHandler(callback=main_callback),
 
     cf.simple_handler('echo_command', consts.MESSAGE, filters=Filters.command),
     cf.simple_handler('echo_message', consts.MESSAGE, filters=Filters.all),
@@ -333,32 +351,37 @@ handlers['main'] = ConversationHandler(
             CommandHandler(command='parameters', callback=ptrs.parameters),
             CallbackQueryHandler(callback=ptrs.parameters_callback, pass_chat_data=True, pass_job_queue=True),
             ptrs.exit_parameters,
-            ptrs.cancel_parameters,
             ptrs.parameters_error('main'),
         ],
         consts.PARAMETERS_NAME_STATE: [
             ptrs.exit_parameters,
-            ptrs.cancel_parameters,
+            ptrs.cancel_parameters_callback_hdl,
             MessageHandler(filters=Filters.all, callback=ptrs.set_new_name_parameters),
         ],
         consts.PARAMETERS_TIME_STATE: [
             ptrs.exit_parameters,
-            ptrs.cancel_parameters,
-            MessageHandler(filters=Filters.all, callback=ptrs.time_message_parameters, pass_chat_data=True,
-                           pass_job_queue=True),
+            ptrs.cancel_parameters_callback_hdl,
+            MessageHandler(
+                filters=Filters.all,
+                callback=ptrs.time_message_parameters,
+                pass_chat_data=True, pass_job_queue=True,
+            ),
         ],
         consts.PARAMETERS_TZINFO_STATE: [
             ptrs.exit_parameters,
-            ptrs.cancel_parameters,
-            MessageHandler(filters=Filters.all, callback=ptrs.tzinfo_parameters, pass_chat_data=True,
-                           pass_job_queue=True),
+            ptrs.cancel_parameters_callback_hdl,
+            MessageHandler(
+                filters=Filters.all,
+                callback=ptrs.tzinfo_parameters,
+                pass_chat_data=True, pass_job_queue=True,
+            ),
         ],
         consts.REPORT_MESSAGE_STATE: [
-            cancel_main,
+            cancel_callback_hdl,
             MessageHandler(filters=Filters.all, callback=report_sent),
         ],
         consts.ADMIN_NOTIFY_STATE: [
-            cancel_main,
+            cancel_callback_hdl,
             MessageHandler(filters=Filters.all, callback=admin_notify),
         ],
     },

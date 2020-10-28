@@ -129,7 +129,7 @@ if __name__ == '__main__':
 #  PE self timetable
 #  quotes support
 #  other groups
-#  add cancel button instead of /cancel
+#  add cancel button instead of /cancel +
 #  SERVER
 #  make enums
 #  mlw_tools normal errors

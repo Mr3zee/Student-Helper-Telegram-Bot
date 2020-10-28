@@ -103,3 +103,7 @@ SUBJECT = 'subject_%(subject)s_%(attendance)s_%(page)s_button'
 # HELP change page
 HELP_MAIN = 'help_main_button'
 HELP_ADDITIONAL = 'help_additional_button'
+
+# other
+CANCEL = 'cancel_button'
+CANCEL_CALLBACK = 'cancel_%(data)s_button'
