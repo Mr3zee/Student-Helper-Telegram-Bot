@@ -37,7 +37,7 @@ def start(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
 
-    new_user = database.add_user(user_id, update.effective_user.username, chat_id)
+    new_user = database.add_user(user_id, update.effective_user.username, chat_id, language_code)
 
     if new_user:
         jobs.reset_mailing_job(context, user_id, chat_id, language_code)
