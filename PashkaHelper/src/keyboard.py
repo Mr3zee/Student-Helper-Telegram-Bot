@@ -87,15 +87,15 @@ def mailing_keyboard(mailing_status, notification_status, language_code):
         [
             # buttons names and callback according to current states
             make_button(
-                (buttons.ALLOW_MESSAGE
+                (buttons.ALLOW_MAILING
                  if mailing_status == consts.MAILING_FORBIDDEN
-                 else buttons.FORBID_MESSAGE),
+                 else buttons.FORBID_MAILING),
                 language_code,
             ),
             make_button(
-                (buttons.DISABLE_NOTIFICATION_MESSAGE
+                (buttons.DISABLE_MAILING_NOTIFICATIONS
                  if notification_status == consts.NOTIFICATION_ENABLED
-                 else buttons.ENABLE_NOTIFICATION_MESSAGE),
+                 else buttons.ENABLE_MAILING_NOTIFICATIONS),
                 language_code,
             ),
         ],

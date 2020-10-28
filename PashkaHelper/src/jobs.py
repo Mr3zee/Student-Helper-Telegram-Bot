@@ -44,85 +44,55 @@ def mailing_job(context: CallbackContext):
     )
 
 
-def find_job(context: CallbackContext, name, chat_id, user_id):
-    """find user's job by name"""
-    jq: JobQueue = context.job_queue
-    job_tuples = jq.get_jobs_by_name(consts.MAILING_JOB)
-    old_job = None
-    for job in job_tuples:
-        print(job.name, job.enabled, job.removed, job.next_t)
-        if job.name == name and job.context[0] == chat_id and job.context[1] == user_id:
-            old_job = job
-            break
-    return old_job
+def get_job_attrs(user_id):
+    """get job_time and notification status for user"""
+    mailing_time, utcoffset, notification_status = db.get_user_attrs(
+        attrs_names=[consts.MAILING_TIME, consts.UTCOFFSET, consts.NOTIFICATION_STATUS],
+        user_id=user_id,
+    ).values()
 
-
-def add_mailing_job(jq: JobQueue, user_id, mailing_time, utcoffset, notification_status, chat_id, language_code):
-    """adds new mailing job to JobQueue"""
-    return
-    # todo fix
-    # get job time
     job_time = tm.to_utc_converter(
         input_date=datetime.datetime.strptime(mailing_time, '%H:%M'),
         utcoffset=datetime.timedelta(hours=utcoffset),
     ).time()
-    # add job
-    new_job = jq.run_daily(
+
+    return job_time, notification_status
+
+
+def set_mailing_job(job_queue: JobQueue, user_id, chat_id, language_code):
+    """set new mailing job"""
+
+    job_time, notification_status = get_job_attrs(user_id)
+
+    job_queue.run_daily(
         callback=mailing_job,
         time=job_time,
         days=(0, 1, 2, 3, 4, 5),
         context=[chat_id, user_id, language_code, notification_status],
         name=consts.MAILING_JOB,
     )
-    return new_job
 
 
-def set_mailing_job(context: CallbackContext, chat_id, user_id, language_code):
-    """set mailing job, remove previous if exists"""
-    return
-    # todo fix
-    # check if there is such job
-    old_job = find_job(context, user_id=user_id, chat_id=chat_id, name=consts.MAILING_JOB)
-    # remove it if there is one
-    if old_job is not None:
-        rm_mailing_job(context, user_id, chat_id, old_job)
-
-    mailing_time, utcoffset, notification_status = db.get_user_attrs(
-        attrs_names=[consts.MAILING_TIME, consts.UTCOFFSET, consts.NOTIFICATION_STATUS],
-        user_id=user_id,
-    ).values()
-
-    return add_mailing_job(
-        jq=context.job_queue,
-        user_id=user_id, chat_id=chat_id,
-        mailing_time=mailing_time, utcoffset=utcoffset,
-        notification_status=notification_status,
-        language_code=language_code,
-    )
+def rm_mailing_jobs(job_queue: JobQueue, user_id, chat_id):
+    """remove all mailing jobs if where were such"""
+    for job in job_queue.get_jobs_by_name(name=consts.MAILING_JOB):  # type: Job
+        if job.context[0] == chat_id and job.context[1] == user_id:
+            job.schedule_removal()
 
 
-def rm_mailing_job(context: CallbackContext, user_id, chat_id, old_job: Job = None):
-    """remove mailing job if where was one"""
-    return
-    # todo fix
-    if old_job is None:
-        old_job = find_job(context, user_id=user_id, chat_id=chat_id, name=consts.MAILING_JOB)
-    if old_job is not None:
-        old_job.schedule_removal()
+def reset_mailing_job(context: CallbackContext, user_id, chat_id, language_code):
+    """delete all deprecated jobs, set new if needed"""
+    jq = context.job_queue
+    rm_mailing_jobs(jq, user_id, chat_id)
+    if db.get_user_attr('mailing_status', user_id=user_id) == consts.MAILING_ALLOWED:
+        set_mailing_job(jq, user_id, chat_id, language_code)
 
 
 def load_jobs(jq: JobQueue):
     """load jobs from the database"""
-    return
-    # todo fix
-    dct = db.get_jobs_info()
-
-    for user_id, params in dct.items():
-        add_mailing_job(
-            jq=jq,
-            user_id=user_id, chat_id=params[3],
-            mailing_time=params[0],
-            utcoffset=params[1],
-            notification_status=params[2],
-            language_code='ru',
-        )
+    users = db.get_all_users()
+    for user in users:
+        user_id = user[0]
+        chat_id = user[2]
+        language_code = user[3]
+        set_mailing_job(jq, user_id, chat_id, language_code)

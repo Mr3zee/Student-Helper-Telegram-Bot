@@ -40,7 +40,7 @@ def start(update: Update, context: CallbackContext):
     new_user = database.add_user(user_id, update.effective_user.username, chat_id)
 
     if new_user:
-        jobs.set_mailing_job(user_id=user_id, chat_id=chat_id, context=context, language_code=language_code)
+        jobs.reset_mailing_job(context, user_id, chat_id, language_code)
 
     context.bot.send_message(
         chat_id=chat_id,

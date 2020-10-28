@@ -32,6 +32,7 @@ def get_app_route(bot: Bot, dispatcher: Dispatcher, user_updater):
                 user_id=update.effective_user.id,
                 user_nick=update.effective_user.username,
                 chat_id=update.effective_chat.id,
+                language_code=update.effective_user.language_code,
             )
             dispatcher.process_update(update)
         return {'ok': True}

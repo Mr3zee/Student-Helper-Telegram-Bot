@@ -24,10 +24,10 @@ CHAT_ID = 'chat_id'
 ADMIN = 'admin'
 MUTED = 'muted'
 UTCOFFSET = 'utcoffset'
+LC = 'lc'
 
 # Persistence attributes
 CONVERSATIONS = 'conversations'
-JOBS = 'jobs'
 
 # timetable consts
 WEEKDAY = 'weekday'
@@ -81,19 +81,8 @@ NOTIFICATION_DISABLED = 'disabled'
 MUTE = 'mute'
 UNMUTE = 'unmute'
 
-# Jobs consts
+# jobs
 MAILING_JOB = 'mailing_job'
-CALLBACK_JOB = 'callback'
-INTERVAL_JOB = 'interval'
-REPEAT_JOB = 'repeat'
-CONTEXT_JOB = 'context'
-DAYS_JOB = 'days'
-NAME_JOB = 'name'
-TZINFO_JOB = 'tzinfo'
-
-JOB_DATA = [CALLBACK_JOB, INTERVAL_JOB, REPEAT_JOB, CONTEXT_JOB, DAYS_JOB, NAME_JOB, TZINFO_JOB]
-JOB_STATE = ['_remove', '_enabled']
-
 
 # other
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report', 'admin'}

@@ -171,38 +171,36 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
-    if data == buttons.ALLOW_MESSAGE or data == buttons.FORBID_MESSAGE:
-        # process mailing status change: set/rm job and update database
-        if data == buttons.ALLOW_MESSAGE:
-            jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
-            new_status = consts.MAILING_ALLOWED
-        else:
-            jobs.rm_mailing_job(context, user_id=user_id, chat_id=chat_id)
-            new_status = consts.MAILING_FORBIDDEN
-        database.set_user_attrs(user_id=user_id, attrs={consts.MAILING_STATUS: new_status})
-
-        # update mailing page
-        return __mailing_callback(update, context, language_code)
-    elif data == buttons.ENABLE_NOTIFICATION_MESSAGE or data == buttons.DISABLE_NOTIFICATION_MESSAGE:
-        # process notification status change: reset job and update database
-        new_status = (
-            consts.NOTIFICATION_ENABLED
-            if data == buttons.ENABLE_NOTIFICATION_MESSAGE
-            else consts.NOTIFICATION_DISABLED
-        )
-        database.set_user_attrs(user_id=user_id, attrs={consts.NOTIFICATION_STATUS: new_status})
-        jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
-
-        # update mailing page
-        return __mailing_callback(update, context, language_code)
-    elif data == buttons.TZINFO:
-        # request user input
+    # request user input
+    if data == buttons.TZINFO:
         return __chg_parameters_page(update, consts.ENTER_TZINFO, language_code=language_code,
                                      ret_lvl=consts.PARAMETERS_TZINFO_STATE)
     elif data == buttons.MESSAGE_TIME:
-        # request user input
         return __chg_parameters_page(update, consts.ENTER_TIME, language_code=language_code,
                                      ret_lvl=consts.PARAMETERS_TIME_STATE)
+
+    #
+    if data in {buttons.ALLOW_MAILING, buttons.FORBID_MAILING}:
+        attr = consts.MAILING_STATUS
+        new_status = (
+            consts.MAILING_ALLOWED
+            if data == buttons.ALLOW_MAILING
+            else consts.MAILING_FORBIDDEN
+        )
+    elif data in {buttons.DISABLE_MAILING_NOTIFICATIONS, buttons.ENABLE_MAILING_NOTIFICATIONS}:
+        attr = consts.NOTIFICATION_STATUS
+        new_status = (
+            consts.NOTIFICATION_ENABLED
+            if data == buttons.ENABLE_MAILING_NOTIFICATIONS
+            else consts.NOTIFICATION_DISABLED
+        )
+    else:
+        raise ValueError(f'Invalid data in mailing set: {data}')
+    database.set_user_attrs(user_id=user_id, attrs={attr: new_status})
+    jobs.reset_mailing_job(context, user_id, chat_id, language_code)
+
+    # update mailing page
+    return __mailing_callback(update, context, language_code)
 
 
 def __user_time_input_chg(update: Update, context: CallbackContext, validation, attr_name, error_state):
@@ -219,7 +217,7 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
         database.set_user_attrs(user_id=user_id, attrs={attr_name: new_info})
 
         # reset mailing job
-        jobs.set_mailing_job(context, update.effective_chat.id, user_id, language_code)
+        jobs.reset_mailing_job(context, user_id, chat_id, language_code)
 
         # get and send mailing page
         text, reply_markup = __get_mailing_page(update, language_code)

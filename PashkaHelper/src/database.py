@@ -31,6 +31,7 @@ USER_INFO = {
     consts.USER_NICK,
     consts.ADMIN,
     consts.MUTED,
+    consts.LC,
 }
 
 # domains for attrs
@@ -67,13 +68,15 @@ class Users(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     user_nick = db.Column(db.String(50), unique=True)
     chat_id = db.Column(db.Integer, unique=True)
+    lc = db.Column(db.String(5))
     admin = db.Column(db.Boolean)
     muted = db.Column(db.Boolean)
 
-    def __init__(self, user_id, user_nick, chat_id, admin=False, muted=False):
+    def __init__(self, user_id, user_nick, chat_id, language_code, admin=False, muted=False):
         self.user_id = user_id
         self.user_nick = user_nick
         self.chat_id = chat_id
+        self.lc = language_code
         self.admin = admin
         self.muted = muted
 
@@ -123,10 +126,15 @@ class UserParameters(db.Model):
         self.eng = eng
 
 
-def add_user(user_id, user_nick, chat_id) -> bool:
+def add_user(user_id, user_nick, chat_id, language_code) -> bool:
     """add new user to the database, returns True if user was added, else False"""
     if db.session.query(Users).filter(Users.user_id == user_id).count() == 0:
-        new_user = Users(user_id=user_id, user_nick=user_nick, chat_id=chat_id)
+        new_user = Users(
+            user_id=user_id,
+            user_nick=user_nick,
+            chat_id=chat_id,
+            language_code=language_code,
+        )
         new_parameters = UserParameters(user_id=user_id)
         db.session.add(new_user)
         db.session.add(new_parameters)
@@ -135,10 +143,14 @@ def add_user(user_id, user_nick, chat_id) -> bool:
     return False
 
 
-def update_user_info(user_id, user_nick, chat_id):
+def update_user_info(user_id, user_nick, chat_id, language_code):
     """updates user's info by id"""
     if db.session.query(Users).filter_by(user_id=user_id).count() != 0:
-        set_user_attrs(user_id=user_id, attrs={consts.USER_NICK: user_nick, consts.CHAT_ID: chat_id})
+        set_user_attrs(user_id=user_id, attrs={
+            consts.USER_NICK: user_nick,
+            consts.CHAT_ID: chat_id,
+            consts.LC: language_code,
+        })
 
 
 def has_user(user_nick):
@@ -161,7 +173,7 @@ def get_jobs_info() -> dict:
 
 def get_all_users():
     """get all users' ids and nicks"""
-    return [(user.user_id, user.user_nick) for user in db.session.query(Users).all()]
+    return [(user.user_id, user.user_nick, user.chat_id, user.lc) for user in db.session.query(Users).all()]
 
 
 def check_unique_fields(user_id=None, user_nick=None, chat_id=None):
@@ -334,4 +346,19 @@ def update_conversations(conversations: dict):
     """save conversations to database"""
     db_conversations = get_persistence_row(name=consts.CONVERSATIONS)
     db_conversations.data = json.loads(encode_conversations_to_json(conversations))
+    db.session.commit()
+
+
+def load_jobs() -> list:
+    """load jobs from database"""
+    jobs = get_persistence_row(name=consts.JOBS).data
+    if jobs is None:
+        return []
+    return jobs
+
+
+def save_jobs(jobs: list):
+    """Save jobs to database"""
+    db_jobs = get_persistence_row(name=consts.JOBS)
+    db_jobs.data = json.loads(json.dumps(jobs, default=str))
     db.session.commit()

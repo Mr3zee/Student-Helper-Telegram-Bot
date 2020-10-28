@@ -128,10 +128,10 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  quotes support
-#  jobs
+#  jobs +
 #  other groups
 #  SERVER
-#  add language_code to the Users db
+#  add language_code to the Users db +
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
