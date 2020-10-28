@@ -36,3 +36,10 @@ def to_not_week_parity(week_parity):
 def if_none(val, default):
     """returns val if val is not None else default"""
     return val if val is not None else default
+
+
+def get_value(dct: dict, *keys):
+    """access dict with given keys"""
+    for key in keys:
+        dct = dct.get(key, {})
+    return dct

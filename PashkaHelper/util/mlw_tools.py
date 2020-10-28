@@ -1,17 +1,20 @@
-# this file is a mess, later i will fix it and make comments, maybe
+"""this file is a mess, later i will fix it and make comments, maybe"""
 
 from typing import Dict, TextIO
 from static import consts
+from util import util
 
 
 class MLWText:
     def __init__(self, name, parsed_seq: list, local_vars: Dict[str, list] = None, cases: Dict[str, list] = None,
-                 global_vars: Dict[str, str] = None):
+                 global_vars: Dict[str, str] = None, local_dict:dict = None, local_dict_keys:list = None):
         self.name = name
         self.__parsed_seq = parsed_seq
         self.__local_vars = (local_vars if local_vars else {})
         self.__cases = (cases if cases else {})
         self.__global_vars = (global_vars if global_vars else {})
+        self.__local_dict = local_dict
+        self.__local_dict_keys = local_dict_keys
 
     def __get_text(self, seq: list) -> str:
         new_seq = []
@@ -24,17 +27,24 @@ class MLWText:
                 element = self.__substitute_vars(part)
             elif part.startswith('_case'):
                 element = self.__substitute_case(part)
+                if not element:
+                    prev = '\0'
             else:
                 element = part
-            if not element:
-                prev = '\0'
-            else:
-                new_seq.append(element)
+            new_seq.append(element)
         return ''.join(new_seq)
+
+    def __load_from_json(self, var_name):
+        return util.get_value(
+            self.__local_dict,
+            *[*self.__local_dict_keys, self.name, var_name],
+        )
 
     def __substitute_vars(self, var_name: str) -> str:
         if var_name[0] == '&':
             retval = self.__local_vars.get(var_name)
+            if retval is None:
+                retval = self.__load_from_json(var_name[1:])
             if retval is not None:
                 return self.__get_text(retval)
             raise ValueError(f'Undefined local variable: {var_name}')
@@ -59,6 +69,10 @@ class MLWText:
 
     def add_global_vars(self, values: dict):
         self.__global_vars.update({f'^{key}': value for key, value in values.items()})
+
+    def add_local_dict(self, local_dict: dict, local_dict_keys: list):
+        self.__local_dict = local_dict
+        self.__local_dict_keys = local_dict_keys
 
     def text(self, global_vars: Dict[str, str] = None) -> str:
         if global_vars:
