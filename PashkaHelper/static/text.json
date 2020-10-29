@@ -109,6 +109,10 @@
     "help_main_button": "← Основное",
     "help_additional_button": "Дополнительно →",
 
+    "admin_ls_next_button": "Next →",
+    "admin_ls_prev_button": "← Prev",
+    "admin_ls_update_button": "Upd ↺",
+
     "timetable_monday_button": "Пн",
     "timetable_tuesday_button": "Вт",
     "timetable_wednesday_button": "Ср",

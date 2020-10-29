@@ -18,7 +18,7 @@ import src.subject as subject
 from src.text import get_text
 from src.timetable import get_weekday_timetable
 from src import time_management as tm, timetable as tt
-from src.admin import admin, admin_notify
+from src.admin import admin, admin_notify, admin_callback
 
 import logging
 
@@ -62,6 +62,8 @@ def main_callback(update: Update, context: CallbackContext):
         return subject.subject_callback(update, context, parsed_data, language_code)
     elif parsed_data[0] == consts.HELP:
         return help_callback(update, parsed_data, language_code)
+    elif parsed_data[0] == consts.ADMIN:
+        return admin_callback(update, parsed_data, language_code)
     else:
         return unknown_callback(update, context)
 
@@ -71,7 +73,8 @@ def cancel_callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     parsed_data = data.split('_')
     if parsed_data[0] == consts.CANCEL:
-        update.callback_query.edit_message_text(
+        cf.edit_message(
+            update=update,
             text=get_text('cancel_main_text', update.effective_user.language_code).text(),
         )
         return consts.MAIN_STATE

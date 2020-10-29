@@ -676,7 +676,7 @@ offline:
 
 [ls_admin_text]
 [body]
-Список всех пользователей:
+Пользователи: <b>^lb-^rb из ^total</b>
 
 ^users
 [/body]

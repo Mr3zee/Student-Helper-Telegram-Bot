@@ -35,7 +35,7 @@ def admin(update: Update, context: CallbackContext):
 
     # list of the users
     elif args[0] == '-ls':
-        text, ret_lvl = admin_ls(args, language_code)
+        text, ret_lvl, reply_markup = admin_ls(0, language_code)
 
     # mute/unmute users
     elif args[0] == '-m' or args[0] == '-um':
@@ -49,6 +49,18 @@ def admin(update: Update, context: CallbackContext):
         reply_markup=reply_markup,
     )
     return ret_lvl
+
+
+def admin_callback(update: Update, parsed_data, language_code):
+    if parsed_data[1] == 'ls':
+        text, _, reply_markup = admin_ls(parsed_data[2], language_code)
+        cf.edit_message(
+            update=update,
+            text=text,
+            reply_markup=reply_markup,
+        )
+    else:
+        raise ValueError(f"Invalid admin callback: {parsed_data[1]}")
 
 
 def admin_request_notify(context: CallbackContext, args, language_code):
@@ -106,16 +118,39 @@ def admin_notify(update: Update, context: CallbackContext):
     return consts.MAIN_STATE
 
 
-def admin_ls(args, language_code):
+USERS_ON_PAGE = 12
+
+
+def admin_ls(page_number, language_code):
     """list all users"""
-    if len(args) > 1:
-        text = get_text('too_many_args_admin_text', language_code).text()
+
+    # get page of users (left/right bound)
+    page_number = int(page_number)
+    users = database.get_all_users()
+    count = len(users)
+    page_number = min((count - 1) // USERS_ON_PAGE, page_number)
+
+    lb = page_number * USERS_ON_PAGE
+    rb = lb + USERS_ON_PAGE
+
+    text = get_text('ls_admin_text', language_code).text({
+        consts.USERS: '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users[lb:rb])),
+        consts.LB: lb + 1,
+        consts.RB: min(rb, count),
+        consts.TOTAL: count
+    })
+
+    # detect page type
+    if lb == 0 and rb >= count:
+        page_type = consts.SINGLE_PAGE
     else:
-        users = database.get_all_users()
-        text = get_text('ls_admin_text', language_code).text(
-            {'users': '\n'.join(map(lambda pair: mention_html(pair[0], pair[1]), users))}
+        page_type = (
+            consts.FIRST_PAGE if lb == 0
+            else (consts.LAST_PAGE if rb >= count else consts.MIDDLE_PAGE)
         )
-    return text, consts.MAIN_STATE
+    reply_markup = keyboard.admin_ls(page_number, page_type, language_code)
+
+    return text, consts.MAIN_STATE, reply_markup
 
 
 def admin_mute(args, language_code):

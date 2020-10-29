@@ -7,8 +7,13 @@ from static import consts, buttons
 
 
 def make_button(button, language_code):
-    """Make standard Inline Button"""
+    """Make standard InlineButton"""
     return InlineKeyboardButton(text=get_text(button, language_code).text(), callback_data=button)
+
+
+def make_button_callback(button, callback, language_code):
+    """Make InlineButton where callback is different from name"""
+    return InlineKeyboardButton(text=get_text(button, language_code).text(), callback_data=callback)
 
 
 def make_timetable_button(weekday, current_state, language_code):
@@ -313,4 +318,23 @@ def cancel_operation(data: str):
             ],
         ]
         return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
     return inner
+
+
+def admin_ls(page_number, page_type, language_code):
+    def inner(number):
+        return buttons.ADMIN_LS % {consts.PAGE_NUMBER: number}
+    next_button = make_button_callback(buttons.NEXT_PAGE, inner(page_number + 1), language_code)
+    prev_button = make_button_callback(buttons.PREV_PAGE, inner(page_number - 1), language_code)
+    update_button = make_button_callback(buttons.UPDATE_PAGE, inner(page_number), language_code)
+    ls_buttons = [update_button]
+    if page_type == consts.FIRST_PAGE:
+        ls_buttons.append(next_button)
+    elif page_type == consts.LAST_PAGE:
+        ls_buttons.append(prev_button)
+    elif page_type == consts.MIDDLE_PAGE:
+        ls_buttons.extend([prev_button, next_button])
+    elif page_type != consts.SINGLE_PAGE:
+        raise ValueError(f'Invalid page_type: {page_type}')
+    return InlineKeyboardMarkup(inline_keyboard=[ls_buttons])

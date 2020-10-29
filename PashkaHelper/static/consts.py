@@ -84,6 +84,17 @@ UNMUTE = 'unmute'
 # jobs
 MAILING_JOB = 'mailing_job'
 
+# admin ls pages
+FIRST_PAGE = 'first'
+LAST_PAGE = 'last'
+MIDDLE_PAGE = 'middle'
+SINGLE_PAGE = 'single'
+PAGE_NUMBER = 'page_number'
+USERS = 'users'
+TOTAL = 'total'
+LB = 'lb'  # left bound
+RB = 'rb'  # right bound
+
 # other
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report', 'admin'}
 ALL = 'all'

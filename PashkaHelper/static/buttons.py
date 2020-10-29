@@ -107,3 +107,9 @@ HELP_ADDITIONAL = 'help_additional_button'
 # other
 CANCEL = 'cancel_button'
 CANCEL_CALLBACK = 'cancel_%(data)s_button'
+
+# admin ls button
+ADMIN_LS = 'admin_ls_%(page_number)d_button'
+NEXT_PAGE = 'admin_ls_next_button'
+PREV_PAGE = 'admin_ls_prev_button'
+UPDATE_PAGE = 'admin_ls_update_button'

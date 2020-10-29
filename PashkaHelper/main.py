@@ -127,9 +127,8 @@ if __name__ == '__main__':
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
-#  quotes support +
 #  other groups
-#  make ls pages
+#  make ls pages +
 #  SERVER
 #  make enums
 #  mlw_tools normal errors
