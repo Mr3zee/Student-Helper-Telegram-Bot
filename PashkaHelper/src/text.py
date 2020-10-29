@@ -1,5 +1,8 @@
+import random
+
 from json import load
-from static.config import text_json_file_path, text_mlw_file_path, links_json_file_path
+from static.config import text_json_file_path, text_mlw_file_path, links_json_file_path, quote_file_path
+from static import consts
 from util.mlw_tools import MLWText, mlw_load
 
 # open .json file with texts
@@ -40,3 +43,14 @@ def get_text(name, language_code) -> MLWText:
     if retval is None:
         raise ValueError(f'Undefined text name: {name}')
     return retval
+
+
+with open(quote_file_path, encoding='UTF-8') as quote_file:
+    quotes: list = load(quote_file)
+
+
+def random_quote(language_code):
+    quote, author = quotes[random.randint(0, len(quotes) - 1)]
+    return get_text('quote_text', language_code).text(
+        {consts.QUOTE: quote, consts.AUTHOR: author}
+    )

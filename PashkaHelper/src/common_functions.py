@@ -11,7 +11,7 @@ from static import consts
 
 
 def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, language_code,
-                           disable_notification=False):
+                           disable_notification=False, footer=None):
     """
     Sends timetable for specified day
     """
@@ -31,6 +31,7 @@ def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, 
         attendance=attendance,
         week_parity=week_parity,
         language_code=language_code,
+        footer=footer,
     )
 
     context.bot.send_message(
@@ -46,7 +47,8 @@ def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, 
     )
 
 
-def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code, disable_notifications=False):
+def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
+                         disable_notifications=False, footer=None):
     """Sends timetable for current day"""
     return send_weekday_timetable(
         context=context,
@@ -55,6 +57,7 @@ def send_today_timetable(context: CallbackContext, user_id, chat_id, language_co
         weekday=consts.TODAY,
         language_code=language_code,
         disable_notification=disable_notifications,
+        footer=footer,
     )
 
 

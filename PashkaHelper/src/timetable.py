@@ -38,7 +38,7 @@ def get_subject_timetable(subject, subtype, attendance, language_code):
     return header + '\n'.join(weekday_list)
 
 
-def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, language_code) -> str:
+def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, language_code, footer=None) -> str:
     """
     makes timetable for specified day
     (subject_names: all user's subjects or subtypes)
@@ -54,6 +54,7 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, 
     template.add_global_vars({
         consts.WEEKDAY: get_text(f'{weekday}_timetable_text', language_code).text(),
         consts.WEEK_PARITY: get_text(f'{week_parity}_week_timetable_text', language_code=language_code).text(),
+        consts.FOOTER: footer or '',
     })
 
     # get timetables as dict

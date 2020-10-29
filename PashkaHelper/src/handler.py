@@ -57,11 +57,11 @@ def main_callback(update: Update, context: CallbackContext):
     data, language_code = cf.manage_callback_query(update)
     parsed_data = data.split('_')
     if parsed_data[0] == consts.TIMETABLE:
-        return timetable_callback(update, context, parsed_data, language_code)
+        return timetable_callback(update, parsed_data, language_code)
     elif parsed_data[0] == consts.SUBJECT:
         return subject.subject_callback(update, context, parsed_data, language_code)
     elif parsed_data[0] == consts.HELP:
-        return help_callback(update, context, parsed_data, language_code)
+        return help_callback(update, parsed_data, language_code)
     else:
         return unknown_callback(update, context)
 
@@ -94,7 +94,7 @@ def help(update: Update, context: CallbackContext):
     )
 
 
-def help_callback(update: Update, context: CallbackContext, data: list, language_code):
+def help_callback(update: Update, data: list, language_code):
     """change help page"""
     if data[1] in {consts.MAIN_PAGE, consts.ADDITIONAL_PAGE}:
         text = get_text(f'help_{data[1]}_text', language_code).text()
@@ -116,7 +116,7 @@ def unknown_callback(update: Update, context: CallbackContext):
     )
 
 
-def timetable_callback(update: Update, context: CallbackContext, data: list, language_code):
+def timetable_callback(update: Update, data: list, language_code):
     """handles timetable callbacks"""
     subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
     attendance, week_parity, weekday = data[1:-1]

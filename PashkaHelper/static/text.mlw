@@ -106,11 +106,18 @@ value: Аргумент должен быть больше -1 и меньше 7
 <b>^weekday, ^week_parity неделя</b> - расписание пар на день:
 
 ^timetable
-
+^footer
 Главная /help. Расписание /timetable
 Другой день:
 [/body]
 [/weekday_text]
+
+
+[quote_text]
+[body]
+Цитата дня: <b>"^quote"</b> - ^author\0
+[/body]
+[/quote_text]
 
 
 [today_sunday_text]

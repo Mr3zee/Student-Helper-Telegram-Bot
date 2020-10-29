@@ -27,7 +27,7 @@ class MLWText:
                 element = self.__substitute_vars(part)
             elif part.startswith('_case'):
                 element = self.__substitute_case(part)
-                if not element:
+                if not element or element == '\0':
                     prev = '\0'
             else:
                 element = part
@@ -221,15 +221,18 @@ class MLWParser(BaseParser):
         self.__text_seq = body
 
     def _parse_single_line_text(self) -> list:
+        def make_retval():
+            if text:
+                retval.append(''.join(text))
+            return retval
+
         retval = []
         text = []
         self._skip_redundant_symbols()
         while True:
             if self._is_ch('#'):
                 self._next_line()
-                if text:
-                    retval.append(''.join(text))
-                return retval
+                return make_retval()
             elif self._is_ch('&') or self._is_ch('^'):
                 if text:
                     retval.append((''.join(text)))
@@ -240,19 +243,19 @@ class MLWParser(BaseParser):
                 text = []
                 continue
             elif self._is_ch('['):
-                if text:
-                    retval.append(''.join(text))
+                make_retval()
                 if self._is_closing_tag():
                     return retval
                 retval.extend(self._parse_tag())
                 text = []
                 continue
             elif self._is_ch('\n'):
-                if text:
-                    retval.append(''.join(text))
-                return retval
+                return make_retval()
             elif self._is_ch('\\'):
                 self._next_char()
+                if self._is_ch('0'):
+                    self._next_char()
+                    return make_retval()
 
             text.append(self._take_char())
 

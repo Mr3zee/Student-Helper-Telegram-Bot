@@ -127,15 +127,16 @@ if __name__ == '__main__':
 #  add deadlines
 #  add everyday deadlines
 #  PE self timetable
-#  quotes support
+#  quotes support +
 #  other groups
-#  add cancel button instead of /cancel +
+#  make ls pages
 #  SERVER
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
 #  make chat_data persistent
 #  nosql -> sql
+#  language_code sometimes is null
 
 # TODO heroku:
 #  all done by now

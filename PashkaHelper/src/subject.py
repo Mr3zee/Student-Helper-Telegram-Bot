@@ -159,8 +159,8 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
     subtype, attendance = database.get_user_attrs([subject, consts.ATTENDANCE], user_id=user_id).values()
 
     # substitutes with request parameters if exists
-    attendance = util.if_none(request.get(consts.ATTENDANCE), attendance)
-    subtype = util.if_none(request.get(consts.SUBTYPE), subtype)
+    attendance = request.get(consts.ATTENDANCE) or attendance
+    subtype = request.get(consts.SUBTYPE) or subtype
 
     # select page to return
     if page == consts.TIMETABLE_PAGE:

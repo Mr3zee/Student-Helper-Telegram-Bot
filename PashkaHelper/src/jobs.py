@@ -7,6 +7,7 @@ import src.database as db
 import src.handler as hdl
 import src.time_management as tm
 from static import consts
+from src.text import random_quote
 
 
 def nullify_conversations(user_id, chat_id):
@@ -41,6 +42,7 @@ def mailing_job(context: CallbackContext):
         user_id=user_id,
         language_code=language_code,
         disable_notifications=disable_notifications,
+        footer=f'\n{random_quote(language_code)}'
     )
 
 
