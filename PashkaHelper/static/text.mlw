@@ -221,114 +221,108 @@ all: all
 
 # John Cuti
 cuti: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-C2/3
-offline: 2-ИТИПКТ-C2/1
+<em>[case ^subtype]
+c2_3: 2-ИТИПКТ-C2/3
+c2_1: 2-ИТИПКТ-C2/1
 all: 2-ИТИПКТ-C2/1 | 2-ИТИПКТ-C2/3
 [/case] - Джон Кути</em>
 Почта Джона Кути: &cuti_email
 <a href = '&cuti_hw_link'>Сайт</a> для выполения домашнего задания
-[case ^attendance]
-online: [m]
-Заочно:
-  - <a href = '&c2_3_discord'>Discord</a> of native speakers
-  - <a href = '&c2_3_tg'>Chat</a> of native speakers[/m]
-offline: [m]
-Очно:
-  - Кабинет: 412
-  - <a href = '&c2_1_tg'>Чатик</a> истинных англичан[/m]
+<a href = '&c2_3_discord'>Discord</a> of native speakers
+
+[case ^subtype]
+c2_3: [m]
+- <a href = '&c2_3_tg'>Chat</a> of native speakers[/m]
+c2_1: [m]
+- Кабинет: 412
+- <a href = '&c2_1_tg'>Чатик</a> истинных англичан[/m]
 [/case][/m]
 
 # Cipo
 cipo: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-C1/1
-offline: 2-ИТИПКТ-C1/2
+<em>[case ^subtype]
+c1_1: 2-ИТИПКТ-C1/1
+c1_2: 2-ИТИПКТ-C1/2
 all: 2-ИТИПКТ-C1/1 | 2-ИТИПКТ-C1/2
 [/case] - Cipo</em>
-[case ^attendance]
-online: [m]
-Заочно:
- - <a href = '&c1_1_zoom'>Zoom</a> охуительных историй
- - <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа[/m]
-offline: [m]
-Очно:
- - Кабинет: 409
- - <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую[/m]
+<a href = '&c1_1_zoom'>Zoom</a> охуительных историй
+
+[case ^subtype]
+c1_1: [m]
+- <a href = '&c1_1_tg'>Чат</a> людей, слушаюших охуительные истории с компа[/m]
+c1_2: [m]
+- Кабинет: 409
+- <a href = '&c1_2_tg'>Чат</a> людей, слушаюших охуительные истории в живую[/m]
 [/case][/m]
 
 # Белянина С.
 belyanina: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-B2/3
-offline: 2-ИТИПКТ-B2/1
+<em>[case ^subtype]
+b2_3: 2-ИТИПКТ-B2/3
+b2_1: 2-ИТИПКТ-B2/1
 all: 2-ИТИПКТ-B2/1 | 2-ИТИПКТ-B2/3
 [/case] - Белянина С.</em>
-[case ^attendance]
-online: [m]
-Заочно:
-  - <a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
-  - <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства[/m]
-offline: [m]
-Очно:
-  - Кабинет: 315
-  - <a href = '&b2_1_tg'>Чат</a> иностранных агентов[/m]
+<a href = '&b2_3_zoom'>Zoom</a> ценителей иностранного вмешательства
+
+[case ^subtype]
+b2_3: [m]
+- <a href = '&b2_3_tg'>Чат</a> ценителей иностранного вмешательства[/m]
+b2_1: [m]
+- Кабинет: 315
+- <a href = '&b2_1_tg'>Чат</a> иностранных агентов[/m]
 [/case][/m]
 
 # Захарова А.
 zaharova: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-C2/2
-offline: 2-ИТИПКТ-B2/2
+<em>[case ^subtype]
+c2_2: 2-ИТИПКТ-C2/2
+b2_2: 2-ИТИПКТ-B2/2
 all: 2-ИТИПКТ-C2/2 | 2-ИТИПКТ-B2/2
 [/case] - Захарова А.</em>
-[case ^attendance]
-online: [m]
-Заочно:
-  - <a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
-  - Идентификатор конференции: 824 3167 0213
-  - Код доступа: 121611 (или какой-то из 121611-121622)
-  - <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов[/m]
-offline: [m]
-Очно:
-  - Кабинет: 319
-  - <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров[/m]
+<a href = '&c2_2_zoom'>Zoom</a> прошаренных англосаксов
+Идентификатор: 82431670213
+Код: 121611 (или какой-то из 121611-121622)
+
+[case ^subtype]
+c2_2: [m]
+- <a href = '&c2_2_tg'>Чат</a> прошаренных англосаксов[/m]
+b2_2: [m]
+- Кабинет: 319
+- <a href = '&b2_2_tg'>Чат</a> Вильямов Шекспиров[/m]
 [/case][/m]
 
 # Трофимова Т.А.
 trofimova: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-B1.2/1
-offline: 2-ИТИПКТ-B1.2/2
+<em>[case ^subtype]
+b12_1: 2-ИТИПКТ-B1.2/1
+b12_2: 2-ИТИПКТ-B1.2/2
 all: 2-ИТИПКТ-B1.2/1 | 2-ИТИПКТ-B1.2/2
 [/case] - Трофимова Т.А.</em>
-[case ^attendance]
-online: [m]
-Заочно:
-  - <a href = '&b12_1_zoom'>Zoom</a> капиталистов
-  - <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"[/m]
-offline: [m]
-Очно:
-  - Кабинет: 313
-  - <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"[/m]
+<a href = '&b12_1_zoom'>Zoom</a> капиталистов
+
+[case ^subtype]
+b12_1: [m]
+- <a href = '&b12_1_tg'>Chat</a> "London is the capital of Россия"[/m]
+b12_2: [m]
+- Кабинет: 313
+- <a href = '&b12_2_tg'>Chat</a> "London is the capital of Russia"[/m]
 [/case][/m]
 
 # Малышева А.
 malysheva: [m]
-<em>[case ^attendance]
-online: 2-ИТИПКТ-B1.1/1
-offline: 2-ИТИПКТ-B1.1/2
+<em>[case ^subtype]
+b11_1: 2-ИТИПКТ-B1.1/1
+b11_2: 2-ИТИПКТ-B1.1/2
 all: 2-ИТИПКТ-B1.1/1 | 2-ИТИПКТ-B1.1/2
 [/case] - Малышева А.</em>
-[case ^attendance]
-online: [m]
-Заочно:
-  - <a href = '&b11_1_zoom'>Zoom</a> сторонников Brexit
-  - <a href = '&b11_1_tg'>Чат</a> сторонников Brexit[/m]
-offline: [m]
-Очно:
-  - Кабинет: 410
-  - <a href = '&b11_2_tg'>Чат</a> противников Brexit[/m]
+<a href = '&b11_1_zoom'>Zoom</a> Union Jack
+
+[case ^subtype]
+b11_1: [m]
+- <a href = '&b11_1_tg'>Чат</a> сторонников Brexit[/m]
+b11_2: [m]
+- Кабинет: 410
+- <a href = '&b11_2_tg'>Чат</a> противников Brexit[/m]
 [/case][/m]
 [/case]
 
