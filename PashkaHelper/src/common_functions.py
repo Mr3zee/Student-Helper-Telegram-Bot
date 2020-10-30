@@ -105,10 +105,13 @@ def manage_callback_query(update: Update):
 def send_message(context: CallbackContext, text, language_code, user_nick=None, chat_id=None):
     """Send simple message"""
     chat_id = database.get_user_attr(consts.CHAT_ID, user_nick=user_nick) if chat_id is None else chat_id
-    context.bot.send_message(
-        chat_id=chat_id,
-        text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
-    )
+    try:
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
+        )
+    except error.Unauthorized:
+        pass
 
 
 def send_message_to_all(context: CallbackContext, text, sender_id, language_code):
