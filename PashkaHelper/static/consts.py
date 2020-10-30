@@ -95,6 +95,10 @@ TOTAL = 'total'
 LB = 'lb'  # left bound
 RB = 'rb'  # right bound
 
+# deadlines consts
+DATE = 'date'
+DEADLINES = 'deadlines'
+
 # other
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report', 'admin'}
 ALL = 'all'

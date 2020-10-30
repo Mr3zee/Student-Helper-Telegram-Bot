@@ -55,6 +55,11 @@ class Server:
         'ч/нч': consts.WEEK_BOTH,
     }
 
+    # deadlines consts
+    __dl_column = (4, 14)
+    __dl_days_start = 'B2'
+    __zero_day_id = 737724  # date(2020, 10, 26).toordinal()
+
     def __init__(self):
         logger.info('Starting Server...')
         if not Server.__instance:

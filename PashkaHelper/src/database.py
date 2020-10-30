@@ -202,26 +202,9 @@ def __get_user_info_row(user_id=None, user_nick=None, chat_id=None):
     ).first()
 
 
-def get_user_parameters(user_id, language_code):
+def get_user_parameters(user_id):
     """returns all user's parameters"""
-    retval = {}
-    values = get_user_attrs(list(PARAMETERS), user_id)
-    for attr_name, attr_value in values.items():
-        # attrs without modifications
-        if (attr_name == consts.USERNAME and attr_value) or (attr_name == consts.MAILING_TIME):
-            retval[attr_name] = attr_value
-            continue
-        # add sign to utcoffset
-        elif attr_name == consts.UTCOFFSET:
-            retval[attr_name] = (str(attr_value) if attr_value < 0 else f'+{attr_value}')
-            continue
-        # get readable values
-        text = get_text(f'{attr_name}_{attr_value}_user_data_text', language_code).text()
-        # attach group's number to general name
-        if attr_name == consts.ENG and attr_value != consts.ALL:
-            text = get_text('eng_std_user_data_text', language_code).text({consts.ENG: text})
-        retval[attr_name] = text
-    return retval
+    return get_user_attrs(list(PARAMETERS), user_id)
 
 
 def get_user_subject_names(user_id):

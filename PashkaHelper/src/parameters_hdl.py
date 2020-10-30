@@ -25,7 +25,9 @@ def parameters(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=get_text('main_parameters_text', language_code).text(database.get_user_parameters(user_id, language_code)),
+        text=get_text('main_parameters_text', language_code).text(
+            cf.pretty_user_parameters(database.get_user_parameters(user_id), language_code),
+        ),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
     return consts.PARAMETERS_MAIN_STATE
@@ -36,7 +38,7 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
     """change parameters page for specified value"""
     user_id = update.effective_user.id
     text = get_text(f'{page_name}_parameters_text', language_code)
-    user_info = database.get_user_parameters(user_id, language_code)
+    user_info = cf.pretty_user_parameters(database.get_user_parameters(user_id), language_code)
     text = text.text(user_info)
     if parameters_keyboard is None:
         parameters_keyboard = KEYBOARD_MAP.get(page_name)
@@ -46,6 +48,27 @@ def __chg_parameters_page(update: Update, page_name, language_code, parameters_k
         reply_markup=(parameters_keyboard(language_code) if parameters_keyboard else None),
     )
     return ret_lvl
+
+
+def __main_callback(update: Update, data, language_code):
+    """show specified page to change parameters"""
+    if data == buttons.PARAMETERS_RETURN:
+        return __return_callback(update, language_code)
+    elif data == buttons.MAILING:
+        return __mailing_callback(update, language_code)
+    elif data == buttons.COURSES:
+        return __chg_parameters_page(update, consts.COURSES, language_code)
+    elif data == buttons.NAME:
+        return __chg_parameters_page(
+            update=update,
+            page_name=consts.ENTER_NAME,
+            ret_lvl=consts.PARAMETERS_NAME_STATE,
+            language_code=language_code,
+        )
+    elif data == buttons.ATTENDANCE:
+        return __chg_parameters_page(update, consts.ATTENDANCE, language_code)
+    else:
+        raise ValueError(f'invalid callback for main parameters page: {data}')
 
 
 def parameters_callback(update: Update, context: CallbackContext):
@@ -71,33 +94,14 @@ def parameters_callback(update: Update, context: CallbackContext):
         raise ValueError(f'invalid callback for parameters: {data}')
 
 
-def __main_callback(update: Update, data, language_code):
-    """show specified page to change parameters"""
-    if data == buttons.PARAMETERS_RETURN:
-        return __return_callback(update, language_code)
-    elif data == buttons.EVERYDAY_MESSAGE:
-        return __mailing_callback(update, language_code)
-    elif data == buttons.COURSES:
-        return __chg_parameters_page(update, consts.COURSES, language_code)
-    elif data == buttons.NAME:
-        return __chg_parameters_page(
-            update=update,
-            page_name=consts.ENTER_NAME,
-            ret_lvl=consts.PARAMETERS_NAME_STATE,
-            language_code=language_code,
-        )
-    elif data == buttons.ATTENDANCE:
-        return __chg_parameters_page(update, consts.ATTENDANCE, language_code)
-    else:
-        raise ValueError(f'invalid callback for main parameters page: {data}')
-
-
 def __return_callback(update: Update, language_code):
     """show main parameters page"""
     user_id = update.effective_user.id
     cf.edit_message(
         update=update,
-        text=get_text('main_parameters_text', language_code).text(database.get_user_parameters(user_id, language_code)),
+        text=get_text('main_parameters_text', language_code).text(
+            cf.pretty_user_parameters(database.get_user_parameters(user_id), language_code)
+        ),
         reply_markup=keyboard.parameters_keyboard(language_code),
     )
     return consts.PARAMETERS_MAIN_STATE
@@ -105,8 +109,10 @@ def __return_callback(update: Update, language_code):
 
 def __get_mailing_page(user_id, language_code):
     """get mailing page attrs"""
-    attrs = database.get_user_parameters(user_id, language_code)
-    text = get_text('mailing_parameters_text', language_code).text(attrs)
+    attrs = database.get_user_parameters(user_id)
+    text = get_text('mailing_parameters_text', language_code).text(
+        cf.pretty_user_parameters(attrs, language_code),
+    )
     reply_markup = keyboard.mailing_keyboard(
         mailing_status=attrs[consts.MAILING_STATUS],
         notification_status=attrs[consts.NOTIFICATION_STATUS],
@@ -217,7 +223,6 @@ def __update_mailing_timetable(update: Update, context: CallbackContext, data, l
             language_code=language_code,
         )
 
-    #
     if data in {buttons.ALLOW_MAILING, buttons.FORBID_MAILING}:
         attr = consts.MAILING_STATUS
         new_status = (

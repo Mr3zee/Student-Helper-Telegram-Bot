@@ -4,13 +4,13 @@ TIMETABLE_BUTTON = 'timetable_%(attendance)s_%(week_parity)s_%(weekday)s_button'
 
 # parameters buttons
 NAME = 'name_button'
-EVERYDAY_MESSAGE = 'mailing_parameters_button'
+MAILING = 'mailing_parameters_button'
 ATTENDANCE = 'attendance_button'
 COURSES = 'courses_parameters_button'
 PARAMETERS_RETURN = 'return_parameters_button'
 EXIT_PARAMETERS = 'exit_parameters_button'
 
-MAIN_SET = {NAME, EVERYDAY_MESSAGE, COURSES, ATTENDANCE, PARAMETERS_RETURN}
+MAIN_SET = {NAME, MAILING, COURSES, ATTENDANCE, PARAMETERS_RETURN}
 
 # attendance buttons
 ATTENDANCE_ONLINE = 'online_attendance_button'

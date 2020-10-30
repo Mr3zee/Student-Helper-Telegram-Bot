@@ -3,7 +3,7 @@ from telegram import Update, error
 
 import src.keyboard as keyboard
 import src.database as database
-from src.timetable import get_weekday_timetable
+from src import timetable as tt
 from src import time_management as tm
 from src.text import get_text
 
@@ -25,7 +25,7 @@ def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, 
 
     week_parity = tm.get_week_parity()
 
-    timetable = get_weekday_timetable(
+    timetable = tt.get_weekday_timetable(
         weekday=weekday,
         subject_names=database.get_user_subject_names(user_id),
         attendance=attendance,
@@ -129,3 +129,24 @@ def edit_message(update: Update, text, reply_markup=None):
         )
     except error.BadRequest:
         pass
+
+
+def pretty_user_parameters(user_parameters: dict, language_code):
+    """make parameters readable for users"""
+    retval = {}
+    for attr_name, attr_value in user_parameters.items():
+        # attrs without modifications
+        if (attr_name == consts.USERNAME and attr_value) or (attr_name == consts.MAILING_TIME):
+            retval[attr_name] = attr_value
+            continue
+        # add sign to utcoffset
+        elif attr_name == consts.UTCOFFSET:
+            retval[attr_name] = (str(attr_value) if attr_value < 0 else f'+{attr_value}')
+            continue
+        # get readable values
+        text = get_text(f'{attr_name}_{attr_value}_user_data_text', language_code).text()
+        # attach group's number to general name
+        if attr_name == consts.ENG and attr_value != consts.ALL:
+            text = get_text('eng_std_user_data_text', language_code).text({consts.ENG: text})
+        retval[attr_name] = text
+    return retval

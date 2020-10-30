@@ -80,7 +80,7 @@ def parameters_keyboard(language_code):
         ],
         [
             make_button(buttons.EXIT_PARAMETERS, language_code),
-            make_button(buttons.EVERYDAY_MESSAGE, language_code),
+            make_button(buttons.MAILING, language_code),
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)

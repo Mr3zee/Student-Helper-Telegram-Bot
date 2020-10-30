@@ -29,3 +29,7 @@ def to_utc_converter(input_date: datetime, utcoffset: timedelta):
 def get_week_parity():
     """return week parity according to ZERO_WEEK"""
     return consts.WEEK_EVEN if (datetime.today().isocalendar()[1] - ZERO_WEEK) % 2 != 0 else consts.WEEK_ODD
+
+
+def today_id(utcoffset: timedelta):
+    return (datetime.today() - utcoffset).toordinal()

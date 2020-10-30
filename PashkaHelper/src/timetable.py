@@ -2,10 +2,107 @@ from src.text import get_text
 from static import consts
 from src.server import Server
 
+from telegram import Update
+from telegram.ext import CallbackContext
+
+from src import keyboard, database, common_functions as cf, time_management as tm
+
 SUBJECT_TEMPLATE = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 SUBJECT_TEMPLATE_WITH_PARITY = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
 
 SERVER = Server.get_instance()
+
+
+def timetable_callback(update: Update, data: list, language_code):
+    """handles timetable callbacks"""
+    subject_names = database.get_user_subject_names(user_id=update.effective_user.id)
+    attendance, week_parity, weekday = data[1:-1]
+
+    cf.edit_message(
+        update=update,
+        text=get_weekday_timetable(
+            weekday=weekday,
+            subject_names=subject_names,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        ),
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        )
+    )
+
+
+def timetable_args_error(context: CallbackContext, chat_id, error_type, language_code):
+    """send argument error message"""
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=get_text('timetable_args_error_text', language_code).text({'error_type': error_type}),
+    )
+
+
+def timetable(update: Update, context: CallbackContext):
+    """
+    sends timetable main page if no argument specified
+    otherwise sends timetable for specified day: 0 - 7 -> monday - sunday
+    """
+    language_code = update.effective_user.language_code
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    args = context.args
+
+    week_parity = tm.get_week_parity()
+    attendance = database.get_user_attr(consts.ATTENDANCE, user_id)
+
+    if len(args) > 1:
+        # too many args
+        return timetable_args_error(context, chat_id, 'many', language_code)
+    elif len(args) == 1:
+        # check if arg is integer
+        try:
+            weekday = int(args[0])
+        except ValueError:
+            return timetable_args_error(context, chat_id, 'type', language_code)
+        if weekday > 6 or weekday < 0:
+            # wrong day index
+            return timetable_args_error(context, chat_id, 'value', language_code)
+        # get timetable for specified day
+        weekday = tm.weekdays[weekday]
+        text = get_weekday_timetable(
+            weekday=weekday,
+            subject_names=database.get_user_subject_names(user_id),
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        )
+    else:
+        # timetable main page
+        weekday = tm.get_today_weekday(database.get_user_attr(consts.UTCOFFSET, user_id=user_id))
+        text = get_text('timetable_text', language_code).text()
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=text,
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code,
+        ),
+    )
+
+
+def today(update: Update, context: CallbackContext):
+    """sends today timetable"""
+    cf.send_today_timetable(
+        context=context,
+        user_id=update.effective_user.id,
+        chat_id=update.effective_chat.id,
+        language_code=update.effective_user.language_code,
+    )
+
 
 
 def get_subject_timetable(subject, subtype, attendance, language_code):
