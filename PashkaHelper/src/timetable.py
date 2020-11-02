@@ -223,17 +223,15 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, 
 
 def __put_together(online, offline, template, language_code):
     """make header(s) and glue it to timetable(s)"""
-    def inner(attendance):
+    def inner(attendance, table):
         header = get_text(f'{attendance}_timetable_text', language_code).text() + '\n'
-        tt.append(header + __make_timetable(online, template))
+        tt.append(header + __make_timetable(table, template))
 
     tt = []
-
     if online:
-        inner(consts.ATTENDANCE_ONLINE)
-
+        inner(consts.ATTENDANCE_ONLINE, online)
     if offline:
-        inner(consts.ATTENDANCE_OFFLINE)
+        inner(consts.ATTENDANCE_OFFLINE, offline)
 
     return '\n\n'.join(tt)
 

@@ -23,7 +23,6 @@ def mailing_job(context: CallbackContext):
      - [0]: user_id
      - [1]: chat_id
      - [2]: language_code
-     - [3]: notification_status
     """
 
     job = context.job
@@ -36,26 +35,24 @@ def mailing_job(context: CallbackContext):
     # get other parameters
     chat_id = job.context[1]
     language_code = job.context[2]
-    notification_status = job.context[3]
-    disable_notifications = notification_status == consts.NOTIFICATION_DISABLED
 
     # exit all conversations to avoid collisions
     nullify_conversations(user_id, chat_id)
 
-    tt.send_today_timetable(
+    tt.send_weekday_timetable(
         context=context,
         chat_id=chat_id,
         user_id=user_id,
+        weekday=consts.TODAY,
         language_code=language_code,
-        disable_notifications=disable_notifications,
         footer=f'\n{random_quote(language_code)}',
     )
 
 
-def get_job_attrs(user_id):
-    """get job_time and notification status for user"""
-    mailing_time, utcoffset, notification_status = db.get_user_attrs(
-        attrs_names=[consts.MAILING_TIME, consts.UTCOFFSET, consts.NOTIFICATION_STATUS],
+def get_job_time(user_id):
+    """get job_time for user"""
+    mailing_time, utcoffset = db.get_user_attrs(
+        attrs_names=[consts.MAILING_TIME, consts.UTCOFFSET],
         user_id=user_id,
     ).values()
 
@@ -64,19 +61,16 @@ def get_job_attrs(user_id):
         utcoffset=datetime.timedelta(hours=utcoffset),
     ).time()
 
-    return job_time, notification_status
+    return job_time
 
 
 def set_mailing_job(job_queue: JobQueue, user_id, chat_id, language_code):
     """set new mailing job"""
-
-    job_time, notification_status = get_job_attrs(user_id)
-
     job_queue.run_daily(
         callback=mailing_job,
-        time=job_time,
+        time=get_job_time(user_id),
         days=(0, 1, 2, 3, 4, 5),
-        context=[user_id, chat_id, language_code, notification_status],
+        context=[user_id, chat_id, language_code],
         name=consts.MAILING_JOB,
     )
 

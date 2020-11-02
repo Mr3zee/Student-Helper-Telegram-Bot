@@ -129,7 +129,6 @@ if __name__ == '__main__':
 #  PE self timetable
 #  other groups
 #  SERVER
-#  send_message wrapper with Unauthorized catch +
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste
