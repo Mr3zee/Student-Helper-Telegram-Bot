@@ -40,7 +40,8 @@ def start(update: Update, context: CallbackContext):
     if new_user:
         jobs.reset_mailing_job(context, user_id, chat_id, language_code)
 
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=chat_id,
         text=get_text('start_text', language_code=language_code).text(),
     )
@@ -76,7 +77,8 @@ def cancel_callback(update: Update, context: CallbackContext):
             text=get_text('cancel_main_text', update.effective_user.language_code).text(),
         )
         return consts.MAIN_STATE
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('wrong_callback_text', language_code).text(),
     )
@@ -88,7 +90,8 @@ cancel_callback_hdl = CallbackQueryHandler(callback=cancel_callback, pass_user_d
 def help(update: Update, context: CallbackContext):
     """help command callback"""
     language_code = update.effective_user.language_code
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('help_main_text', language_code).text(),
         reply_markup=keyboard.help_keyboard(consts.MAIN_PAGE, language_code),
@@ -111,7 +114,8 @@ def help_callback(update: Update, data: list, language_code):
 def unknown_callback(update: Update, context: CallbackContext):
     """handles unknown callbacks"""
     language_code = update.effective_user.language_code
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('unknown_callback_text', language_code).text()
     )
@@ -124,7 +128,8 @@ def error_callback(update: Update, context: CallbackContext):
     """
     language_code = update.effective_user.language_code
     # notify user
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('error_handler_user_text', language_code).text()
     )
@@ -148,7 +153,8 @@ def error_callback(update: Update, context: CallbackContext):
 
     # send collected data to all admins
     for dev_id in database.get_all_admins_chat_ids():
-        context.bot.send_message(
+        cf.send_message(
+            context=context,
             chat_id=dev_id,
             text=text.text(data),
         )
@@ -175,7 +181,8 @@ def doc(update: Update, context: CallbackContext):
                 text = get_text('doc_text', language_code).text({'command': args[0], 'admin': if_admin})
                 if not if_admin and args[0] == 'admin':
                     text += get_text('doc_unavailable_text', language_code).text()
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=text,
     )
@@ -192,7 +199,8 @@ def report(update: Update, context: CallbackContext):
         text = get_text('report_text', language_code).text()
         ret_lvl = consts.REPORT_MESSAGE_STATE
         reply_markup = keyboard.cancel_operation(consts.REPORT_STATE)(language_code)
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=text,
         reply_markup=reply_markup,
@@ -208,7 +216,8 @@ def report_sent(update: Update, context: CallbackContext):
         'user': mention_html(update.effective_user.id, update.effective_user.first_name),
     }
     for admin_id in database.get_all_admins_chat_ids():
-        context.bot.send_message(
+        cf.send_message(
+            context=context,
             chat_id=admin_id,
             text=get_text('report_template_text', language_code).text(data),
         )
@@ -217,7 +226,8 @@ def report_sent(update: Update, context: CallbackContext):
             from_chat_id=chat_id,
             message_id=update.message.message_id,
         )
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=chat_id,
         text=get_text('report_sent_text', language_code).text(),
     )

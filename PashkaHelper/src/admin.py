@@ -43,7 +43,8 @@ def admin(update: Update, context: CallbackContext):
     else:
         text = get_text('invalid_flag_admin_text', language_code).text()
 
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=text,
         reply_markup=reply_markup,
@@ -98,20 +99,21 @@ def admin_notify(update: Update, context: CallbackContext):
 
     # send notification
     if user_nick is not None:
-        cf.send_message(
+        cf.send_notification(
             context=context,
             user_nick=user_nick,
             text=notification_text, language_code=language_code,
         )
     else:
-        cf.send_message_to_all(
+        cf.send_notification_to_all(
             context=context,
             sender_id=update.effective_user.id,
             text=notification_text, language_code=language_code,
         )
 
     # notify sender that everything is ok
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('notification_sent_notify_admin_text', language_code).text()
     )

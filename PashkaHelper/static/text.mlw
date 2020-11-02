@@ -335,24 +335,26 @@ b11_2: [m]
 [body]
 <b>Дифференциальные уравнения</b>
 
+<a href = '&site_link'>Сайт</a> Бабушкина
+
 <u>Лекции</u>
- Все пройденные <a href = '&all_topics_link'>темы</a>
- Оказывается у нас есть <a href = '&conspectus_link'>конспект</a>
- <a href = '&twitch_link'>Тут</a> стримят лекции, залетайте
+Все пройденные <a href = '&all_topics_link'>темы</a>
+Оказывается у нас есть <a href = '&conspectus_link'>конспект</a>
+<a href = '&twitch_link'>Тут</a> стримят лекции, залетайте
 
 <u>Практики</u>
- <a href = '&main_folder_link'>Диск</a> | <a href = '&tasks_link'>дз</a> | отметка <a href = '&hw_table_link'>дз</a> | <a href = '&points_link'>баллы</a>
+<a href = '&main_folder_link'>Диск</a> | <a href = '&tasks_link'>дз</a> | отметка <a href = '&hw_table_link'>дз</a> | <a href = '&points_link'>баллы</a>
 
 <u>Zoom:</u>
- Для лекций:
-  - Свежая <a href = '&lecture_zoom'>ссылочка</a>
- Для практик:
-  - Идентификатор: 850 0856 9716
-  - Пароль: 317851
-  - Свежая <a href = '&practice_zoom'>ссылочка</a>
+Для лекций:
+- Свежая <a href = '&lecture_zoom'>ссылочка</a>
+Для практик:
+- Идентификатор: 850 0856 9716
+- Пароль: 317851
+- Свежая <a href = '&practice_zoom'>ссылочка</a>
 
 <u>Telegram-чаты</u>
- <a href = '&practice_tg'>Чат</a> М323* Диффуры, практика
+<a href = '&practice_tg'>Чат</a> М323* Диффуры, практика
 
 Вернуться на главную /help
 [/body]

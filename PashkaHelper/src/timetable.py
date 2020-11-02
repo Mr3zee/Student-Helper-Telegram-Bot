@@ -38,7 +38,8 @@ def timetable_callback(update: Update, data: list, language_code):
 
 def timetable_args_error(context: CallbackContext, chat_id, error_type, language_code):
     """send argument error message"""
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=chat_id,
         text=get_text('timetable_args_error_text', language_code).text({'error_type': error_type}),
     )
@@ -82,7 +83,8 @@ def timetable(update: Update, context: CallbackContext):
         # timetable main page
         weekday = tm.get_today_weekday(database.get_user_attr(consts.UTCOFFSET, user_id=user_id))
         text = get_text('timetable_text', language_code).text()
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=chat_id,
         text=text,
         reply_markup=keyboard.timetable_keyboard(
@@ -96,11 +98,52 @@ def timetable(update: Update, context: CallbackContext):
 
 def today(update: Update, context: CallbackContext):
     """sends today timetable"""
-    cf.send_today_timetable(
+    send_weekday_timetable(
         context=context,
         user_id=update.effective_user.id,
         chat_id=update.effective_chat.id,
+        weekday=consts.TODAY,
         language_code=update.effective_user.language_code,
+    )
+
+
+def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, language_code, footer=None):
+    """Sends timetable for specified day"""
+
+    # get user parameters
+    attendance, utcoffset, notification_status = database.get_user_attrs(
+        attrs_names=[consts.ATTENDANCE, consts.UTCOFFSET, consts.NOTIFICATION_STATUS],
+        user_id=user_id,
+    ).values()
+
+    disable_notification = notification_status == consts.NOTIFICATION_DISABLED
+
+    if weekday == consts.TODAY:
+        # get current day
+        weekday = tm.get_today_weekday(utcoffset)
+
+    week_parity = tm.get_week_parity()
+
+    tt = get_weekday_timetable(
+        weekday=weekday,
+        subject_names=database.get_user_subject_names(user_id),
+        attendance=attendance,
+        week_parity=week_parity,
+        language_code=language_code,
+        footer=footer,
+    )
+
+    cf.send_message(
+        context=context,
+        chat_id=chat_id,
+        text=tt,
+        reply_markup=keyboard.timetable_keyboard(
+            weekday=weekday,
+            attendance=attendance,
+            week_parity=week_parity,
+            language_code=language_code
+        ),
+        disable_notification=disable_notification,
     )
 
 
@@ -108,14 +151,14 @@ def get_subject_timetable(subject, subtype, attendance, language_code):
     """get a timetable for specified subject"""
 
     # dict of {weekday: {'online': tt1, 'offline': tt2}}
-    timetable = SERVER.get_subject_timetable(subject, subtype, attendance)
+    tt = SERVER.get_subject_timetable(subject, subtype, attendance)
 
     # no timetable for this subject
-    if not timetable:
+    if not tt:
         return get_text('no_subject_timetable_header_text', language_code=language_code).text()
 
     weekday_list = []
-    for weekday, dct in timetable.items():
+    for weekday, dct in tt.items():
         # get subheader
         weekday_name = get_text(f'{weekday}_timetable_text', language_code=language_code).text()
 
@@ -180,18 +223,19 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, 
 
 def __put_together(online, offline, template, language_code):
     """make header(s) and glue it to timetable(s)"""
-    timetable = []
+    def inner(attendance):
+        header = get_text(f'{attendance}_timetable_text', language_code).text() + '\n'
+        tt.append(header + __make_timetable(online, template))
+
+    tt = []
 
     if online:
-        header = get_text(f'online_timetable_text', language_code).text() + '\n'
-        timetable.append(header + __make_timetable(online, template))
+        inner(consts.ATTENDANCE_ONLINE)
 
-    # only True when attendance is both and in that case first is online and second is offline
     if offline:
-        header = get_text('offline_timetable_text', language_code).text() + '\n'
-        timetable.append(header + __make_timetable(offline, template))
+        inner(consts.ATTENDANCE_OFFLINE)
 
-    return '\n\n'.join(timetable)
+    return '\n\n'.join(tt)
 
 
 def __rm_blanks(subject_row):

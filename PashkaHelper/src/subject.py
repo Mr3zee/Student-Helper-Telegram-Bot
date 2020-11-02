@@ -3,7 +3,6 @@ from typing import Dict
 from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
-from util import util
 from src.text import get_text
 from src.timetable import get_subject_timetable
 import src.database as database
@@ -179,6 +178,7 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
 
 def subject_handler(subject: str) -> CommandHandler:
     """Returns subject handler"""
+
     def inner(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
         user_id = update.effective_user.id
@@ -190,7 +190,8 @@ def subject_handler(subject: str) -> CommandHandler:
             page=consts.MAIN_PAGE,
             language_code=language_code,
         )
-        context.bot.send_message(
+        cf.send_message(
+            context=context,
             chat_id=update.effective_chat.id,
             text=main_info,
             reply_markup=keyboard.subject_keyboard(

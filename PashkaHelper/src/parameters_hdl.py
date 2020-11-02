@@ -6,7 +6,6 @@ from static import consts, buttons
 
 from src import keyboard, database, common_functions as cf, jobs
 
-
 KEYBOARD_MAP = {
     consts.ATTENDANCE: keyboard.attendance_keyboard,
     consts.COURSES: keyboard.courses_keyboard,
@@ -23,7 +22,8 @@ def parameters(update: Update, context: CallbackContext):
     """start parameters conversation"""
     language_code = update.effective_user.language_code
     user_id = update.effective_user.id
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=update.effective_chat.id,
         text=get_text('main_parameters_text', language_code).text(
             cf.pretty_user_parameters(database.get_user_parameters(user_id), language_code),
@@ -264,13 +264,15 @@ def __user_time_input_chg(update: Update, context: CallbackContext, validation, 
 
         # get and send mailing page
         text, reply_markup = __get_mailing_page(user_id, language_code)
-        context.bot.send_message(
+        cf.send_message(
+            context=context,
             chat_id=chat_id,
             text=text,
             reply_markup=reply_markup,
         )
         return consts.PARAMETERS_MAIN_STATE
-    context.bot.send_message(
+    cf.send_message(
+        context=context,
         chat_id=chat_id,
         text=get_text('format_error_parameters_text', language_code).text(),
     )
@@ -304,7 +306,8 @@ def parameters_error(name):
 
     def error(update: Update, context: CallbackContext):
         language_code = update.effective_user.language_code
-        context.bot.send_message(
+        cf.send_message(
+            context=context,
             chat_id=update.effective_chat.id,
             text=get_text(f'{name}_parameters_error_text', language_code).text(),
         )

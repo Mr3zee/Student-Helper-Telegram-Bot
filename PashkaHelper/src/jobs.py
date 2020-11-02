@@ -2,7 +2,7 @@ import datetime
 
 from telegram.ext import CallbackContext, JobQueue, Job
 
-import src.common_functions as cf
+import src.timetable as tt
 import src.database as db
 import src.handler as hdl
 import src.time_management as tm
@@ -42,7 +42,7 @@ def mailing_job(context: CallbackContext):
     # exit all conversations to avoid collisions
     nullify_conversations(user_id, chat_id)
 
-    cf.send_today_timetable(
+    tt.send_today_timetable(
         context=context,
         chat_id=chat_id,
         user_id=user_id,

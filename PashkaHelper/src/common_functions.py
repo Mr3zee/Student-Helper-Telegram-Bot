@@ -1,64 +1,10 @@
 from telegram.ext import CallbackContext, MessageHandler, CommandHandler
 from telegram import Update, error
 
-import src.keyboard as keyboard
 import src.database as database
-from src import timetable as tt
-from src import time_management as tm
 from src.text import get_text
 
 from static import consts
-
-
-def send_weekday_timetable(context: CallbackContext, user_id, chat_id, weekday, language_code,
-                           disable_notification=False, footer=None):
-    """
-    Sends timetable for specified day
-    """
-
-    # get user parameters
-    attendance, utcoffset = database.get_user_attrs([consts.ATTENDANCE, consts.UTCOFFSET], user_id=user_id).values()
-
-    if weekday == consts.TODAY:
-        # get current day
-        weekday = tm.get_today_weekday(utcoffset)
-
-    week_parity = tm.get_week_parity()
-
-    timetable = tt.get_weekday_timetable(
-        weekday=weekday,
-        subject_names=database.get_user_subject_names(user_id),
-        attendance=attendance,
-        week_parity=week_parity,
-        language_code=language_code,
-        footer=footer,
-    )
-
-    context.bot.send_message(
-        chat_id=chat_id,
-        text=timetable,
-        reply_markup=keyboard.timetable_keyboard(
-            weekday=weekday,
-            attendance=attendance,
-            week_parity=week_parity,
-            language_code=language_code
-        ),
-        disable_notification=disable_notification,
-    )
-
-
-def send_today_timetable(context: CallbackContext, user_id, chat_id, language_code,
-                         disable_notifications=False, footer=None):
-    """Sends timetable for current day"""
-    return send_weekday_timetable(
-        context=context,
-        user_id=user_id,
-        chat_id=chat_id,
-        weekday=consts.TODAY,
-        language_code=language_code,
-        disable_notification=disable_notifications,
-        footer=footer,
-    )
 
 
 def simple_handler(name, type, command=None, filters=None, reply_markup=None, ret_state=None):
@@ -76,7 +22,8 @@ def simple_handler(name, type, command=None, filters=None, reply_markup=None, re
 
         text = get_text(f'{name}_text', language_code).text()
 
-        context.bot.send_message(
+        send_message(
+            context=context,
             chat_id=chat_id,
             text=text,
             reply_markup=reply_markup,
@@ -102,25 +49,36 @@ def manage_callback_query(update: Update):
     return data, language_code
 
 
-def send_message(context: CallbackContext, text, language_code, user_nick=None, chat_id=None):
+def send_notification(context: CallbackContext, text, language_code, user_nick=None, chat_id=None):
     """Send simple message"""
     chat_id = database.get_user_attr(consts.CHAT_ID, user_nick=user_nick) if chat_id is None else chat_id
-    try:
-        context.bot.send_message(
-            chat_id=chat_id,
-            text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
-        )
-    except error.Unauthorized:
-        pass
+    send_message(
+        context=context,
+        chat_id=chat_id,
+        text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
+    )
 
 
-def send_message_to_all(context: CallbackContext, text, sender_id, language_code):
+def send_notification_to_all(context: CallbackContext, text, sender_id, language_code):
     """Send simple message to all users except sender"""
     chat_ids = database.gat_attr_column(consts.CHAT_ID)
     for chat_id in chat_ids:
         if chat_id == sender_id:
             continue
-        send_message(context, text, chat_id=chat_id, language_code=language_code)
+        send_notification(context, text, chat_id=chat_id, language_code=language_code)
+
+
+def send_message(context: CallbackContext, chat_id, text, reply_markup=None, disable_notification=None):
+    """wrapper for context.bot.send_message that ignores Unauthorized error"""
+    try:
+        context.bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            reply_markup=reply_markup,
+            disable_notification=disable_notification,
+        )
+    except error.Unauthorized:
+        pass
 
 
 def edit_message(update: Update, text, reply_markup=None):
