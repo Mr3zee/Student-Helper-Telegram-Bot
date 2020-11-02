@@ -21,9 +21,9 @@ def get_today_weekday(utcoffset: int) -> str:
     return weekdays[(datetime.utcnow() + timedelta(hours=utcoffset)).weekday()]
 
 
-def to_utc_converter(input_date: datetime, utcoffset: timedelta):
+def to_utc_converter(input_time: datetime, utcoffset: timedelta):
     """convert date with offset to utc"""
-    return input_date - utcoffset
+    return input_time - utcoffset
 
 
 def get_week_parity():
@@ -32,4 +32,12 @@ def get_week_parity():
 
 
 def today_id(utcoffset: timedelta):
-    return (datetime.today() - utcoffset).toordinal()
+    return get_today(utcoffset).toordinal()
+
+
+def get_today(utcoffset):
+    return datetime.utcnow() + utcoffset
+
+
+def get_next_day(day: date, offset: int) -> date:
+    return day + timedelta(days=offset)

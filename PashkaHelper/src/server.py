@@ -240,5 +240,10 @@ class Server:
             include_tailing_empty_rows=False,
         )[1:]
 
+    # ------ DEADLINES ------
+
+    def get_deadlines(self, day):
+        return None, None
+
 
 Server.get_instance().get_random_quote()

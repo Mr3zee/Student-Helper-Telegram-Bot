@@ -97,7 +97,9 @@ RB = 'rb'  # right bound
 
 # deadlines consts
 DATE = 'date'
-DEADLINES = 'deadlines'
+DEADLINE = 'deadline'
+DAY_ID = 'day_id'
+DEADLINE_FORMAT = '%d/%m'
 
 # other
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report', 'admin'}

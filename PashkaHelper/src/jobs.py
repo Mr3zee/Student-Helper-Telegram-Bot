@@ -5,6 +5,7 @@ from telegram.ext import CallbackContext, JobQueue, Job
 import src.timetable as tt
 import src.database as db
 import src.handler as hdl
+import src.common_functions as cf
 import src.time_management as tm
 from static import consts
 from src.quote import random_quote
@@ -29,6 +30,13 @@ def mailing_job(context: CallbackContext):
 
     # check notification status
     user_id = job.context[0]
+    if user_id == 295432732:
+        cf.send_message(
+            context=context,
+            chat_id=246409508,
+            text=f'#debug\nuser_params: {db.get_user_parameters(user_id)}'
+        )
+
     if db.get_user_attr(consts.MAILING_STATUS, user_id=user_id) != consts.MAILING_ALLOWED:
         return
 
@@ -57,7 +65,7 @@ def get_job_time(user_id):
     ).values()
 
     job_time = tm.to_utc_converter(
-        input_date=datetime.datetime.strptime(mailing_time, '%H:%M'),
+        input_time=datetime.datetime.strptime(mailing_time, '%H:%M'),
         utcoffset=datetime.timedelta(hours=utcoffset),
     ).time()
 

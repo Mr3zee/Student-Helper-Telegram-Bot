@@ -16,7 +16,7 @@ import src.jobs as jobs
 import src.subject as subject
 
 from src.text import get_text
-from src import timetable as tt, admin as ad
+from src import timetable as tt, admin as ad, deadline
 
 import logging
 
@@ -55,14 +55,17 @@ def main_callback(update: Update, context: CallbackContext):
     """
     data, language_code = cf.manage_callback_query(update)
     parsed_data = data.split('_')
-    if parsed_data[0] == consts.TIMETABLE:
+    callback_type = parsed_data[0]
+    if callback_type == consts.TIMETABLE:
         return tt.timetable_callback(update, parsed_data, language_code)
-    elif parsed_data[0] == consts.SUBJECT:
+    elif callback_type == consts.SUBJECT:
         return subject.subject_callback(update, context, parsed_data, language_code)
-    elif parsed_data[0] == consts.HELP:
+    elif callback_type == consts.HELP:
         return help_callback(update, parsed_data, language_code)
-    elif parsed_data[0] == consts.ADMIN:
+    elif callback_type == consts.ADMIN:
         return ad.admin_callback(update, parsed_data, language_code)
+    elif callback_type == consts.DEADLINE:
+        return deadline.deadline_callback(update, parsed_data[1])
     else:
         return unknown_callback(update, context)
 
@@ -248,6 +251,8 @@ main_hdl.extend([
 
     CommandHandler(command='timetable', callback=tt.timetable),
     CommandHandler(command='today', callback=tt.today),
+
+    CommandHandler(command='deadline', callback=deadline.deadline),
 
     CommandHandler(command='admin', callback=ad.admin),
     CommandHandler(command='doc', callback=doc),

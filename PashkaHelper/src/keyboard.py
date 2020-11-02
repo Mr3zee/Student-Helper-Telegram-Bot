@@ -1,7 +1,10 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+import datetime
 
 from util import util
 from src.text import get_text
+
+from src import time_management as tm
 
 from static import consts, buttons
 
@@ -338,3 +341,18 @@ def admin_ls(page_number, page_type, language_code):
     elif page_type != consts.SINGLE_PAGE:
         raise ValueError(f'Invalid page_type: {page_type}')
     return InlineKeyboardMarkup(inline_keyboard=[ls_buttons])
+
+
+def deadlines(utcoffset, language_code):
+    def make_day_button(day: datetime.date, offset):
+        day = tm.get_next_day(day, offset).strftime(consts.DEADLINE_FORMAT)
+        return InlineKeyboardButton(
+            text=day,
+            callback_data=buttons.DEADLINE % {consts.DAY_ID: day}
+        )
+
+    today = tm.get_today(utcoffset)
+    keyboard = [
+        [make_day_button(today, i) for i in range(6)]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

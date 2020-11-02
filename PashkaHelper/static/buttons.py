@@ -113,3 +113,6 @@ ADMIN_LS = 'admin_ls_%(page_number)d_button'
 NEXT_PAGE = 'admin_ls_next_button'
 PREV_PAGE = 'admin_ls_prev_button'
 UPDATE_PAGE = 'admin_ls_update_button'
+
+
+DEADLINE = 'deadline_%(day_id)s_button'
