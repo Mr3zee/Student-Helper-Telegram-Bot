@@ -1,7 +1,11 @@
+import datetime
+import random
+
 import pygsheets
+from pygsheets.worksheet import Worksheet
 
 from static import consts
-from static.config import TIMETABLE_URL, service_file_path
+from static.config import TIMETABLE_URL, QUOTES_URL, service_file_path
 import src.subject as sub
 
 import logging
@@ -55,17 +59,23 @@ class Server:
         'ч/нч': consts.WEEK_BOTH,
     }
 
-    # deadlines consts
+    # --- params for parsing deadlines ---
     __dl_column = (4, 14)
     __dl_days_start = 'B2'
-    __zero_day_id = 737724  # date(2020, 10, 26).toordinal()
+    __zero_day_id = datetime.date(2020, 10, 26).toordinal()
 
     def __init__(self):
         logger.info('Starting Server...')
         if not Server.__instance:
             self.__gc = pygsheets.authorize(service_file=service_file_path)
-            self.__sh_timetable = self.__gc.open_by_url(TIMETABLE_URL)
-            self.__wks = self.__sh_timetable.sheet1
+
+            # timetable
+            self.__sh_tt = self.__gc.open_by_url(TIMETABLE_URL)
+            self.__wks_tt: Worksheet = self.__sh_tt.sheet1
+
+            # quotes
+            self.__sh_qu = self.__gc.open_by_url(QUOTES_URL)
+            self.__wks_qu: Worksheet = self.__sh_qu.sheet1
 
         logger.info('Server started successfully')
 
@@ -75,11 +85,13 @@ class Server:
             cls.__instance = Server()
         return cls.__instance
 
+    # ------ TIMETABLE ------
+
     def get_weekday_timetable(self, weekday, valid_subject_names, attendance, week_parity) -> dict:
         """returns weekday as dict {attendance: list of subjects}"""
 
         # get all values
-        values = self.__get_values_from_table()
+        values = self.__get_tt_values()
         # get the filter for user's subjects
         subject_filter = Server.__subject_compare(valid_subject_names)
 
@@ -93,7 +105,7 @@ class Server:
         """get timetable for specified subject"""
 
         # get all values
-        values = self.__get_values_from_table()
+        values = self.__get_tt_values()
         # get the filter for the subject
         subject_filter = Server.__subject_compare(subject_set=sub.SUBJECTS[subject].get_all_timetable_names(subtype))
         # dict {weekday: {online: tt, offline: tt}} - values maybe None
@@ -131,9 +143,9 @@ class Server:
 
         return {'online': online_dict, 'offline': offline_dict}
 
-    def __get_values_from_table(self):
+    def __get_tt_values(self):
         """gets timetable from google sheets"""
-        return self.__wks.get_values(self.__tt_top_left, self.__tt_bottom_right)
+        return self.__wks_tt.get_values(self.__tt_top_left, self.__tt_bottom_right)
 
     @staticmethod
     def __true_filter(*args, **kwargs):
@@ -210,3 +222,23 @@ class Server:
                 }
                 retval.append(subject)
         return retval
+
+    # ------ QUOTE ------
+
+    def get_random_quote(self):
+        values = self.__get_quotes()
+        count = len(values)
+        index = random.randint(0, count - 1)
+        quote, author = values[index]
+        while not author and index > 0:
+            index = index - 1
+            author = values[index][1]
+        return quote, author
+
+    def __get_quotes(self):
+        return self.__wks_qu.get_all_values(
+            include_tailing_empty_rows=False,
+        )[1:]
+
+
+Server.get_instance().get_random_quote()

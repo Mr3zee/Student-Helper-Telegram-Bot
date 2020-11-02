@@ -104,7 +104,6 @@ def today(update: Update, context: CallbackContext):
     )
 
 
-
 def get_subject_timetable(subject, subtype, attendance, language_code):
     """get a timetable for specified subject"""
 

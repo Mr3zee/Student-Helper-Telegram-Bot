@@ -7,7 +7,6 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 import src.subject as subject
-from src.text import get_text
 from src.app import app
 
 from static import config, consts
@@ -329,19 +328,4 @@ def update_conversations(conversations: dict):
     """save conversations to database"""
     db_conversations = get_persistence_row(name=consts.CONVERSATIONS)
     db_conversations.data = json.loads(encode_conversations_to_json(conversations))
-    db.session.commit()
-
-
-def load_jobs() -> list:
-    """load jobs from database"""
-    jobs = get_persistence_row(name=consts.JOBS).data
-    if jobs is None:
-        return []
-    return jobs
-
-
-def save_jobs(jobs: list):
-    """Save jobs to database"""
-    db_jobs = get_persistence_row(name=consts.JOBS)
-    db_jobs.data = json.loads(json.dumps(jobs, default=str))
     db.session.commit()

@@ -7,7 +7,7 @@ import src.database as db
 import src.handler as hdl
 import src.time_management as tm
 from static import consts
-from src.text import random_quote
+from src.quote import random_quote
 
 
 def nullify_conversations(user_id, chat_id):
@@ -20,15 +20,21 @@ def mailing_job(context: CallbackContext):
     """
     Sends everyday mailing with timetable
     job.context:
-     - [0]: chat_id
-     - [1]: user_id
+     - [0]: user_id
+     - [1]: chat_id
      - [2]: language_code
      - [3]: notification_status
     """
+
     job = context.job
-    # get parameters
-    chat_id = job.context[0]
-    user_id = job.context[1]
+
+    # check notification status
+    user_id = job.context[0]
+    if db.get_user_attr(consts.MAILING_STATUS, user_id=user_id) != consts.MAILING_ALLOWED:
+        return
+
+    # get other parameters
+    chat_id = job.context[1]
     language_code = job.context[2]
     notification_status = job.context[3]
     disable_notifications = notification_status == consts.NOTIFICATION_DISABLED
@@ -42,7 +48,7 @@ def mailing_job(context: CallbackContext):
         user_id=user_id,
         language_code=language_code,
         disable_notifications=disable_notifications,
-        footer=f'\n{random_quote(language_code)}'
+        footer=f'\n{random_quote(language_code)}',
     )
 
 
@@ -70,7 +76,7 @@ def set_mailing_job(job_queue: JobQueue, user_id, chat_id, language_code):
         callback=mailing_job,
         time=job_time,
         days=(0, 1, 2, 3, 4, 5),
-        context=[chat_id, user_id, language_code, notification_status],
+        context=[user_id, chat_id, language_code, notification_status],
         name=consts.MAILING_JOB,
     )
 

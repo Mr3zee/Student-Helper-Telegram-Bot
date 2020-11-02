@@ -115,7 +115,7 @@ value: Аргумент должен быть больше -1 и меньше 7
 
 [quote_text]
 [body]
-Цитата дня: <b>"^quote"</b> - ^author\0
+"^quote" - ^author\0
 [/body]
 [/quote_text]
 
