@@ -89,6 +89,7 @@
     "mute_all_users_admin_text": "Все пользователи <b>muted</b>",
     "unmute_user_admin_text": "Пользователь <b>unmuted</b>",
     "unmute_all_users_admin_text": "Все пользователи <b>unmuted</b>",
+    "invalid_flag_value_admin_text": "Неверное значение флага",
 
     "report_text": "Выведи следующим сообщением отзыв. Он будет отправлен разработчикам",
     "report_sent_text": "Спасибо за отзыв!\n\nМы сделаем все возможное, чтобы исправить это безобразие",

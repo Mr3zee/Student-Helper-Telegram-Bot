@@ -2,10 +2,7 @@ from telegram import ParseMode, Bot
 from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
 from static import config
-import src.handler as hdl
-from src.app import app, get_app_route, PORT
-import src.database as db
-import src.jobs as jobs
+from src import app, handler as hdl, database as db, jobs
 
 import logging
 
@@ -111,12 +108,12 @@ add_handlers(dispatcher)
 jobs.load_jobs(job_queue)
 
 # set up web page to receive updates from Telegram
-get_app_route(bot, dispatcher, db.update_user_info)
+app.get_app_route(bot, dispatcher, db.update_user_info)
 
 logger.info('Staring bot...')
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=PORT)
+    app.app.run(host='127.0.0.1', port=app.PORT)
 
 # TODO:
 #  CLIENT
@@ -128,8 +125,9 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  other groups
-#  silence mode for /admin -n
+#  silence mode for /admin -n +
 #  SERVER
+#  optimize get_text and MLWText
 #  make enums
 #  mlw_tools normal errors
 #  fix buttons copypaste

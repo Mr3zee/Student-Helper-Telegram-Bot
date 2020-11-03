@@ -72,6 +72,17 @@ def admin_request_notify(context: CallbackContext, args, language_code):
         text = get_text('no_args_notify_admin_text', language_code).text()
     else:
         params = args[1].split('=')
+        n_mode = False
+        if len(args) >= 3:
+            tr_flag, val = args[2].split('=')
+            if tr_flag != '-s':
+                text = get_text('invalid_flag_admin_text', language_code).text()
+                return text, ret_lvl, reply_markup
+            if val not in {'1', '0'}:
+                text = get_text('invalid_flag_value_admin_text', language_code).text()
+                return text, ret_lvl, reply_markup
+            n_mode = val == '1'
+        context.chat_data['n_mode'] = n_mode
         ret_lvl = consts.ADMIN_NOTIFY_STATE
         reply_markup = keyboard.cancel_operation(consts.ADMIN_NOTIFY_STATE)(language_code)
         if params[0] == '--all':
@@ -92,23 +103,23 @@ def admin_notify(update: Update, context: CallbackContext):
     """sends provided text to specified users"""
     language_code = update.effective_user.language_code
 
-    user_nick = context.chat_data.get('notify_username_admin')
-    context.chat_data.pop('notify_username_admin', None)
+    user_nick = context.chat_data.pop('notify_username_admin', None)
+    disable_notification = context.chat_data.pop('n_mode', None)
 
     notification_text = update.message.text
 
     # send notification
     if user_nick is not None:
         cf.send_notification(
-            context=context,
-            user_nick=user_nick,
-            text=notification_text, language_code=language_code,
+            context=context, user_nick=user_nick,
+            text=notification_text, disable_notification=disable_notification,
+            language_code=language_code,
         )
     else:
         cf.send_notification_to_all(
-            context=context,
-            sender_id=update.effective_user.id,
-            text=notification_text, language_code=language_code,
+            context=context, sender_id=update.effective_user.id,
+            text=notification_text, disable_notification=disable_notification,
+            language_code=language_code,
         )
 
     # notify sender that everything is ok

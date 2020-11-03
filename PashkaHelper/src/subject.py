@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler
 
 from src.text import get_text
-from src.timetable import get_subject_timetable
+import src.timetable as tt
 import src.database as database
 import src.keyboard as keyboard
 import src.common_functions as cf
@@ -163,7 +163,7 @@ def get_subject_info(subject, user_id, page, language_code, request: dict = None
 
     # select page to return
     if page == consts.TIMETABLE_PAGE:
-        timetable = get_subject_timetable(subject, subtype, attendance, language_code)
+        timetable = tt.get_subject_timetable(subject, subtype, attendance, language_code)
         return get_text('subject_timetable_text', language_code).text({
             consts.TIMETABLE: timetable,
         }), attendance
@@ -205,7 +205,7 @@ def subject_handler(subject: str) -> CommandHandler:
     return CommandHandler(command=SUBJECTS[subject].get_command(), callback=inner)
 
 
-def subject_callback(update: Update, context: CallbackContext, data: list, language_code):
+def subject_callback(update: Update, data: list, language_code):
     """
     Callback function for subject keyboard
      - data: list

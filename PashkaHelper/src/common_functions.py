@@ -49,23 +49,28 @@ def manage_callback_query(update: Update):
     return data, language_code
 
 
-def send_notification(context: CallbackContext, text, language_code, user_nick=None, chat_id=None):
-    """Send simple message"""
+def send_notification(context: CallbackContext, text, language_code, user_nick=None, chat_id=None,
+                      disable_notification=False):
+    """Send notification to specified user"""
     chat_id = database.get_user_attr(consts.CHAT_ID, user_nick=user_nick) if chat_id is None else chat_id
     send_message(
-        context=context,
-        chat_id=chat_id,
+        context=context, chat_id=chat_id,
         text=get_text('notification_admin_text', language_code).text({consts.TEXT: text}),
+        disable_notification=disable_notification,
     )
 
 
-def send_notification_to_all(context: CallbackContext, text, sender_id, language_code):
+def send_notification_to_all(context: CallbackContext, text, sender_id, language_code, disable_notification=False):
     """Send simple message to all users except sender"""
     chat_ids = database.gat_attr_column(consts.CHAT_ID)
     for chat_id in chat_ids:
         if chat_id == sender_id:
             continue
-        send_notification(context, text, chat_id=chat_id, language_code=language_code)
+        send_notification(
+            context=context, chat_id=chat_id,
+            text=text, disable_notification=disable_notification,
+            language_code=language_code
+        )
 
 
 def send_message(context: CallbackContext, chat_id, text, reply_markup=None, disable_notification=None):

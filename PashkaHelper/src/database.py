@@ -176,11 +176,13 @@ def get_all_users():
 
 
 def check_unique_fields(user_id=None, user_nick=None, chat_id=None):
+    """checks if provided fields are not None simultaneously"""
     if user_id is None and user_nick is None and chat_id is None:
         raise ValueError('All fields cannot be None simultaneously')
 
 
 def __valid_attr(attr):
+    """if valid attr name is provided"""
     return attr in PARAMETERS or attr in USER_INFO
 
 
@@ -268,6 +270,7 @@ def set_user_attrs(attrs: dict, user_id: int = None, user_nick: str = None, chat
 
 
 def set_attr_to_all(attr: str, new_value):
+    """set specified attr to all users"""
     if attr in PARAMETERS:
         users = db.session.query(UserParameters).all()
     elif attr in USER_INFO:
@@ -301,7 +304,6 @@ def valid_utcoffset(new_tzinfo: str):
 
 class Persistence(db.Model):
     """Database for saving bot's states"""
-
     __tablename__ = 'persistence'
     name = db.Column(db.String(50), primary_key=True)
     data = db.Column(db.JSON)

@@ -6,12 +6,12 @@ from telegram.ext import MessageHandler, CommandHandler, CallbackContext, Filter
     ConversationHandler
 from telegram.utils.helpers import mention_html
 
+import static.consts as consts
+
 import src.keyboard as keyboard
 import src.database as database
 import src.common_functions as cf
-import static.consts as consts
-
-import src.parameters_hdl as ptrs
+import src.parameters as ptrs
 import src.jobs as jobs
 import src.subject as subject
 
@@ -59,7 +59,7 @@ def main_callback(update: Update, context: CallbackContext):
     if callback_type == consts.TIMETABLE:
         return tt.timetable_callback(update, parsed_data, language_code)
     elif callback_type == consts.SUBJECT:
-        return subject.subject_callback(update, context, parsed_data, language_code)
+        return subject.subject_callback(update, parsed_data, language_code)
     elif callback_type == consts.HELP:
         return help_callback(update, parsed_data, language_code)
     elif callback_type == consts.ADMIN:
@@ -90,7 +90,7 @@ def cancel_callback(update: Update, context: CallbackContext):
 cancel_callback_hdl = CallbackQueryHandler(callback=cancel_callback, pass_user_data=True)
 
 
-def help(update: Update, context: CallbackContext):
+def help_cmd(update: Update, context: CallbackContext):
     """help command callback"""
     language_code = update.effective_user.language_code
     cf.send_message(
@@ -247,7 +247,7 @@ for sub in subject.SUBJECTS:
 # add all other main handlers
 main_hdl.extend([
     CommandHandler(command='parameters', callback=ptrs.parameters),
-    CommandHandler(command='help', callback=help),
+    CommandHandler(command='help', callback=help_cmd),
 
     CommandHandler(command='timetable', callback=tt.timetable),
     CommandHandler(command='today', callback=tt.today),
