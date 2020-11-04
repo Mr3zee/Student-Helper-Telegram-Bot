@@ -99,7 +99,7 @@ RB = 'rb'  # right bound
 DATE = 'date'
 DEADLINE = 'deadline'
 DAY_ID = 'day_id'
-DEADLINE_FORMAT = '%d/%m'
+DEADLINE_DAY_FORMAT = '%d/%m'
 
 # other
 DOC_COMMANDS = {'doc', 'help', 'parameters', 'today', 'timetable', 'report', 'admin'}

@@ -41,7 +41,7 @@
 /bj  БЖД
 
 <u>Дополнительно:</u>
-Контакты <a href = '&contacts_36_link'>3236</a> | <a href = '&contacts_37_link'>3237</a>
+Контакты <a href = '&contacts_36_link'>3236</a> | <a href = '&contacts_37_link'>3237</a> | <a href ='&teachers_link'>Преподы</a>
 [/body]
 [/help_additional_text]
 
@@ -115,7 +115,7 @@ value: Аргумент должен быть больше -1 и меньше 7
 
 [quote_text]
 [body]
-"^quote" - ^author\0
+"^quote" - ^author#
 [/body]
 [/quote_text]
 
@@ -702,3 +702,21 @@ False:
 [/case]
 [/body]
 [/doc_text]
+
+[deadline_text]
+[body]
+<b>Дедлайны на ^date, ^weekday</b>
+
+^deadline
+
+<a href = '&table_link'>Таблица</a> | <a href = '&exit_link'>Отменить</a> дедлайны
+Посмотреть другой день:
+[/body]
+[/deadline_text]
+
+[dl_template_text]
+[body]
+<u>^subject:</u>
+^deadline#
+[/body]
+[/dl_template_text]

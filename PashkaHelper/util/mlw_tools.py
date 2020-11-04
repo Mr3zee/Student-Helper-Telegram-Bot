@@ -253,9 +253,6 @@ class MLWParser(BaseParser):
                 return make_retval()
             elif self._is_ch('\\'):
                 self._next_char()
-                if self._is_ch('0'):
-                    self._next_char()
-                    return make_retval()
 
             text.append(self._take_char())
 

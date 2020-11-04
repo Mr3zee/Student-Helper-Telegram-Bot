@@ -252,7 +252,7 @@ main_hdl.extend([
     CommandHandler(command='timetable', callback=tt.timetable),
     CommandHandler(command='today', callback=tt.today),
 
-    CommandHandler(command='deadline', callback=deadline.deadline),
+    CommandHandler(command='dl', callback=deadline.deadline),
 
     CommandHandler(command='admin', callback=ad.admin),
     CommandHandler(command='doc', callback=doc),
@@ -337,8 +337,8 @@ handlers['not_start'] = cf.simple_handler(name='not_start', type=consts.MESSAGE,
 # Bot father commands
 # help - главное меню
 # parameters - окно настроек
-# today - расписание на сегодня
-# timetable - окно расписания
+# tt - расписание
+# dl - дедлайны
 # doc - документация
 # report - сообщение разработчикам
 # al - алгосики

@@ -1,11 +1,14 @@
 import datetime
 import random
+import re
+from typing import List
 
 import pygsheets
+from pygsheets import Cell
 from pygsheets.worksheet import Worksheet
 
 from static import consts
-from static.config import TIMETABLE_URL, QUOTES_URL, service_file_path
+from static.config import TIMETABLE_URL, QUOTES_URL, DEADLINES_URL, service_file_path
 import src.subject as sub
 
 import logging
@@ -60,9 +63,11 @@ class Server:
     }
 
     # --- params for parsing deadlines ---
-    __dl_column = (4, 14)
-    __dl_days_start = 'B2'
-    __zero_day_id = datetime.date(2020, 10, 26).toordinal()
+    __dl_column_frame = ('4', '14')  # dl frame
+    __dl_offset = 1  # index of the first dl column
+    __dl_zero_day_id = datetime.date(2020, 10, 26).toordinal()  # first day in table
+    __dl_subject_col = 'A'  # col with subject names
+    __dl_weekday_row = 3  # row with weekday names
 
     def __init__(self):
         logger.info('Starting Server...')
@@ -76,6 +81,10 @@ class Server:
             # quotes
             self.__sh_qu = self.__gc.open_by_url(QUOTES_URL)
             self.__wks_qu: Worksheet = self.__sh_qu.sheet1
+
+            # deadlines
+            self.__sh_dl = self.__gc.open_by_url(DEADLINES_URL)
+            self.__wks_dl: Worksheet = self.__sh_dl.sheet1
 
         logger.info('Server started successfully')
 
@@ -226,24 +235,62 @@ class Server:
     # ------ QUOTE ------
 
     def get_random_quote(self):
+        """return random quote"""
         values = self.__get_quotes()
         count = len(values)
         index = random.randint(0, count - 1)
         quote, author = values[index]
+        # find quote's author
         while not author and index > 0:
             index = index - 1
             author = values[index][1]
         return quote, author
 
     def __get_quotes(self):
+        """return all quotes"""
         return self.__wks_qu.get_all_values(
             include_tailing_empty_rows=False,
-        )[1:]
+        )[1:]  # first row is cols names
 
     # ------ DEADLINES ------
 
-    def get_deadlines(self, day):
-        return None, None
+    def get_deadlines(self, day: int):
+        """get deadlines as (subject, deadline)"""
+
+        # find day's index from zero day
+        day_offset = day - self.__dl_zero_day_id
+
+        # find day's column
+        column = self.__column_name(day_offset // 7 + day_offset)  # every week has one blank col
+
+        weekday = self.__wks_dl.get_value(f'{column}{self.__dl_weekday_row}')
+
+        retval = []
+        dls = zip(self.__get_dl_col(self.__dl_subject_col), self.__get_dl_col(column))
+        for subject, dl in dls:  # type: List[Cell]
+            formatted_dl = Server.__delete_links(dl[0].value_unformatted)
+            if formatted_dl != '':
+                retval.append((subject[0].value_unformatted, formatted_dl))
+        return retval, weekday
+
+    def __column_name(self, index):
+        ret_val = ''
+        index += self.__dl_offset + 1
+        while index > 0:
+            index, ch = divmod(index - 1, 26)
+            ret_val += chr(ch + ord('a'))
+        return ret_val[::-1].capitalize()
+
+    def __get_dl_col(self, col):
+        return self.__wks_dl.get_values(
+            start=col + self.__dl_column_frame[0],
+            end=col + self.__dl_column_frame[1],
+            returnas='cells',
+        )
+
+    @staticmethod
+    def __delete_links(cell):
+        return re.sub(r'\*.*\*', '', cell).strip()
 
 
 Server.get_instance().get_random_quote()

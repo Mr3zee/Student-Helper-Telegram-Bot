@@ -345,7 +345,7 @@ def admin_ls(page_number, page_type, language_code):
 
 def deadlines(utcoffset, language_code):
     def make_day_button(day: datetime.date, offset):
-        day = tm.get_next_day(day, offset).strftime(consts.DEADLINE_FORMAT)
+        day = tm.get_next_day(day, offset).strftime(consts.DEADLINE_DAY_FORMAT)
         return InlineKeyboardButton(
             text=day,
             callback_data=buttons.DEADLINE % {consts.DAY_ID: day}

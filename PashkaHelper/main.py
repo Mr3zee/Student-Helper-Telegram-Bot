@@ -121,11 +121,11 @@ if __name__ == '__main__':
 #  mark tasks in tables
 #  add to /today links
 #  teachers info
-#  add deadlines
+#  add deadlines +
 #  add everyday deadlines
 #  PE self timetable
 #  other groups
-#  silence mode for /admin -n +
+#  merge /today into /timetable
 #  SERVER
 #  optimize get_text and MLWText
 #  make enums
