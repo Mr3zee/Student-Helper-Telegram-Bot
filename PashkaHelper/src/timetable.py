@@ -47,7 +47,7 @@ def timetable_args_error(context: CallbackContext, chat_id, error_type, language
 
 def timetable(update: Update, context: CallbackContext):
     """
-    sends timetable main page if no argument specified
+    sends timetable for current today
     otherwise sends timetable for specified day: 0 - 7 -> monday - sunday
     """
     language_code = update.effective_user.language_code
@@ -56,12 +56,13 @@ def timetable(update: Update, context: CallbackContext):
     args = context.args
 
     week_parity = tm.get_week_parity()
-    attendance = database.get_user_attr(consts.ATTENDANCE, user_id)
 
-    if len(args) > 1:
-        # too many args
-        return timetable_args_error(context, chat_id, 'many', language_code)
-    elif len(args) == 1:
+    attendance, utcoffset = database.get_user_attrs(
+        attrs_names=[consts.ATTENDANCE, consts.UTCOFFSET],
+        user_id=user_id,
+    ).values()
+
+    if len(args) >= 1:
         # check if arg is integer
         try:
             weekday = int(args[0])
@@ -70,40 +71,28 @@ def timetable(update: Update, context: CallbackContext):
         if weekday > 6 or weekday < 0:
             # wrong day index
             return timetable_args_error(context, chat_id, 'value', language_code)
-        # get timetable for specified day
+
         weekday = tm.weekdays[weekday]
-        text = get_weekday_timetable(
+    else:
+        # current day
+        weekday = tm.get_today_weekday(utcoffset)
+
+    cf.send_message(
+        context=context,
+        chat_id=chat_id,
+        text=get_weekday_timetable(
             weekday=weekday,
             subject_names=database.get_user_subject_names(user_id),
             attendance=attendance,
             week_parity=week_parity,
             language_code=language_code,
-        )
-    else:
-        # timetable main page
-        weekday = tm.get_today_weekday(database.get_user_attr(consts.UTCOFFSET, user_id=user_id))
-        text = get_text('timetable_text', language_code).text()
-    cf.send_message(
-        context=context,
-        chat_id=chat_id,
-        text=text,
+        ),
         reply_markup=keyboard.timetable_keyboard(
             weekday=weekday,
             attendance=attendance,
             week_parity=week_parity,
             language_code=language_code,
         ),
-    )
-
-
-def today(update: Update, context: CallbackContext):
-    """sends today timetable"""
-    send_weekday_timetable(
-        context=context,
-        user_id=update.effective_user.id,
-        chat_id=update.effective_chat.id,
-        weekday=consts.TODAY,
-        language_code=update.effective_user.language_code,
     )
 
 
@@ -188,7 +177,7 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, 
         return get_text('today_sunday_text', language_code=language_code).text()
 
     # get text templates
-    template = get_text('weekday_text', language_code)
+    template = get_text('timetable_text', language_code)
 
     template.add_global_vars({
         consts.WEEKDAY: get_text(f'{weekday}_timetable_text', language_code).text(),
@@ -223,6 +212,7 @@ def get_weekday_timetable(weekday: str, subject_names, attendance, week_parity, 
 
 def __put_together(online, offline, template, language_code):
     """make header(s) and glue it to timetable(s)"""
+
     def inner(attendance, table):
         header = get_text(f'{attendance}_timetable_text', language_code).text() + '\n'
         tt.append(header + __make_timetable(table, template))

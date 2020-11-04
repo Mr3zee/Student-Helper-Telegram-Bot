@@ -249,8 +249,7 @@ main_hdl.extend([
     CommandHandler(command='parameters', callback=ptrs.parameters),
     CommandHandler(command='help', callback=help_cmd),
 
-    CommandHandler(command='timetable', callback=tt.timetable),
-    CommandHandler(command='today', callback=tt.today),
+    CommandHandler(command='tt', callback=tt.timetable),
 
     CommandHandler(command='dl', callback=deadline.deadline),
 

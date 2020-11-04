@@ -66,5 +66,4 @@ def pretty_deadlines(deadlines, language_code):
         }))
     if not lst:
         return get_text('no_deadlines_text', language_code).text()
-    print(lst)
     return '\n\n'.join(lst)

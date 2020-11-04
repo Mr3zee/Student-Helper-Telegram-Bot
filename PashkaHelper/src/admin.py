@@ -13,7 +13,8 @@ def admin(update: Update, context: CallbackContext):
     admin's control panel
     current functions:
     '/admin [-ls]' - list of all users
-    '/admin [-n <--user=user_nick | --all>]' - send a notification to the specified user or to all users
+    '/admin [-n <--user=user_nick | --all> [--s=<0 | 1>] ]' - send a notification to the specified user or to all users.
+        Flag --s (silence) is set to 0 by default
     '/admin [-m |-um <--user=user_nick | --all>]' - mute/unmute reports from user
     """
     language_code = update.effective_user.language_code

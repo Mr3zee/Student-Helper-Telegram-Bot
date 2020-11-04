@@ -16,8 +16,8 @@
     "saturday_timetable_text": "Суббота",
 
     "timetable_mailing_greeting_text": "Доброго времени суток!\nЯ принес твое сегодняшнее расписание, чтобы ты ничего не забыл)",
-    "offline_timetable_text": "<em>Очно:</em>",
-    "online_timetable_text": "<em>Заочно:</em>",
+    "offline_timetable_text": "<u>Очно:</u>",
+    "online_timetable_text": "<u>Заочно:</u>",
     "odd_week_timetable_text": "нечетная",
     "even_week_timetable_text": "четная",
     "happy_timetable_text": "В этот прекрасный день нет пар!",
