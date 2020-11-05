@@ -7,7 +7,7 @@ from util import util
 
 class MLWText:
     def __init__(self, name, parsed_seq: list, local_vars: Dict[str, list] = None, cases: Dict[str, list] = None,
-                 global_vars: Dict[str, str] = None, local_dict:dict = None, local_dict_keys:list = None):
+                 global_vars: Dict[str, str] = None, local_dict: dict = None, local_dict_keys: list = None):
         self.name = name
         self.__parsed_seq = parsed_seq
         self.__local_vars = (local_vars if local_vars else {})
@@ -34,7 +34,7 @@ class MLWText:
             new_seq.append(element)
         return ''.join(new_seq)
 
-    def __load_from_json(self, var_name):
+    def __load_from_local_dict(self, var_name):
         return util.get_value(
             self.__local_dict,
             *[*self.__local_dict_keys, self.name, var_name],
@@ -44,7 +44,7 @@ class MLWText:
         if var_name[0] == '&':
             retval = self.__local_vars.get(var_name)
             if retval is None:
-                retval = self.__load_from_json(var_name[1:])
+                retval = self.__load_from_local_dict(var_name[1:])
             if retval is not None:
                 return self.__get_text(retval)
             raise ValueError(f'Undefined local variable: {var_name}')

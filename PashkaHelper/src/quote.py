@@ -1,9 +1,9 @@
-from src.server import Server
+from src.server import Quotes
 from src.text import get_text
 
 from static import consts
 
-SERVER = Server.get_instance()
+SERVER = Quotes.get_instance()
 
 
 def random_quote(language_code):

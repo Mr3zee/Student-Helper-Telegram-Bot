@@ -353,6 +353,7 @@ def deadlines(utcoffset, language_code):
 
     today = tm.get_today(utcoffset)
     keyboard = [
-        [make_day_button(today, i) for i in range(6)]
+        [make_day_button(today, i) for i in range(3)],
+        [make_day_button(today, i) for i in range(3, 6)],
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)

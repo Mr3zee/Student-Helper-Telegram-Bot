@@ -4,13 +4,13 @@ from datetime import timedelta, datetime
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from src.server import Server
+from src.server import Deadlines
 from src import keyboard, time_management as tm, database as db, common_functions as cf
 from src.text import get_text
 
 from static import consts
 
-SERVER = Server.get_instance()
+SERVER = Deadlines.get_instance()
 
 
 def deadline(update: Update, context: CallbackContext):

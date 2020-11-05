@@ -1,6 +1,6 @@
 from src.text import get_text
 from static import consts
-from src.server import Server
+from src.server import Timetable
 
 from telegram import Update
 from telegram.ext import CallbackContext
@@ -10,7 +10,7 @@ from src import keyboard, database, common_functions as cf, time_management as t
 SUBJECT_TEMPLATE = '%(time)s | %(subject)s | %(teacher)s | %(place)s'
 SUBJECT_TEMPLATE_WITH_PARITY = '%(time)s | %(parity)s | %(subject)s | %(teacher)s | %(place)s'
 
-SERVER = Server.get_instance()
+SERVER = Timetable.get_instance()
 
 
 def timetable_callback(update: Update, data: list, language_code):

@@ -124,7 +124,6 @@ if __name__ == '__main__':
 #  add everyday deadlines
 #  PE self timetable
 #  other groups
-#  merge /today into /timetable +
 #  SERVER
 #  optimize get_text and MLWText
 #  make enums
