@@ -1,7 +1,7 @@
 import datetime
 import random
 import re
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 import pygsheets
@@ -27,7 +27,10 @@ class Server(ABC):
     __instance = None
 
     # need to be specified in child classes
-    _url = None
+    @property
+    @abstractmethod
+    def _url(self):
+        pass
 
     def __init__(self, url):
         if not self.__instance:
@@ -116,7 +119,7 @@ class Timetable(Server):
 
     @staticmethod
     def __make_weekday_table(values, weekday, attendance, subject_filter, week_parity=consts.WEEK_BOTH) -> dict:
-        """returns dict {'online': tt1, 'offline': tt1}"""
+        """returns dict {'online': tt1, 'offline': tt2}"""
 
         # get weekday frame
         start_row, end_row = Timetable.__find_weekday_frame(values, weekday)
