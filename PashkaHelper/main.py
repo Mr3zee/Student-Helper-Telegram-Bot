@@ -2,7 +2,8 @@ from telegram import ParseMode, Bot
 from telegram.ext import Dispatcher, Defaults, JobQueue, BasePersistence
 
 from static import config
-from src import app, handler as hdl, database as db, jobs
+from src import handler as hdl, database as db, jobs
+from src.app import app, get_app_route
 
 import logging
 
@@ -108,12 +109,12 @@ add_handlers(dispatcher)
 jobs.load_jobs(job_queue)
 
 # set up web page to receive updates from Telegram
-app.get_app_route(bot, dispatcher, db.update_user_info)
+get_app_route(bot, dispatcher, db.update_user_info)
 
 logger.info('Staring bot...')
 
 if __name__ == '__main__':
-    app.app.run(host='127.0.0.1', port=app.PORT)
+    app.run(host='127.0.0.1', port=app.PORT)
 
 # TODO:
 #  CLIENT

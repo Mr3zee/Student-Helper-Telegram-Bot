@@ -92,7 +92,6 @@ value: Аргумент должен быть больше -1 и меньше 7
 
 ^timetable
 ^footer
-
 <a href = '&our_link'>Таблица</a> | /dl - дедлайны
 Выбрать другие параметры:
 [/body]
@@ -405,7 +404,8 @@ void <a href = '&cpp_twitch'>Twitch</a>(const Student *student) {
 kotlin: [m]
 <em><s>Kotlin</s> HTML + CSS + JS</em>
 Богоспасаемый <a href = '&kotlin_gitlab'>Gitlab</a>
-<a href = '&kotlin_yt'>Youtube</a> | <a href = '&kotlin_twitch'>Twitch</a> | <a href = '&kotlin_zoom'>Zoom</a>
+<a href = '&kotlin_yt'>Youtube</a> | <a href = '&kotlin_twitch'>Twitch</a> | <a href = '&kotlin_discord'>Discord</a> | <a href = '&kotlin_zoom'>Zoom</a>
+<a href = '&kotlin_table'>Таблица</a> курса | <a href = '&kotlin_points'>баллы</a>
 <a href = '&kotlin_tg'>Чат</a> Client-server and Kotlin[/m]
 [/case]
 

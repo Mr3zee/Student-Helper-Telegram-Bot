@@ -45,7 +45,7 @@ def mailing_job(context: CallbackContext):
         user_id=user_id,
         weekday=consts.TODAY,
         language_code=language_code,
-        footer=f'\n{random_quote(language_code)}',
+        footer=f'\n{random_quote(language_code)}\n',
     )
 
 
