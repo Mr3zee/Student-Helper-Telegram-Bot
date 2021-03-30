@@ -7,14 +7,12 @@
     "error_handler_user_text": "Слушай, прости, но пока я обрабатывал твой запрос произошла непредвиденная ошибка. Я уже сообщил разработчикам, так что жди хотфикс, я уведомлю тебя, когда он произодет\n\nP.s.: Возможно это соединение багает, попробуй еще раз на всякий случай",
     "cancel_main_text": "Операция отменена\n\nВернуться на главные экран /help",
     "wrong_callback_text": "Кнопки ни к чему, введи нужные данные, пожалуйста",
-
     "monday_timetable_text": "Понедельник",
     "tuesday_timetable_text": "Вторник",
     "wednesday_timetable_text": "Среда",
     "thursday_timetable_text": "Четверг",
     "friday_timetable_text": "Пятница",
     "saturday_timetable_text": "Суббота",
-
     "timetable_mailing_greeting_text": "Доброго времени суток!\nЯ принес твое сегодняшнее расписание, чтобы ты ничего не забыл)",
     "offline_timetable_text": "<u>Очно:</u>",
     "online_timetable_text": "<u>Заочно:</u>",
@@ -23,16 +21,13 @@
     "happy_timetable_text": "В этот прекрасный день нет пар!",
     "subject_timetable_header_text": "<b>Расписание по дням:</b>\n\n",
     "no_subject_timetable_header_text": "<b>Бюджет урезали, расписание не завезли</b>\n",
-
     "exit_parameters_text": "Ты успешно вышел из настроек\n\nГлавное меню /help, вернуться в настройки /parameters",
     "format_error_parameters_text": "Неправильный формат ввода или недопустимое значение",
     "main_parameters_error_text": "Я не смог понять это сообщение(\nЕсли что, ты еще в настройках, надо выйти, чтобы команды работали\n\nНажми /exit, чтобы выйти, или /parameters, чтобы найти меню настроек",
     "cancel_parameters_text": "Операция успешно отменена",
-
     "enter_name_parameters_text": "Введи свое новое имя в формате ФИО (оно нужно для отметки дз в таблицах)",
     "enter_tzinfo_parameters_text": "Введи свою временную зону. Например, если ты сейчас в Питере (UTC +3), то надо ввести +3",
     "enter_time_parameters_text": "Введи время, в которое ты хочешь получать ежедневное расписание в формате HH:MM",
-
     "name_unknown_user_data_text": "не указано",
     "attendance_both_user_data_text": "Очно и заочно",
     "attendance_online_user_data_text": "Заочно",
@@ -41,18 +36,15 @@
     "mailing_status_forbidden_user_data_text": "выключена",
     "notification_status_enabled_user_data_text": "со звуком",
     "notification_status_disabled_user_data_text": "беззвучно",
-
     "os_all_user_data_text": "Все оси",
     "os_lite_user_data_text": "Стандартные оси",
     "os_adv_user_data_text": "Системные оси",
-
     "sp_all_user_data_text": "Все СП",
     "sp_kotlin_user_data_text": "Client-Server and Kotlin",
     "sp_cpp_user_data_text": "Язык программирования С++",
     "sp_web_user_data_text": "Web разработка",
     "sp_ios_user_data_text": "Ios разработка",
     "sp_android_user_data_text": "Android разработка",
-
     "history_international_user_data_text": "Межнар",
     "history_science_user_data_text": "Наука и техника",
     "history_eu_problems_user_data_text": "Проблемы Европы XХ века",
@@ -60,7 +52,6 @@
     "history_reforms_user_data_text": "Реформы и реформаторы",
     "history_statehood_user_data_text": "История государственности",
     "history_all_user_data_text": "Вся история, совсем вся",
-
     "eng_c2_1_user_data_text": "C2/1",
     "eng_c2_2_user_data_text": "C2/2",
     "eng_c2_3_user_data_text": "C2/3",
@@ -74,9 +65,7 @@
     "eng_b12_1_user_data_text": "B1.2/1",
     "eng_b12_2_user_data_text": "B1.2/2",
     "eng_all_user_data_text": "Not enough gold, mine more gold",
-
     "eng_teacher_all_user_data_text": "Teachers?",
-
     "unauthorized_user_admin_text": "У тебя нет прав доступа к данной команде",
     "no_args_admin_text": "У данной команды должны быть аргументы",
     "no_args_notify_admin_text": "Флаг -n подразумевает наличие аргументов после",
@@ -90,32 +79,23 @@
     "unmute_user_admin_text": "Пользователь <b>unmuted</b>",
     "unmute_all_users_admin_text": "Все пользователи <b>unmuted</b>",
     "invalid_flag_value_admin_text": "Неверное значение флага",
-
     "report_text": "Выведи следующим сообщением отзыв. Он будет отправлен разработчикам",
     "report_sent_text": "Спасибо за отзыв!\n\nМы сделаем все возможное, чтобы исправить это безобразие",
     "cannot_send_report_text": "Прости, но на данный момент отправка сообщений разработчикам недоступна",
-
     "quantity_error_doc_text": "Чот многовато аргументов",
     "wrong_command_error_doc_text": "Такой команды не существует",
-
     "doc_unavailable_text": "Документация недоступна",
-
     "no_deadlines_text": "Ничего нет, но расслябляться рано",
-
     "cancel_button": "╳ Отмена",
-
     "subject_timetable_page_button": "Расписание →",
     "subject_main_page_button": "← Мэйн инфа",
     "subject_online_attendance_button": "Показать заочное",
     "subject_offline_attendance_button": "Показать очное",
-
     "help_main_button": "← Основное",
     "help_additional_button": "Дополнительно →",
-
     "admin_ls_next_button": "Next →",
     "admin_ls_prev_button": "← Prev",
     "admin_ls_update_button": "Upd ↺",
-
     "timetable_monday_button": "Пн",
     "timetable_tuesday_button": "Вт",
     "timetable_wednesday_button": "Ср",
